@@ -130,6 +130,11 @@ add_action( 'after_setup_theme', function () {
     add_theme_support( 'wc-product-gallery-slider' );
 } );
 
+// Placeholder produit de marque (remplace le placeholder gris WooCommerce par défaut)
+add_filter( 'woocommerce_placeholder_img_src', function ( $src ) {
+    return get_stylesheet_directory_uri() . '/assets/img/nl-placeholder.svg';
+} );
+
 /**
  * ============================================
  * NL STORE TESTIMONIALS CAROUSEL SHORTCODE
