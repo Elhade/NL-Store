@@ -1,32 +1,91 @@
 /**
 Theme Name: NLStore Astra
 Author: Elhade
-Description: Luxury dark e-commerce for NL Store Mayotte
-Version: 2.1.0
+Description: Luxury dark e-commerce for NL Store Mayotte — Maison NL design system
+Version: 3.0.0
 License: GPL v2
 Text Domain: nlstore-astra
 Template: astra
 */
 
 /* ======================================================
-   ROOT VARIABLES
+   DESIGN TOKENS — Maison NL
    ====================================================== */
 :root {
-  --nl-black: #050505;
-  --nl-black-deep: #030303;
-  --nl-black-soft: #111111;
-  --nl-white: #f7f3eb;
-  --nl-white-soft: #e8e4dc;
-  --nl-grey: #b9b1a4;
-  --nl-grey-dark: #7e7568;
+  /* Canvas */
+  --nl-black: #060503;
+  --nl-black-deep: #020201;
+  --nl-black-soft: #0e0c0a;
+  --nl-surface: #141210;
+  --nl-surface-2: #1c1916;
+  --nl-ivory: #f8f4ec;
+  --nl-ivory-deep: #efe8da;
+
+  /* Ink */
+  --nl-white: #f6f1e7;
+  --nl-white-soft: #e7e0d3;
+  --nl-grey: #b4ab9c;
+  --nl-grey-dark: #6f6657;
+
+  /* Gold */
   --nl-gold: #d4af37;
+  --nl-gold-bright: #f1d57e;
   --nl-gold-soft: #e4c46a;
-  --nl-gold-dark: #9c7723;
+  --nl-gold-deep: #9c7723;
+  --nl-gold-ink: #0b0904;
+
+  /* Lines & glow */
   --nl-border: rgba(212, 175, 55, 0.22);
+  --nl-hairline: rgba(212, 175, 55, 0.16);
+  --nl-hairline-strong: rgba(212, 175, 55, 0.42);
+  --nl-glow: rgba(212, 175, 55, 0.28);
+
+  /* Shadows */
+  --nl-shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
   --nl-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-  --nl-radius: 18px;
+  --nl-shadow-lg: 0 32px 64px rgba(0, 0, 0, 0.55);
+  --nl-shadow-gold: 0 14px 34px rgba(212, 175, 55, 0.26);
+
+  /* Radii */
+  --nl-radius-sm: 10px;
+  --nl-radius: 16px;
+  --nl-radius-lg: 22px;
+  --nl-radius-pill: 999px;
+
+  /* Spacing scale (8pt) */
+  --nl-space-1: 4px;
+  --nl-space-2: 8px;
+  --nl-space-3: 12px;
+  --nl-space-4: 16px;
+  --nl-space-5: 24px;
+  --nl-space-6: 32px;
+  --nl-space-7: 48px;
+  --nl-space-8: 64px;
+  --nl-space-9: 96px;
+  --nl-space-10: 128px;
+
+  /* Section rhythm (fluid) */
+  --nl-section-y: clamp(56px, 9vw, 112px);
+  --nl-gutter: clamp(20px, 5vw, 56px);
+  --nl-container: 1280px;
+
+  /* Type */
   --nl-font-title: "Cormorant Garamond", "Georgia", serif;
   --nl-font-body: "Montserrat", "Helvetica", sans-serif;
+
+  /* Fluid type scale */
+  --nl-fs-display: clamp(3rem, 6.5vw, 5.25rem);
+  --nl-fs-h1: clamp(2rem, 4vw, 3.25rem);
+  --nl-fs-h2: clamp(1.75rem, 3vw, 2.5rem);
+  --nl-fs-h3: clamp(1.35rem, 2vw, 1.7rem);
+  --nl-fs-eyebrow: 0.72rem;
+
+  /* Motion */
+  --nl-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --nl-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Legacy aliases (compat) */
+  --nl-radius: 16px;
 }
 
 /* ======================================================
@@ -41,15 +100,17 @@ body {
   margin: 0;
   padding: 0;
   background:
-    radial-gradient(circle at top center, rgba(212, 175, 55, 0.08), transparent 28%),
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.03), transparent 18%),
-    linear-gradient(180deg, #120f0b 0%, #070707 35%, #030303 100%) !important;
+    radial-gradient(circle at top center, rgba(212, 175, 55, 0.07), transparent 30%),
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.025), transparent 18%),
+    linear-gradient(180deg, #100d0a 0%, #070605 35%, #030302 100%) !important;
   background-attachment: fixed !important;
   background-color: var(--nl-black) !important;
   color: var(--nl-white) !important;
   font-family: var(--nl-font-body) !important;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   overflow-x: hidden;
 }
 
@@ -59,27 +120,20 @@ body::before {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.035), transparent 16%),
-    radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.06), transparent 18%),
-    radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.025), transparent 20%);
+    radial-gradient(circle at 15% 30%, rgba(255, 255, 255, 0.03), transparent 16%),
+    radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.05), transparent 18%),
+    radial-gradient(circle at 60% 72%, rgba(255, 255, 255, 0.02), transparent 20%);
   mix-blend-mode: screen;
   z-index: 0;
 }
 
+/* Subtle film-grain vignette for depth */
 body::after {
   content: "";
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: -40px;
-  height: 240px;
+  inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 15% 100%, rgba(255, 255, 255, 0.06), transparent 35%),
-    radial-gradient(ellipse at 55% 100%, rgba(255, 255, 255, 0.04), transparent 35%),
-    radial-gradient(ellipse at 85% 100%, rgba(255, 255, 255, 0.05), transparent 35%);
-  filter: blur(24px);
-  opacity: 0.5;
+  background: radial-gradient(ellipse at center, transparent 58%, rgba(0, 0, 0, 0.55) 100%);
   z-index: 0;
 }
 
@@ -94,37 +148,63 @@ body::after {
   z-index: 1;
 }
 
+/* Shared inner container */
+.nl-container {
+  max-width: var(--nl-container);
+  margin-inline: auto;
+  padding-inline: var(--nl-gutter);
+}
+
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: var(--nl-white);
+}
+
+/* Refined gold scrollbar */
+* {
+  scrollbar-color: var(--nl-gold-deep) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(var(--nl-gold-deep), #5e4715);
+  border-radius: var(--nl-radius-pill);
+}
+
 /* ======================================================
    TYPOGRAPHY
    ====================================================== */
 a {
   color: var(--nl-gold) !important;
   text-decoration: none;
-  transition: color 0.25s ease;
+  transition: color 0.25s var(--nl-ease);
 }
 
 a:hover {
-  color: var(--nl-gold-soft) !important;
+  color: var(--nl-gold-bright) !important;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--nl-font-title) !important;
   color: var(--nl-gold) !important;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
+  letter-spacing: 0.4px;
+  line-height: 1.08;
   margin: 0;
 }
 
-p,
-li,
-span,
-div {
+p, li, span, div {
   color: var(--nl-white);
+}
+
+/* Decorative gold rule */
+.nl-rule {
+  width: 64px;
+  height: 2px;
+  margin: var(--nl-space-4) auto;
+  background: linear-gradient(90deg, transparent, var(--nl-gold), transparent);
+  border: none;
 }
 
 /* ======================================================
@@ -135,26 +215,49 @@ div {
 .ast-primary-header-bar,
 .ast-builder-menu-1,
 .ast-desktop .main-header-bar {
-  background: rgba(5, 5, 5, 0.92) !important;
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.18) !important;
+  background: rgba(6, 5, 3, 0.82) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid var(--nl-hairline) !important;
 }
 
 .ast-site-identity .site-title a,
 .site-title a {
   color: var(--nl-gold) !important;
   font-family: var(--nl-font-title) !important;
-  font-size: 24px !important;
+  font-size: 26px !important;
   font-weight: 700 !important;
+  letter-spacing: 1px !important;
 }
 
 .main-navigation a,
 .ast-builder-menu-1 .menu-item a {
-  color: var(--nl-white) !important;
+  color: var(--nl-white-soft) !important;
   text-transform: uppercase !important;
-  letter-spacing: 1.2px !important;
+  letter-spacing: 1.6px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
+  position: relative;
+}
+
+/* Animated underline on nav */
+.main-navigation .menu-item > a::after,
+.ast-builder-menu-1 .menu-item > a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 1px;
+  background: var(--nl-gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--nl-ease);
+}
+
+.main-navigation .menu-item > a:hover::after,
+.ast-builder-menu-1 .menu-item > a:hover::after {
+  transform: scaleX(1);
 }
 
 .main-navigation a:hover,
@@ -162,22 +265,169 @@ div {
   color: var(--nl-gold) !important;
 }
 
+/* Cart count bubble */
+.ast-site-header-cart .ast-cart-menu-wrap .count {
+  background: var(--nl-gold) !important;
+  color: var(--nl-gold-ink) !important;
+  border-color: var(--nl-gold) !important;
+}
+
 /* ======================================================
-   HERO SECTION - nl-hero-section
+   BUTTONS — Global & Custom
+   ====================================================== */
+.wp-block-button__link,
+.wp-block-button__link.nl-btn-primary,
+.wp-block-button__link.category-button,
+button,
+input[type="button"],
+input[type="submit"],
+.woocommerce a.button,
+.woocommerce button.button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
+  color: var(--nl-gold-ink) !important;
+  border: none !important;
+  border-radius: var(--nl-radius-sm) !important;
+  padding: 14px 32px !important;
+  font-family: var(--nl-font-body) !important;
+  font-weight: 700 !important;
+  letter-spacing: 1.4px !important;
+  text-transform: uppercase !important;
+  font-size: 12.5px !important;
+  box-shadow: var(--nl-shadow-gold) !important;
+  transition: transform 0.3s var(--nl-ease-spring), box-shadow 0.3s var(--nl-ease), background 0.3s var(--nl-ease) !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  text-decoration: none !important;
+}
+
+/* Gold sheen sweep */
+.wp-block-button__link::before,
+.woocommerce a.button::before,
+.woocommerce button.button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.6s var(--nl-ease);
+  pointer-events: none;
+}
+
+.wp-block-button__link:hover::before,
+.woocommerce a.button:hover::before,
+.woocommerce button.button:hover::before {
+  left: 130%;
+}
+
+.wp-block-button__link:hover,
+button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+  background: linear-gradient(135deg, var(--nl-gold-bright), var(--nl-gold-deep)) !important;
+  color: var(--nl-gold-ink) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 18px 38px rgba(212, 175, 55, 0.36) !important;
+}
+
+/* Secondary button (outline) */
+.wp-block-button__link.nl-btn-secondary {
+  background: transparent !important;
+  color: var(--nl-gold) !important;
+  border: 1.5px solid var(--nl-gold) !important;
+  box-shadow: none !important;
+}
+
+.wp-block-button__link.nl-btn-secondary:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: var(--nl-gold-bright) !important;
+  border-color: var(--nl-gold-bright) !important;
+}
+
+/* ======================================================
+   SECTION SHELL & HEADERS
+   ====================================================== */
+.nl-section-header {
+  text-align: center !important;
+  margin-bottom: var(--nl-space-7) !important;
+}
+
+.nl-section-label,
+.nl-surtitle {
+  display: inline-block !important;
+  margin: 0 auto var(--nl-space-3) !important;
+  padding: 7px 18px !important;
+  border-radius: var(--nl-radius-pill) !important;
+  background: rgba(212, 175, 55, 0.08) !important;
+  border: 1px solid var(--nl-border) !important;
+  color: var(--nl-gold) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+}
+
+.nl-section-main-title {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-h1) !important;
+  font-weight: 700 !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 !important;
+  line-height: 1.08 !important;
+}
+
+/* Centered title with flanking rules */
+.nl-section-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nl-space-5) !important;
+  margin-bottom: var(--nl-space-7) !important;
+}
+
+.nl-section-line {
+  flex: 1 !important;
+  height: 1px !important;
+  max-width: 220px !important;
+  background: linear-gradient(to right, transparent, var(--nl-hairline-strong), transparent) !important;
+  display: block !important;
+}
+
+.nl-section-deco {
+  color: var(--nl-gold) !important;
+  font-size: 18px !important;
+}
+
+.nl-section-title {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-h2) !important;
+  font-weight: 700 !important;
+  color: var(--nl-white-soft) !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+/* ======================================================
+   HERO SECTION
    ====================================================== */
 .nl-hero-section,
 .nl-hero,
 .hero-fixed {
   position: relative !important;
-  min-height: 700px !important;
+  min-height: min(88vh, 760px) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   overflow: hidden !important;
-  padding: 100px 40px !important;
+  padding: clamp(90px, 12vw, 140px) var(--nl-gutter) !important;
   --nl-hero-bg: url('');
   background:
-    linear-gradient(135deg, rgba(5,5,5,0.65), rgba(5,5,5,0.88)),
+    linear-gradient(135deg, rgba(5, 4, 3, 0.72), rgba(5, 4, 3, 0.92)),
     var(--nl-hero-bg) center center / cover no-repeat !important;
   background-color: #0d0b09 !important;
   isolation: isolate;
@@ -190,9 +440,9 @@ div {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(212, 175, 55, 0.15), transparent 25%),
-    radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.08), transparent 22%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.3));
+    radial-gradient(circle at 20% 24%, rgba(212, 175, 55, 0.16), transparent 26%),
+    radial-gradient(circle at 82% 32%, rgba(255, 255, 255, 0.07), transparent 22%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.45));
   z-index: 1;
   pointer-events: none;
 }
@@ -204,315 +454,420 @@ div {
   position: absolute;
   inset: -10%;
   background:
-    radial-gradient(ellipse at 15% 75%, rgba(255, 255, 255, 0.12), transparent 20%),
-    radial-gradient(ellipse at 35% 30%, rgba(255, 255, 255, 0.08), transparent 18%),
-    radial-gradient(ellipse at 68% 65%, rgba(255, 255, 255, 0.1), transparent 20%),
-    radial-gradient(ellipse at 88% 24%, rgba(255, 255, 255, 0.07), transparent 16%);
-  filter: blur(30px);
+    radial-gradient(ellipse at 15% 75%, rgba(255, 255, 255, 0.1), transparent 20%),
+    radial-gradient(ellipse at 35% 30%, rgba(255, 255, 255, 0.06), transparent 18%),
+    radial-gradient(ellipse at 68% 65%, rgba(255, 255, 255, 0.08), transparent 20%),
+    radial-gradient(ellipse at 88% 24%, rgba(255, 255, 255, 0.06), transparent 16%);
+  filter: blur(34px);
   opacity: 0.5;
-  animation: nlHeroSmoke 18s ease-in-out infinite alternate;
+  animation: nlHeroSmoke 20s ease-in-out infinite alternate;
   z-index: 1;
   pointer-events: none;
 }
 
-.nl-hero-section > .wp-block-group,
-.nl-hero > .wp-block-group,
-.hero-fixed > .wp-block-group {
+@media (prefers-reduced-motion: reduce) {
+  .nl-hero-section::after { animation: none; }
+}
+
+.nl-hero-section .nl-hero-inner {
   position: relative !important;
-  z-index: 2;
+  z-index: 2 !important;
   text-align: center !important;
-  max-width: 900px;
+  max-width: 880px !important;
   margin: 0 auto !important;
-  padding: 0 20px !important;
+  padding: 0 var(--nl-space-5) !important;
 }
 
-/* Hero title */
-.nl-hero-section h1,
-.nl-hero h1,
-.hero-fixed h1 {
-  font-size: 80px !important;
-  line-height: 0.95 !important;
-  color: var(--nl-gold) !important;
+.nl-hero-surtitre {
+  font-size: 12.5px !important;
+  letter-spacing: 4px !important;
   text-transform: uppercase !important;
-  letter-spacing: 2px !important;
-  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.4) !important;
-  animation: nlHeroFloat 6s ease-in-out infinite !important;
-  margin: 30px 0 !important;
-  font-family: var(--nl-font-title) !important;
-  font-weight: 700 !important;
+  color: var(--nl-gold) !important;
+  margin: 0 0 var(--nl-space-5) 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 12px !important;
 }
 
-/* Hero subtitle & text */
-.nl-hero-section h2,
-.nl-hero h2,
-.hero-fixed h2 {
-  font-size: 18px !important;
-  color: var(--nl-white-soft) !important;
+.nl-hero-surtitre::before,
+.nl-hero-surtitre::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--nl-hairline-strong);
+  display: inline-block;
+}
+
+.nl-hero-logo-img {
+  max-height: 118px !important;
+  width: auto !important;
+  margin: 0 auto var(--nl-space-3) !important;
+  display: block !important;
+  filter: drop-shadow(0 6px 26px rgba(212, 175, 55, 0.4)) !important;
+}
+
+.nl-hero-logo-fallback {
+  font-family: var(--nl-font-title) !important;
+  font-size: 90px !important;
+  font-weight: 700 !important;
+  color: var(--nl-gold) !important;
+  line-height: 1 !important;
+  text-shadow: 0 6px 28px rgba(212, 175, 55, 0.35) !important;
+  margin: 0 0 var(--nl-space-2) 0 !important;
+  letter-spacing: -2px !important;
+}
+
+.nl-hero-brand {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-display) !important;
+  font-weight: 700 !important;
+  color: transparent !important;
+  background: linear-gradient(180deg, #fbe9b0 0%, var(--nl-gold) 55%, var(--nl-gold-deep) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  letter-spacing: 8px !important;
+  text-transform: uppercase !important;
+  margin: 0 0 var(--nl-space-4) 0 !important;
+  filter: drop-shadow(0 8px 30px rgba(0, 0, 0, 0.5));
+}
+
+.nl-hero-subtitle {
+  font-family: var(--nl-font-title) !important;
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem) !important;
   font-weight: 400 !important;
-  letter-spacing: 0.6px !important;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.3) !important;
-  margin: 20px 0 !important;
-  font-family: var(--nl-font-title) !important;
-}
-
-.nl-hero-section p,
-.nl-hero p,
-.hero-fixed p {
+  font-style: italic !important;
   color: var(--nl-white-soft) !important;
-  font-size: 14px !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  margin: 15px 0 40px 0 !important;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.3) !important;
+  margin: 0 0 var(--nl-space-3) 0 !important;
+  letter-spacing: 0.5px !important;
 }
 
-/* ======================================================
-   BUTTONS - Global & Custom
-   ====================================================== */
-.wp-block-button__link,
-.wp-block-button__link.nl-btn-primary,
-.wp-block-button__link.nl-btn-secondary,
-.wp-block-button__link.category-button,
-button,
-input[type="button"],
-input[type="submit"],
-.woocommerce a.button,
-.woocommerce button.button {
+.nl-hero-tagline {
+  font-size: 12px !important;
+  letter-spacing: 2.5px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-grey) !important;
+  margin: 0 0 var(--nl-space-6) 0 !important;
+}
+
+.nl-hero-buttons {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nl-space-4) !important;
+  flex-wrap: wrap !important;
+  margin: 0 0 var(--nl-space-6) 0 !important;
+}
+
+.nl-btn-hero {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 9px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.6px !important;
+  text-transform: uppercase !important;
+  padding: 15px 38px !important;
+  border-radius: var(--nl-radius-pill) !important;
+  transition: all 0.3s var(--nl-ease) !important;
+}
+
+.nl-btn-hero--primary {
   background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
-  color: #0a0a0a !important;
-  border: none !important;
-  border-radius: 12px !important;
-  padding: 14px 32px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1.2px !important;
-  text-transform: uppercase !important;
-  font-size: 13px !important;
-  box-shadow: 0 10px 26px rgba(212, 175, 55, 0.25) !important;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-  cursor: pointer !important;
-  display: inline-block !important;
-  text-decoration: none !important;
+  color: var(--nl-gold-ink) !important;
+  border: 1.5px solid transparent !important;
+  box-shadow: var(--nl-shadow-gold) !important;
 }
 
-.wp-block-button__link:hover,
-button:hover,
-input[type="button"]:hover,
-input[type="submit"]:hover {
-  background: linear-gradient(135deg, #f0cf79, #c4972d) !important;
-  color: #050505 !important;
+.nl-btn-hero--primary:hover {
+  background: linear-gradient(135deg, var(--nl-gold-bright), var(--nl-gold-deep)) !important;
+  color: var(--nl-gold-ink) !important;
   transform: translateY(-3px) !important;
-  box-shadow: 0 16px 34px rgba(212, 175, 55, 0.35) !important;
+  box-shadow: 0 18px 38px rgba(212, 175, 55, 0.4) !important;
 }
 
-/* Secondary button (outline) */
-.wp-block-button__link.nl-btn-secondary {
-  background: transparent !important;
+.nl-btn-hero--secondary {
+  background: rgba(255, 255, 255, 0.03) !important;
   color: var(--nl-gold) !important;
-  border: 2px solid var(--nl-gold) !important;
-  box-shadow: none !important;
+  border: 1.5px solid var(--nl-gold) !important;
+  backdrop-filter: blur(6px);
 }
 
-.wp-block-button__link.nl-btn-secondary:hover {
-  background: rgba(212, 175, 55, 0.1) !important;
-  color: var(--nl-gold-soft) !important;
-  border-color: var(--nl-gold-soft) !important;
+.nl-btn-hero--secondary:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  color: var(--nl-gold-bright) !important;
+  border-color: var(--nl-gold-bright) !important;
+  transform: translateY(-3px) !important;
+}
+
+.nl-hero-trust {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--nl-space-6) !important;
+  flex-wrap: wrap !important;
+  margin-top: var(--nl-space-6) !important;
+}
+
+.nl-hero-trust span {
+  font-size: 12px !important;
+  letter-spacing: 0.6px !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.nl-hero-trust svg {
+  color: var(--nl-gold) !important;
+  stroke: var(--nl-gold) !important;
+  flex-shrink: 0 !important;
 }
 
 /* ======================================================
    CATEGORIES SECTION
    ====================================================== */
-.categories-section {
-  background-color: #0b0b0b !important;
-  padding: 80px 40px !important;
-  position: relative !important;
-  z-index: 1;
+.nl-categories-section {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(212, 175, 55, 0.05), transparent 40%),
+    var(--nl-black-soft) !important;
+  padding: var(--nl-section-y) var(--nl-gutter) !important;
 }
 
-.categories-section h2 {
-  font-size: 36px !important;
-  font-family: var(--nl-font-title) !important;
-  font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
-  text-align: center !important;
-  margin: 0 0 60px 0 !important;
-  letter-spacing: -0.5px !important;
-}
-
-/* 4 column grid */
-.wp-block-columns {
+.nl-categories-grid {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr) !important;
-  gap: 24px !important;
-  margin: 0 !important;
+  gap: var(--nl-space-5) !important;
+  max-width: var(--nl-container) !important;
+  margin: 0 auto !important;
 }
 
-.wp-block-column {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-/* Category card */
-.category-card {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent 20%),
-    linear-gradient(180deg, rgba(25, 25, 25, 0.95), rgba(10, 10, 10, 0.98)) !important;
-  border: 1.5px solid rgba(212, 175, 55, 0.22) !important;
-  border-radius: 20px !important;
-  padding: 25px !important;
-  overflow: hidden !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32) !important;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+.nl-cat-card {
   display: flex !important;
   flex-direction: column !important;
-  justify-content: flex-end !important;
-  min-height: 280px !important;
+  border-radius: var(--nl-radius-lg) !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, var(--nl-surface-2), var(--nl-black-soft)) !important;
+  border: 1px solid var(--nl-hairline) !important;
+  box-shadow: var(--nl-shadow) !important;
+  text-decoration: none !important;
+  transition: transform 0.4s var(--nl-ease-spring), border-color 0.4s var(--nl-ease), box-shadow 0.4s var(--nl-ease) !important;
   cursor: pointer !important;
 }
 
-.category-card:hover {
-  transform: translateY(-8px) !important;
-  border-color: rgba(228, 196, 106, 0.65) !important;
-  box-shadow: 0 28px 48px rgba(0, 0, 0, 0.42) !important;
+.nl-cat-card:hover {
+  transform: translateY(-10px) !important;
+  border-color: var(--nl-hairline-strong) !important;
+  box-shadow: var(--nl-shadow-lg) !important;
 }
 
-.category-card h3 {
-  font-size: 24px !important;
+.nl-cat-card__img {
+  height: 210px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+  transition: transform 0.5s var(--nl-ease) !important;
+}
+
+.nl-cat-card:hover .nl-cat-card__img {
+  transform: scale(1.05) !important;
+}
+
+.nl-cat-card__img::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(to bottom, transparent 35%, rgba(8, 7, 5, 0.85) 100%) !important;
+}
+
+.nl-cat-card__img--empty {
+  background: linear-gradient(135deg, #1e1a12 0%, #2a200e 50%, #1a1208 100%) !important;
+}
+
+.nl-cat-card__img--empty::before {
+  content: "✦" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 42px !important;
+  color: rgba(212, 175, 55, 0.2) !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+.nl-cat-card__body {
+  padding: var(--nl-space-5) var(--nl-space-5) var(--nl-space-4) !important;
+  flex-grow: 1 !important;
+}
+
+.nl-cat-card__body h3 {
   font-family: var(--nl-font-title) !important;
-  color: var(--nl-white-soft) !important;
+  font-size: var(--nl-fs-h3) !important;
   font-weight: 700 !important;
-  margin: 0 0 15px 0 !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 0 var(--nl-space-3) 0 !important;
+  line-height: 1.1 !important;
 }
 
-.category-card ul {
+.nl-cat-card__body ul {
   list-style: none !important;
   padding: 0 !important;
-  margin: 0 0 15px 0 !important;
+  margin: 0 !important;
+}
+
+.nl-cat-card__body li {
   font-size: 13px !important;
   color: var(--nl-grey) !important;
-  line-height: 1.8;
+  padding: 4px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
-.category-card li {
-  margin-bottom: 8px !important;
+.nl-cat-card__body li::before {
+  content: "" !important;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: var(--nl-gold) !important;
+  flex-shrink: 0 !important;
 }
 
-.category-card .wp-block-button {
-  margin-top: 15px !important;
-}
-
-.category-card .wp-block-button__link {
-  background-color: var(--nl-gold) !important;
-  color: #050505 !important;
-  padding: 10px 24px !important;
-  border-radius: 4px !important;
+.nl-cat-card__btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin: 0 var(--nl-space-5) var(--nl-space-5) !important;
+  padding: 12px 20px !important;
+  background: transparent !important;
+  border: 1px solid var(--nl-border) !important;
+  color: var(--nl-gold) !important;
+  font-family: var(--nl-font-body) !important;
   font-size: 11px !important;
   font-weight: 700 !important;
+  letter-spacing: 1.5px !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-  border: none !important;
-  box-shadow: none !important;
-  width: 100% !important;
-  text-align: center !important;
+  border-radius: var(--nl-radius-sm) !important;
+  transition: all 0.3s var(--nl-ease) !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
 }
 
-.category-card .wp-block-button__link:hover {
-  background: var(--nl-gold-soft) !important;
+.nl-cat-card__btn::after {
+  content: "→";
+  transition: transform 0.3s var(--nl-ease);
+}
+
+.nl-cat-card:hover .nl-cat-card__btn {
+  background: var(--nl-gold) !important;
+  border-color: var(--nl-gold) !important;
+  color: var(--nl-gold-ink) !important;
+}
+
+.nl-cat-card:hover .nl-cat-card__btn::after {
+  transform: translateX(4px);
 }
 
 /* ======================================================
    PRODUCTS SECTION
    ====================================================== */
-.products-section {
-  background-color: #0b0b0b !important;
-  padding: 80px 40px !important;
-  position: relative !important;
-  z-index: 1;
+.nl-products-section {
+  background: var(--nl-black-soft) !important;
+  padding: var(--nl-section-y) var(--nl-gutter) !important;
 }
 
-.products-section h2 {
-  font-size: 36px !important;
-  font-family: var(--nl-font-title) !important;
-  font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
+.nl-products-section .nl-section-label {
+  margin-bottom: var(--nl-space-2) !important;
+}
+
+.nl-products-grid {
+  max-width: var(--nl-container) !important;
+  margin: 0 auto !important;
+}
+
+.nl-products-view-all {
   text-align: center !important;
-  margin: 0 0 60px 0 !important;
-  letter-spacing: -0.5px !important;
+  margin-top: var(--nl-space-7) !important;
 }
 
-.nl-surtitle {
-  display: block !important;
-  width: fit-content !important;
-  margin: 0 auto 16px !important;
-  padding: 8px 16px !important;
-  border-radius: 20px !important;
-  background: rgba(212, 175, 55, 0.1) !important;
-  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+.nl-btn-view-all {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 15px 46px !important;
+  border: 1.5px solid var(--nl-gold) !important;
   color: var(--nl-gold) !important;
-  font-size: 11px !important;
+  font-family: var(--nl-font-body) !important;
+  font-size: 12px !important;
   font-weight: 700 !important;
   letter-spacing: 2px !important;
   text-transform: uppercase !important;
-  line-height: 1 !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+  border-radius: var(--nl-radius-pill) !important;
+  transition: all 0.3s var(--nl-ease) !important;
+  text-decoration: none !important;
 }
 
-.products-slider {
-  position: relative !important;
-  overflow: hidden !important;
-  margin: 0 0 40px 0 !important;
+.nl-btn-view-all:hover {
+  background: var(--nl-gold) !important;
+  color: var(--nl-gold-ink) !important;
+  box-shadow: var(--nl-shadow-gold) !important;
+  transform: translateY(-3px) !important;
 }
 
-/* WooCommerce products grid */
+/* WooCommerce products grid in shortcodes */
 ul.products,
 .products-slider ul.products {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 24px !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: var(--nl-space-5) !important;
   list-style: none !important;
   padding: 0 !important;
   margin: 0 !important;
 }
 
-/* ── Carte produit — design crème (contraste sur fond sombre) ── */
+/* ── Product card — ivory surface for contrast ── */
 .woocommerce ul.products li.product,
 .woocommerce-page ul.products li.product {
-  background: #faf8f4 !important;
-  border: 1px solid rgba(212, 175, 55, 0.25) !important;
-  border-radius: 18px !important;
+  background: var(--nl-ivory) !important;
+  border: 1px solid var(--nl-border) !important;
+  border-radius: var(--nl-radius-lg) !important;
   overflow: hidden !important;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22) !important;
-  transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  box-shadow: var(--nl-shadow) !important;
+  transition: transform 0.35s var(--nl-ease-spring), border-color 0.35s var(--nl-ease), box-shadow 0.35s var(--nl-ease) !important;
   padding: 0 !important;
   margin: 0 !important;
-  flex: 0 0 calc(25% - 18px) !important;
-  min-width: 200px;
+  min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
 }
 
 .woocommerce ul.products li.product:hover,
 .woocommerce-page ul.products li.product:hover {
-  transform: translateY(-8px) !important;
-  border-color: rgba(212, 175, 55, 0.65) !important;
-  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.32) !important;
+  transform: translateY(-10px) !important;
+  border-color: var(--nl-hairline-strong) !important;
+  box-shadow: var(--nl-shadow-lg) !important;
 }
 
-/* Image produit */
 .woocommerce ul.products li.product a img,
 .woocommerce-page ul.products li.product a img {
   width: 100% !important;
-  height: 240px !important;
+  height: 250px !important;
   object-fit: cover !important;
   display: block !important;
-  border-radius: 16px 16px 0 0 !important;
-  transition: transform 0.38s ease !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  transition: transform 0.5s var(--nl-ease) !important;
 }
 
 .woocommerce ul.products li.product:hover a img {
-  transform: scale(1.05) !important;
+  transform: scale(1.06) !important;
 }
 
-/* Titre produit */
 .woocommerce ul.products li.product .woocommerce-loop-product__title,
 .woocommerce-page ul.products li.product .woocommerce-loop-product__title {
   color: #1a1209 !important;
@@ -521,32 +876,47 @@ ul.products,
   font-weight: 700 !important;
   line-height: 1.2 !important;
   margin: 0 !important;
-  padding: 14px 16px 4px !important;
+  padding: 16px 18px 4px !important;
 }
 
-/* Prix */
 .woocommerce ul.products li.product .price,
 .woocommerce-page ul.products li.product .price {
-  color: #1a1209 !important;
+  color: var(--nl-gold-deep) !important;
   font-size: 20px !important;
   font-weight: 700 !important;
-  padding: 2px 16px 14px !important;
+  padding: 2px 18px 14px !important;
   display: block !important;
 }
 
-/* Bouton "Ajouter au panier" */
+.woocommerce ul.products li.product .price del {
+  color: #b3a890 !important;
+  font-weight: 500 !important;
+  font-size: 15px !important;
+  margin-right: 6px !important;
+}
+
+.woocommerce ul.products li.product .price ins {
+  text-decoration: none !important;
+}
+
+.woocommerce ul.products li.product .star-rating {
+  margin: 0 18px 8px !important;
+  color: var(--nl-gold) !important;
+  font-size: 13px !important;
+}
+
 .woocommerce ul.products li.product .button,
 .woocommerce-page ul.products li.product .button {
-  width: calc(100% - 32px) !important;
-  margin: auto 16px 16px 16px !important;
-  padding: 12px 20px !important;
-  background: linear-gradient(135deg, #e8cb7a, #d4af37) !important;
-  color: #0d0a04 !important;
+  width: calc(100% - 36px) !important;
+  margin: auto 18px 18px 18px !important;
+  padding: 13px 20px !important;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
+  color: var(--nl-gold-ink) !important;
   font-size: 12px !important;
   font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  border-radius: 10px !important;
-  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.3) !important;
+  letter-spacing: 1.2px !important;
+  border-radius: var(--nl-radius-sm) !important;
+  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.28) !important;
   text-align: center !important;
   display: flex !important;
   align-items: center !important;
@@ -562,103 +932,72 @@ ul.products,
   font-weight: 400;
 }
 
-.woocommerce ul.products li.product .button:hover,
-.woocommerce-page ul.products li.product .button:hover {
-  background: linear-gradient(135deg, #f0d585, #c9a22e) !important;
-  transform: none !important;
-  box-shadow: 0 10px 26px rgba(212, 175, 55, 0.4) !important;
+.woocommerce ul.products li.product .button:has(.nl-btn-arrow)::after {
+  content: none !important;
 }
 
 .woocommerce ul.products li.product .button .nl-btn-arrow {
   font-size: 18px !important;
-  font-weight: 400 !important;
   line-height: 1 !important;
-  margin-left: 6px !important;
-  display: inline !important;
+  transition: transform 0.3s var(--nl-ease) !important;
 }
 
-/* Supprime le ::after CSS quand la flèche vient du template PHP */
-.woocommerce ul.products li.product .button:has(.nl-btn-arrow)::after {
-  content: none !important;
+.woocommerce ul.products li.product .button:hover {
+  background: linear-gradient(135deg, var(--nl-gold-bright), var(--nl-gold-deep)) !important;
+  box-shadow: 0 12px 28px rgba(212, 175, 55, 0.4) !important;
+}
+
+.woocommerce ul.products li.product .button:hover .nl-btn-arrow {
+  transform: translateX(4px) !important;
+}
+
+/* ======================================================
+   PROMO WEEK SECTION
+   ====================================================== */
+.nl-promo-week-section {
+  background:
+    radial-gradient(circle at 50% 120%, rgba(212, 175, 55, 0.05), transparent 45%),
+    var(--nl-black-soft) !important;
+  padding: var(--nl-section-y) var(--nl-gutter) !important;
+  border-top: 1px solid var(--nl-hairline) !important;
+}
+
+.nl-promo-week-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: var(--nl-space-7) !important;
+  max-width: var(--nl-container) !important;
+  margin: 0 auto !important;
+  align-items: start !important;
 }
 
 /* ======================================================
    PROMO BANNER
    ====================================================== */
-.promo-banner {
-  background: linear-gradient(90deg, #d4af37 0%, #c9a22e 100%) !important;
-  padding: 25px 40px !important;
+.promo-banner,
+.nl-promo-banner {
+  background: linear-gradient(90deg, var(--nl-gold-soft) 0%, var(--nl-gold) 50%, var(--nl-gold-deep) 100%) !important;
+  padding: 18px var(--nl-gutter) !important;
   text-align: center !important;
   position: relative !important;
   z-index: 1;
 }
 
-.promo-banner p {
-  color: #050505 !important;
+.promo-banner p,
+.nl-promo-banner p {
+  color: var(--nl-gold-ink) !important;
   text-transform: uppercase !important;
   font-size: 12px !important;
-  letter-spacing: 1px !important;
+  letter-spacing: 1.4px !important;
   margin: 0 !important;
   font-weight: 700 !important;
 }
 
-.promo-banner a {
-  color: #050505 !important;
+.promo-banner a,
+.nl-promo-banner a {
+  color: var(--nl-gold-ink) !important;
   text-decoration: underline !important;
-}
-
-.promo-banner a:hover {
-  color: #050505 !important;
-}
-
-/* ======================================================
-   FEATURED PROMO SECTION
-   ====================================================== */
-.featured-promo-section {
-  background-color: #0b0b0b !important;
-  padding: 80px 40px !important;
-  position: relative !important;
-  z-index: 1;
-}
-
-.featured-promo-section .wp-block-columns {
-  grid-template-columns: 1fr 1fr !important;
-  gap: 48px !important;
-  align-items: center !important;
-}
-
-.featured-image {
-  padding: 0 !important;
-}
-
-.featured-image > div {
-  border-radius: 16px !important;
-}
-
-.featured-promo-section h2 {
-  font-size: 32px !important;
-  font-family: var(--nl-font-title) !important;
-  color: var(--nl-white-soft) !important;
-  font-weight: 700 !important;
-  margin: 0 0 15px 0 !important;
-}
-
-.featured-promo-section h3 {
-  font-size: 36px !important;
-  color: var(--nl-gold) !important;
-  font-weight: 700 !important;
-  margin: 0 0 20px 0 !important;
-}
-
-.featured-promo-section p {
-  color: var(--nl-grey) !important;
-  font-size: 13px !important;
-  line-height: 1.8 !important;
-  margin: 0 0 20px 0 !important;
-}
-
-.featured-promo-section .wp-block-button {
-  margin-top: 0 !important;
+  text-underline-offset: 3px !important;
 }
 
 /* ======================================================
@@ -667,10 +1006,10 @@ ul.products,
 .site-footer,
 .ast-small-footer,
 footer {
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.95), #020202) !important;
-  border-top: 1px solid rgba(212, 175, 55, 0.16) !important;
+  background: linear-gradient(180deg, rgba(6, 5, 3, 0.96), var(--nl-black-deep)) !important;
+  border-top: 1px solid var(--nl-hairline) !important;
   color: var(--nl-grey) !important;
-  padding: 80px 40px !important;
+  padding: var(--nl-space-9) var(--nl-gutter) var(--nl-space-7) !important;
   position: relative !important;
   z-index: 1;
 }
@@ -682,57 +1021,56 @@ footer a {
 
 .site-footer a:hover,
 footer a:hover {
-  color: var(--nl-gold-soft) !important;
+  color: var(--nl-gold-bright) !important;
 }
 
 .nl-footer-luxury {
   position: relative;
   overflow: hidden;
-  padding: 80px 0 40px;
+  padding: var(--nl-space-9) 0 var(--nl-space-7);
 }
 
 .nl-footer-bg {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.98));
+  background: linear-gradient(rgba(6, 5, 3, 0.94), rgba(3, 2, 1, 0.99));
   z-index: 0;
 }
 
 .nl-footer-content {
   position: relative;
   z-index: 2;
-  max-width: 1200px;
+  max-width: var(--nl-container);
   margin: auto;
-  padding: 0 20px;
+  padding: 0 var(--nl-gutter);
 }
 
 .nl-footer-grid {
   display: grid;
   grid-template-columns: minmax(320px, 2fr) minmax(180px, 1fr) minmax(180px, 1fr);
-  gap: 48px;
-  margin-bottom: 40px;
+  gap: var(--nl-space-7);
+  margin-bottom: var(--nl-space-7);
   align-items: start;
 }
 
 .nl-footer-grid h2 {
   color: var(--nl-gold);
-  font-size: 36px;
-  margin: 0 0 18px;
+  font-size: var(--nl-fs-h2);
+  margin: 0 0 var(--nl-space-4);
   line-height: 1.1;
 }
 
 .nl-footer-grid h3 {
   color: var(--nl-gold);
-  margin: 0 0 18px;
-  font-size: 24px;
+  margin: 0 0 var(--nl-space-4);
+  font-size: var(--nl-fs-h3);
   line-height: 1.2;
 }
 
 .nl-footer-grid p {
-  margin: 0 0 14px;
+  margin: 0 0 var(--nl-space-3);
   line-height: 1.75;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .nl-footer-grid ul {
@@ -742,27 +1080,28 @@ footer a:hover {
 }
 
 .nl-footer-grid li {
-  margin: 0 0 12px;
+  margin: 0 0 var(--nl-space-3);
   line-height: 1.5;
 }
 
 .nl-footer-grid a {
   color: #fff;
-  opacity: 0.88;
-  transition: all 0.3s;
+  opacity: 0.86;
+  transition: all 0.3s var(--nl-ease);
   text-decoration: none;
 }
 
 .nl-footer-grid a:hover {
   color: var(--nl-gold);
   opacity: 1;
+  padding-left: 4px;
 }
 
 .nl-socials {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 12px;
+  gap: var(--nl-space-3);
+  margin-top: var(--nl-space-3);
 }
 
 .nl-socials a {
@@ -770,12 +1109,12 @@ footer a:hover {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
   align-items: center;
   justify-content: center;
   color: #fff;
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--nl-ease);
 }
 
 .nl-socials a:hover {
@@ -791,13 +1130,42 @@ footer a:hover {
   stroke-width: 1.9;
 }
 
+.nl-footer-meta {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  color: var(--nl-grey) !important;
+  font-size: 13.5px;
+}
+
+.nl-footer-meta [data-lucide] {
+  color: var(--nl-gold);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.nl-footer-meta a {
+  color: var(--nl-white-soft) !important;
+}
+
+.nl-footer-col h3 {
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
 .nl-footer-bottom {
   text-align: center;
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(212, 175, 55, 0.12);
-  color: #888;
+  margin-top: var(--nl-space-6);
+  padding-top: var(--nl-space-5);
+  border-top: 1px solid var(--nl-hairline);
+  color: #8a8073;
   font-size: 13px;
+}
+
+.nl-footer-bottom p {
+  color: #8a8073 !important;
+  margin: 0;
 }
 
 /* ======================================================
@@ -806,13 +1174,13 @@ footer a:hover {
 input,
 textarea,
 select {
-  background-color: #101010 !important;
-  border: 1px solid rgba(212, 175, 55, 0.18) !important;
+  background-color: var(--nl-black-soft) !important;
+  border: 1px solid var(--nl-hairline) !important;
   color: var(--nl-white) !important;
-  border-radius: 12px !important;
+  border-radius: var(--nl-radius-sm) !important;
   padding: 14px 16px !important;
   font-family: var(--nl-font-body) !important;
-  transition: all 0.25s ease;
+  transition: all 0.25s var(--nl-ease);
 }
 
 input:focus,
@@ -821,11 +1189,15 @@ select:focus {
   border-color: var(--nl-gold) !important;
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
   outline: none !important;
-  background-color: #151515 !important;
+  background-color: #151311 !important;
+}
+
+::placeholder {
+  color: var(--nl-grey-dark) !important;
 }
 
 /* ======================================================
-   WOOCOMMERCE SPECIFIC
+   WOOCOMMERCE SHARED
    ====================================================== */
 .woocommerce del {
   color: var(--nl-grey-dark) !important;
@@ -834,6 +1206,29 @@ select:focus {
 .woocommerce ins {
   color: var(--nl-gold) !important;
   text-decoration: none !important;
+}
+
+/* ======================================================
+   SCROLL REVEAL
+   ====================================================== */
+.nl-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s var(--nl-ease), transform 0.7s var(--nl-ease);
+  will-change: opacity, transform;
+}
+
+.nl-reveal.nl-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nl-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 /* ======================================================
@@ -854,121 +1249,8 @@ select:focus {
   }
 }
 
-@keyframes nlHeroFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
 /* ======================================================
-   RESPONSIVE - TABLET (1024px)
-   ====================================================== */
-@media (max-width: 1024px) {
-  .nl-hero-section,
-  .nl-hero,
-  .hero-fixed {
-    background-attachment: scroll !important;
-    min-height: 70vh !important;
-    padding: 90px 24px !important;
-  }
-
-  .nl-hero-section h1,
-  .nl-hero h1 {
-    font-size: 64px !important;
-  }
-
-  .wp-block-columns {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .featured-promo-section .wp-block-columns {
-    grid-template-columns: 1fr !important;
-  }
-}
-
-/* ======================================================
-   RESPONSIVE - MOBILE (767px)
-   ====================================================== */
-@media (max-width: 767px) {
-  html, body {
-    font-size: 14px;
-  }
-
-  .nl-hero-section,
-  .nl-hero,
-  .hero-fixed {
-    min-height: 60vh !important;
-    padding: 60px 20px !important;
-  }
-
-  .nl-hero-section h1,
-  .nl-hero h1 {
-    font-size: 42px !important;
-    line-height: 1.05 !important;
-  }
-
-  .nl-hero-section h2,
-  .nl-hero h2 {
-    font-size: 16px !important;
-  }
-
-  .nl-hero-section p,
-  .nl-hero p {
-    font-size: 12px !important;
-  }
-
-  .wp-block-columns {
-    grid-template-columns: 1fr !important;
-  }
-
-  .categories-section,
-  .products-section,
-  .featured-promo-section {
-    padding: 40px 20px !important;
-  }
-
-  .categories-section h2,
-  .products-section h2 {
-    font-size: 28px !important;
-    margin-bottom: 40px !important;
-  }
-
-  .category-card {
-    min-height: 240px !important;
-  }
-
-  .woocommerce ul.products li.product {
-    flex: 0 0 calc(50% - 12px) !important;
-  }
-
-  .woocommerce ul.products li.product img {
-    height: 200px !important;
-  }
-
-  .wp-block-button__link {
-    width: 100% !important;
-    padding: 12px 20px !important;
-  }
-
-  .nl-footer-grid {
-    grid-template-columns: 1fr !important;
-    gap: 24px !important;
-  }
-
-  .featured-promo-section h2 {
-    font-size: 24px !important;
-  }
-
-  .featured-promo-section h3 {
-    font-size: 28px !important;
-  }
-}
-
-/* ======================================================
-   CONTAINER FIXES
+   CONTAINER FIXES (Astra / Elementor)
    ====================================================== */
 .e-con,
 .e-con > .e-con-inner,
@@ -982,497 +1264,95 @@ select:focus {
   padding-right: 0 !important;
 }
 
-
-
-.woocommerce ul.products li.product.desktop-align-left .star-rating, .woocommerce ul.products li.product.desktop-align-left .button, .woocommerce-page ul.products li.product.desktop-align-left .star-rating, .woocommerce-page ul.products li.product.desktop-align-left .button {
-    margin-left: 0;
-    margin-right: 0;
-    text-align: center !important;
-}
-
-/* ======================================================
-   PAGE TEMPLATE — NL Store Accueil
-   ====================================================== */
 .nl-home-page {
   overflow-x: hidden;
 }
 
-/* ── Héro ── */
-.nl-hero-section .nl-hero-inner {
-  position: relative !important;
-  z-index: 2 !important;
-  text-align: center !important;
-  max-width: 860px !important;
-  margin: 0 auto !important;
-  padding: 0 24px !important;
-}
-
-.nl-hero-surtitre {
-  font-size: 13px !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  color: var(--nl-white-soft) !important;
-  margin: 0 0 18px 0 !important;
-}
-
-.nl-hero-logo-img {
-  max-height: 120px !important;
-  width: auto !important;
-  margin: 0 auto 10px !important;
-  display: block !important;
-  filter: drop-shadow(0 4px 20px rgba(212,175,55,0.4)) !important;
-}
-
-.nl-hero-logo-fallback {
-  font-family: var(--nl-font-title) !important;
-  font-size: 90px !important;
-  font-weight: 700 !important;
-  color: var(--nl-gold) !important;
-  line-height: 1 !important;
-  text-shadow: 0 6px 28px rgba(212,175,55,0.35) !important;
-  margin: 0 0 6px 0 !important;
-  letter-spacing: -2px !important;
-}
-
-.nl-hero-brand {
-  font-family: var(--nl-font-title) !important;
-  font-size: 64px !important;
-  font-weight: 700 !important;
-  color: var(--nl-gold) !important;
-  letter-spacing: 6px !important;
-  text-transform: uppercase !important;
-  margin: 0 0 16px 0 !important;
-  text-shadow: 0 6px 28px rgba(0,0,0,0.35) !important;
-}
-
-.nl-hero-subtitle {
-  font-family: var(--nl-font-title) !important;
-  font-size: 24px !important;
-  font-weight: 400 !important;
-  color: var(--nl-white-soft) !important;
-  margin: 0 0 10px 0 !important;
-  letter-spacing: 0.5px !important;
-}
-
-.nl-hero-tagline {
-  font-size: 12px !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  color: var(--nl-grey) !important;
-  margin: 0 0 36px 0 !important;
-}
-
-.nl-btn-hero {
-  display: inline-block !important;
-  background: transparent !important;
-  border: 1.5px solid var(--nl-gold) !important;
-  color: var(--nl-gold) !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  letter-spacing: 1.5px !important;
-  text-transform: uppercase !important;
-  padding: 14px 36px !important;
-  border-radius: 30px !important;
-  transition: all 0.3s ease !important;
-  box-shadow: 0 0 0 transparent !important;
-}
-
-.nl-btn-hero:hover {
-  background: var(--nl-gold) !important;
-  color: #0a0a0a !important;
-  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
-}
-
-/* ── Catégories ── */
-.nl-categories-section {
-  background: #0b0b0b !important;
-  padding: 80px 40px !important;
-}
-
-.nl-categories-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
-  gap: 22px !important;
-  max-width: 1280px !important;
-  margin: 0 auto !important;
-}
-
-.nl-cat-card {
-  display: flex !important;
-  flex-direction: column !important;
-  border-radius: 18px !important;
-  overflow: hidden !important;
-  background: linear-gradient(180deg, #181818, #0f0f0f) !important;
-  border: 1.5px solid rgba(212,175,55,0.18) !important;
-  box-shadow: 0 14px 32px rgba(0,0,0,0.3) !important;
-  text-decoration: none !important;
-  transition: all 0.32s cubic-bezier(0.34,1.56,0.64,1) !important;
-  cursor: pointer !important;
-}
-
-.nl-cat-card:hover {
-  transform: translateY(-8px) !important;
-  border-color: rgba(212,175,55,0.6) !important;
-  box-shadow: 0 24px 44px rgba(0,0,0,0.4) !important;
-}
-
-.nl-cat-card__img {
-  height: 200px !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-}
-
-.nl-cat-card__img--empty {
-  background: linear-gradient(135deg, #1a1a1a, #0d0d0d) !important;
-}
-
-.nl-cat-card__img::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%) !important;
-}
-
-.nl-cat-card__body {
-  padding: 20px 22px 24px !important;
-}
-
-.nl-cat-card__body h3 {
-  font-family: var(--nl-font-title) !important;
-  font-size: 26px !important;
-  font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
-  margin: 0 0 12px 0 !important;
-  line-height: 1.1 !important;
-}
-
-.nl-cat-card__body ul {
-  list-style: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-.nl-cat-card__body li {
-  font-size: 13px !important;
-  color: var(--nl-grey) !important;
-  padding: 3px 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-}
-
-.nl-cat-card__body li::before {
-  content: "•" !important;
-  color: var(--nl-gold) !important;
-  font-size: 16px !important;
-  flex-shrink: 0 !important;
-}
-
-/* ── Titre de section ── */
-.nl-section-title-wrap {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 20px !important;
-  margin-bottom: 56px !important;
-}
-
-.nl-section-line {
-  flex: 1 !important;
-  height: 1px !important;
-  max-width: 220px !important;
-  background: linear-gradient(to right, transparent, rgba(212,175,55,0.45), transparent) !important;
-  display: block !important;
-}
-
-.nl-section-deco {
-  color: var(--nl-gold) !important;
-  font-size: 18px !important;
-}
-
-.nl-section-title {
-  font-family: var(--nl-font-title) !important;
-  font-size: 38px !important;
-  font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
-  white-space: nowrap !important;
-  margin: 0 !important;
-}
-
-/* ── Produits populaires ── */
-.nl-products-section {
-  background: #0b0b0b !important;
-  padding: 80px 40px !important;
-}
-
-.nl-products-grid {
-  max-width: 1280px !important;
-  margin: 0 auto !important;
-}
-
-/* ── Promotions de la semaine ── */
-.nl-promo-week-section {
-  background: #0b0b0b !important;
-  padding: 80px 40px !important;
-  border-top: 1px solid rgba(212,175,55,0.1) !important;
-}
-
-.nl-promo-week-grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 40px !important;
-  max-width: 1280px !important;
-  margin: 0 auto !important;
-  align-items: start !important;
-}
-
-/* ── Responsive template ── */
+/* ======================================================
+   RESPONSIVE
+   ====================================================== */
 @media (max-width: 1024px) {
+  .nl-hero-section,
+  .nl-hero,
+  .hero-fixed {
+    background-attachment: scroll !important;
+    min-height: 72vh !important;
+  }
+
   .nl-categories-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .woocommerce ul.products li.product a img {
+    height: 220px !important;
   }
 }
 
 @media (max-width: 768px) {
-  .nl-hero-brand {
-    font-size: 44px !important;
-    letter-spacing: 4px !important;
-  }
-
-  .nl-hero-subtitle {
-    font-size: 18px !important;
-  }
-
-  .nl-categories-section,
-  .nl-products-section,
-  .nl-promo-week-section {
-    padding: 50px 20px !important;
-  }
-
   .nl-promo-week-grid {
     grid-template-columns: 1fr !important;
   }
 
   .nl-section-title {
-    font-size: 28px !important;
+    font-size: var(--nl-fs-h2) !important;
     white-space: normal !important;
     text-align: center !important;
+  }
+
+  .nl-section-line {
+    max-width: 60px !important;
+  }
+
+  .nl-hero-buttons {
+    flex-direction: column !important;
+    gap: var(--nl-space-3) !important;
+  }
+
+  .nl-btn-hero {
+    width: 100% !important;
+    max-width: 320px !important;
+    text-align: center !important;
+  }
+
+  .nl-hero-trust {
+    gap: var(--nl-space-4) !important;
+  }
+
+  .nl-footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--nl-space-5) !important;
   }
 }
 
 @media (max-width: 580px) {
+  html, body {
+    font-size: 14px;
+  }
+
   .nl-categories-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 14px !important;
+    gap: var(--nl-space-3) !important;
   }
 
   .nl-cat-card__img {
-    height: 140px !important;
+    height: 150px !important;
   }
 
   .nl-cat-card__body h3 {
     font-size: 20px !important;
   }
 
-  .nl-hero-logo-fallback {
-    font-size: 64px !important;
+  .woocommerce ul.products,
+  .woocommerce-page ul.products,
+  ul.products {
+    grid-template-columns: 1fr 1fr !important;
+    gap: var(--nl-space-3) !important;
   }
 
-  .nl-hero-brand {
-    font-size: 34px !important;
-  }
-}
-
-/* ======================================================
-   HERO — boutons & badges (v2)
-   ====================================================== */
-.nl-hero-buttons {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 16px !important;
-  flex-wrap: wrap !important;
-  margin: 0 0 28px 0 !important;
-}
-
-.nl-btn-hero--primary {
-  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
-  color: #0a0a0a !important;
-  border: none !important;
-  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
-}
-
-.nl-btn-hero--primary:hover {
-  background: linear-gradient(135deg, #f0cf79, #c4972d) !important;
-  color: #050505 !important;
-  transform: translateY(-3px) !important;
-}
-
-.nl-btn-hero--secondary {
-  background: transparent !important;
-  color: var(--nl-gold) !important;
-  border: 1.5px solid var(--nl-gold) !important;
-}
-
-.nl-btn-hero--secondary:hover {
-  background: rgba(212,175,55,0.1) !important;
-  color: var(--nl-gold-soft) !important;
-}
-
-.nl-hero-trust {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 28px !important;
-  flex-wrap: wrap !important;
-  margin-top: 28px !important;
-}
-
-.nl-hero-trust span {
-  font-size: 12px !important;
-  letter-spacing: 0.4px !important;
-  color: rgba(255,255,255,0.55) !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-}
-
-.nl-hero-trust svg {
-  color: var(--nl-gold) !important;
-  stroke: var(--nl-gold) !important;
-  flex-shrink: 0 !important;
-}
-
-/* ======================================================
-   SECTION HEADER — label + titre principal
-   ====================================================== */
-.nl-section-header {
-  text-align: center !important;
-  margin-bottom: 48px !important;
-}
-
-.nl-section-label {
-  display: block !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 3px !important;
-  text-transform: uppercase !important;
-  color: var(--nl-gold) !important;
-  margin: 0 0 12px 0 !important;
-  text-align: center !important;
-}
-
-.nl-section-main-title {
-  font-family: var(--nl-font-title) !important;
-  font-size: 40px !important;
-  font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
-  margin: 0 !important;
-  line-height: 1.1 !important;
-}
-
-/* ======================================================
-   CATÉGORIE CARD — bouton "Voir les produits"
-   ====================================================== */
-.nl-cat-card__btn {
-  display: block !important;
-  text-align: center !important;
-  margin: 0 22px 22px 22px !important;
-  padding: 10px 20px !important;
-  background: var(--nl-gold) !important;
-  color: #0a0a0a !important;
-  font-family: var(--nl-font-body) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1px !important;
-  text-transform: uppercase !important;
-  border-radius: 6px !important;
-  transition: background 0.25s ease !important;
-  text-decoration: none !important;
-  cursor: pointer !important;
-}
-
-.nl-cat-card:hover .nl-cat-card__btn {
-  background: var(--nl-gold-soft) !important;
-}
-
-.nl-cat-card__img--empty {
-  background: linear-gradient(135deg, #1e1a12 0%, #2a200e 50%, #1a1208 100%) !important;
-  position: relative !important;
-}
-
-.nl-cat-card__img--empty::before {
-  content: "✦" !important;
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  font-size: 42px !important;
-  color: rgba(212,175,55,0.2) !important;
-  pointer-events: none !important;
-}
-
-/* ======================================================
-   PRODUITS — label + bouton "Voir tout"
-   ====================================================== */
-.nl-products-section .nl-section-label {
-  margin-bottom: 8px !important;
-}
-
-.nl-products-view-all {
-  text-align: center !important;
-  margin-top: 44px !important;
-}
-
-.nl-btn-view-all {
-  display: inline-block !important;
-  padding: 14px 44px !important;
-  border: 1.5px solid var(--nl-gold) !important;
-  color: var(--nl-gold) !important;
-  font-family: var(--nl-font-body) !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 2px !important;
-  text-transform: uppercase !important;
-  border-radius: 30px !important;
-  transition: all 0.3s ease !important;
-  text-decoration: none !important;
-}
-
-.nl-btn-view-all:hover {
-  background: var(--nl-gold) !important;
-  color: #0a0a0a !important;
-  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
-}
-
-/* ======================================================
-   RESPONSIVE — nouveaux composants
-   ====================================================== */
-@media (max-width: 768px) {
-  .nl-hero-buttons {
-    flex-direction: column !important;
-    gap: 12px !important;
+  .woocommerce ul.products li.product a img {
+    height: 175px !important;
   }
 
-  .nl-btn-hero {
-    width: 100% !important;
-    max-width: 300px !important;
-    text-align: center !important;
-  }
-
-  .nl-hero-trust {
-    gap: 16px !important;
-  }
-
-  .nl-section-main-title {
-    font-size: 28px !important;
-  }
-}
-
-@media (max-width: 580px) {
   .nl-hero-trust span:last-child {
     display: none !important;
   }
