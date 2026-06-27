@@ -120,12 +120,19 @@ $categories_config = [
         <div class="nl-products-grid">
             <?php
             if (class_exists('WooCommerce')) {
-                // Priorité : produits "en vedette", sinon les 4 derniers parfums
-                $featured = do_shortcode('[products limit="4" columns="4" visibility="featured" orderby="date" order="DESC"]');
-                if (trim(strip_tags($featured)) !== '') {
-                    echo $featured;
+                // Priorité 1 : produits marqués "En vedette" dans WooCommerce
+                $featured_ids = wc_get_featured_product_ids();
+                if (!empty($featured_ids)) {
+                    echo do_shortcode('[products limit="4" columns="4" visibility="featured" orderby="date" order="DESC"]');
                 } else {
-                    echo do_shortcode('[products limit="4" columns="4" category="parfums" orderby="date" order="DESC"]');
+                    // Priorité 2 : catégorie parfums (slug à adapter si différent)
+                    $parfums = get_term_by('slug', 'parfums', 'product_cat');
+                    if ($parfums && !is_wp_error($parfums) && $parfums->count > 0) {
+                        echo do_shortcode('[products limit="4" columns="4" category="parfums" orderby="date" order="DESC"]');
+                    } else {
+                        // Fallback : 4 produits les plus récents
+                        echo do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
+                    }
                 }
             }
             ?>
