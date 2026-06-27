@@ -943,3 +943,227 @@
   padding: 9px 18px !important;
   box-shadow: none !important;
 }
+
+/* ──────────────────────────────────────────────────────────
+   CORRECTIFS MOBILE — A) Pleine largeur + grille robuste
+   Neutralise le layout sidebar/float d'Astra sur les pages Woo
+────────────────────────────────────────────────────────── */
+
+/* Anti-débordement global */
+.woocommerce,
+.woocommerce-page,
+.woocommerce-checkout,
+.woocommerce-cart {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+/* Masque la sidebar Astra vide sur toutes les pages Woo */
+.woocommerce #secondary,
+.woocommerce-page #secondary,
+.ast-woocommerce-container #secondary {
+  display: none !important;
+}
+
+/* Contenu principal en pleine largeur */
+.woocommerce #primary,
+.woocommerce-page #primary {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 0 0 100% !important;
+}
+
+/* Conteneur Astra aligné sur le token de largeur du thème */
+.ast-woocommerce-container,
+.woocommerce .site-content .ast-container {
+  max-width: var(--nl-container) !important;
+  margin-inline: auto !important;
+}
+
+/* Neutralise float/width hérités d'Astra sur ul.products */
+.woocommerce ul.products,
+.woocommerce-page ul.products,
+.ast-woocommerce-container ul.products {
+  display: grid !important;
+  float: none !important;
+  width: 100% !important;
+}
+
+/* Tue les pseudo-éléments clearfix d'Astra */
+.woocommerce ul.products::before,
+.woocommerce ul.products::after,
+.woocommerce-page ul.products::before,
+.woocommerce-page ul.products::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Réinitialise les cartes produit — la grille gère la taille */
+.woocommerce ul.products li.product,
+.woocommerce-page ul.products li.product {
+  float: none !important;
+  width: auto !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  clear: none !important;
+}
+
+/* ──────────────────────────────────────────────────────────
+   CORRECTIFS MOBILE — B) Panier mobile en cartes
+────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Cache l'entête du tableau */
+  .woocommerce-cart table.cart thead {
+    display: none !important;
+  }
+
+  /* Chaque ligne de produit devient un bloc-carte */
+  .woocommerce-cart table.cart tbody tr {
+    display: block !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+    border: 1px solid var(--nl-hairline) !important;
+    border-radius: var(--nl-radius) !important;
+    margin-bottom: 16px !important;
+    padding: 6px 4px !important;
+  }
+
+  /* Chaque cellule en ligne label/valeur */
+  .woocommerce-cart table.cart tbody td {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    text-align: right !important;
+    padding: 12px 16px !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--nl-hairline) !important;
+    width: auto !important;
+  }
+
+  /* Label doré généré depuis data-title */
+  .woocommerce-cart table.cart tbody td::before {
+    content: attr(data-title);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 11px;
+    color: var(--nl-gold);
+    flex-shrink: 0;
+  }
+
+  /* Cellule image : centrée, pas de label */
+  .woocommerce-cart table.cart tbody td.product-thumbnail {
+    justify-content: center !important;
+    border-bottom: 1px solid var(--nl-hairline) !important;
+  }
+
+  .woocommerce-cart table.cart tbody td.product-thumbnail::before {
+    content: none !important;
+  }
+
+  .woocommerce-cart table.cart tbody td.product-thumbnail img {
+    width: 72px !important;
+    height: 72px !important;
+  }
+
+  /* Cellule remove : bouton × aligné à droite, pas de label */
+  .woocommerce-cart table.cart tbody td.product-remove {
+    justify-content: flex-end !important;
+    border-bottom: none !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+  }
+
+  .woocommerce-cart table.cart tbody td.product-remove::before {
+    content: none !important;
+  }
+
+  /* Ligne actions (coupon + MAJ panier) */
+  .woocommerce-cart table.cart tr.cart-actions {
+    display: block !important;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .woocommerce-cart table.cart tr.cart-actions td {
+    display: block !important;
+    border: none !important;
+    padding: 8px 0 !important;
+  }
+
+  .woocommerce-cart table.cart tr.cart-actions td::before {
+    content: none !important;
+  }
+
+  /* Totaux panier en pleine largeur sous le tableau */
+  .woocommerce-cart .cart-collaterals {
+    width: 100% !important;
+    float: none !important;
+  }
+
+  .woocommerce-cart .cart-collaterals .cart_totals {
+    width: 100% !important;
+    float: none !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   CORRECTIFS MOBILE — C) Anti-débordement checkout
+────────────────────────────────────────────────────────── */
+
+/* Tous les blocs checkout en boîte sans dépassement */
+.woocommerce form.checkout,
+.woocommerce .col2-set,
+.woocommerce .col2-set .col-1,
+.woocommerce .col2-set .col-2,
+.woocommerce-checkout #order_review,
+.woocommerce-checkout #order_review_heading {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+
+/* #order_review et #payment bornés à la largeur du parent */
+.woocommerce-checkout #order_review,
+.woocommerce-checkout #payment {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Checkout en colonne unique sur mobile */
+@media (max-width: 768px) {
+  .woocommerce-checkout .col2-set {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Forcer le checkout form à ne pas dépasser */
+  .woocommerce form.checkout {
+    overflow-x: clip !important;
+  }
+}
+
+/* Zone coupon promo — thème sombre + bord doré (remplace le bleu WC par défaut) */
+.woocommerce-form-coupon-toggle .woocommerce-info {
+  background: rgba(212, 175, 55, 0.06) !important;
+  border-left: 3px solid var(--nl-gold) !important;
+  color: var(--nl-grey) !important;
+  border-top: none !important;
+}
+
+.woocommerce-form-coupon-toggle .woocommerce-info a {
+  color: var(--nl-gold) !important;
+}
+
+/* ──────────────────────────────────────────────────────────
+   PLACEHOLDER PRODUIT — object-fit cohérent avec les vraies images
+────────────────────────────────────────────────────────── */
+.woocommerce ul.products li.product img,
+.woocommerce-page ul.products li.product img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 250px !important; /* hauteur fixe (pas d'aspect-ratio : évite toute boucle de largeur) */
+  display: block !important;
+  background: var(--nl-surface) !important;
+}
