@@ -24,26 +24,31 @@ $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'medium') : '';
 $shop_url = class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/boutique/');
 
 // ── Catégories : slug WooCommerce => config affichage ──
+// fallback_img : image depuis WordPress media (ID ou URL) si la catégorie n'a pas de thumbnail WooCommerce
 $categories_config = [
     [
-        'slug'  => 'bebe',
-        'label' => 'Bébè',
-        'items' => ['Biberons', 'Couches', 'Lingettes'],
+        'slug'        => 'bebe',
+        'label'       => 'Bébè',
+        'items'       => ['Biberons', 'Couches', 'Lingettes'],
+        'fallback_img'=> '',
     ],
     [
-        'slug'  => 'parfums',
-        'label' => 'Parfums',
-        'items' => ['Femme', 'Homme', 'Brumes Dubai'],
+        'slug'        => 'parfums',
+        'label'       => 'Parfums',
+        'items'       => ['Femme', 'Homme', 'Brumes Dubai'],
+        'fallback_img'=> '',
     ],
     [
-        'slug'  => 'vetements',
-        'label' => 'Vêtements',
-        'items' => ['Bébé', 'Enfant'],
+        'slug'        => 'vetements',
+        'label'       => 'Vêtements',
+        'items'       => ['Bébé', 'Enfant'],
+        'fallback_img'=> '',
     ],
     [
-        'slug'  => 'hygiene',
-        'label' => 'Hygiène',
-        'items' => ['Crèmes', 'Lingettes', 'Produits bébé'],
+        'slug'        => 'hygiene',
+        'label'       => 'Hygiène',
+        'items'       => ['Crèmes', 'Lingettes', 'Produits bébé'],
+        'fallback_img'=> '',
     ],
 ];
 ?>
@@ -83,7 +88,7 @@ $categories_config = [
                 $term      = get_term_by('slug', $cat['slug'], 'product_cat');
                 $cat_url   = ($term && !is_wp_error($term)) ? get_term_link($term) : $shop_url;
                 $thumb_id  = ($term && !is_wp_error($term)) ? get_term_meta($term->term_id, 'thumbnail_id', true) : 0;
-                $thumb_url = $thumb_id ? wp_get_attachment_image_url($thumb_id, 'medium_large') : '';
+                $thumb_url = $thumb_id ? wp_get_attachment_image_url($thumb_id, 'medium_large') : $cat['fallback_img'];
             ?>
             <a href="<?php echo esc_url($cat_url); ?>" class="nl-cat-card">
                 <div class="nl-cat-card__img<?php echo $thumb_url ? '' : ' nl-cat-card__img--empty'; ?>"
@@ -115,7 +120,13 @@ $categories_config = [
         <div class="nl-products-grid">
             <?php
             if (class_exists('WooCommerce')) {
-                echo do_shortcode('[products limit="4" columns="4" orderby="popularity" status="publish"]');
+                // Priorité : produits "en vedette", sinon les 4 derniers parfums
+                $featured = do_shortcode('[products limit="4" columns="4" visibility="featured" orderby="date" order="DESC"]');
+                if (trim(strip_tags($featured)) !== '') {
+                    echo $featured;
+                } else {
+                    echo do_shortcode('[products limit="4" columns="4" category="parfums" orderby="date" order="DESC"]');
+                }
             }
             ?>
         </div>
