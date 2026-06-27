@@ -45,11 +45,12 @@ add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
 ---------------------------------------------------------- */
 function nl_enqueue_interactions() {
     // Lucide icon library (rendu via data-lucide + lucide.createIcons())
+    // Version épinglée (stabilité + cache-busting WP). MàJ volontaire uniquement.
     wp_enqueue_script(
         'lucide-icons',
-        'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
+        'https://unpkg.com/lucide@1.21.0/dist/umd/lucide.min.js',
         [],
-        null,
+        '1.21.0',
         true
     );
 
@@ -171,7 +172,7 @@ function nl_testimonials_carousel_shortcode($atts) {
                         <div class="swiper-slide nl-testimonials-slide" style="width: 100%; height: auto; display: flex; align-items: stretch;">
                             <div class="nl-testimonial-card" style="background-color: #050505; border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 8px; padding: 30px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: all 0.3s ease;">
                                 <div class="nl-testimonial-rating" style="font-size: 16px; color: #d4af37; letter-spacing: 2px; margin: 0 0 15px 0; display: flex; gap: 4px;">
-                                    <?php echo $stars; ?>
+                                    <?php echo esc_html( $stars ); ?>
                                 </div>
                                 <p class="nl-testimonial-text" style="font-size: 13px; color: #b8b8b8; font-style: italic; line-height: 1.8; margin: 0 0 15px 0; flex-grow: 1;">
                                     <?php echo wp_kses_post($review->comment_content); ?>
@@ -201,7 +202,8 @@ function nl_testimonials_carousel_shortcode($atts) {
 
 add_shortcode('nl_testimonials_carousel', 'nl_testimonials_carousel_shortcode');
 
-add_action('wp_footer', function() {
+// Enqueue sur wp_enqueue_scripts pour que le CSS Swiper atterrisse bien dans le <head>.
+add_action('wp_enqueue_scripts', function() {
     wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], '11.0.0', true);
     wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', [], '11.0.0');
     
@@ -596,7 +598,7 @@ function nl_weekly_promos_page() {
             </div>
             
             <div style="background: #fff; padding: 20px; border-radius: 8px;">
-                <h2>📋 Promotions actives (<?php echo count($promos); ?>)</h2>
+                <h2>📋 Promotions actives (<?php echo absint( count( $promos ) ); ?>)</h2>
                 
                 <?php if (empty($promos)): ?>
                     <p style="color: #999;">Aucune promotion</p>
@@ -615,7 +617,7 @@ function nl_weekly_promos_page() {
                                 <form method="post" style="display: inline;">
                                     <?php wp_nonce_field('nl_weekly_promos_nonce'); ?>
                                     <input type="hidden" name="action" value="delete_promo">
-                                    <input type="hidden" name="promo_id" value="<?php echo $promo->id; ?>">
+                                    <input type="hidden" name="promo_id" value="<?php echo esc_attr( $promo->id ); ?>">
                                     <button type="submit" class="button button-small" onclick="return confirm('Supprimer?')">Supprimer</button>
                                 </form>
                             </div>
@@ -648,7 +650,8 @@ function nl_create_promotions_table() {
     dbDelta($sql);
 }
 
-add_action('after_setup_theme', 'nl_create_promotions_table');
+// Création de la table uniquement à l'activation du thème (évite dbDelta à chaque pageload).
+add_action('after_switch_theme', 'nl_create_promotions_table');
 
 // SHORTCODES
 add_shortcode('nl_promo_banner', 'nl_render_promo_banner');
@@ -668,7 +671,7 @@ function nl_render_promo_banner() {
     
     ob_start();
     ?>
-    <div style="background: <?php echo $gradient; ?>; padding: 25px 40px; text-align: center;">
+    <div style="background: <?php echo esc_attr( $gradient ); ?>; padding: 25px 40px; text-align: center;">
         <p style="color: <?php echo esc_attr($banner['text_color']); ?>; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin: 0; font-weight: bold;">
             <?php echo esc_html($banner['text']); ?> - 
             <a href="<?php echo esc_url($banner['link_url']); ?>" style="color: <?php echo esc_attr($banner['text_color']); ?>; text-decoration: underline;">
