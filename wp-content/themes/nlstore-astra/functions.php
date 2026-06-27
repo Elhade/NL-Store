@@ -135,6 +135,99 @@ add_filter( 'woocommerce_placeholder_img_src', function ( $src ) {
     return get_stylesheet_directory_uri() . '/assets/img/nl-placeholder.svg';
 } );
 
+/* ============================================================
+   NL STORE — IMPORT PRODUITS (one-shot, auto-désactivé)
+   Crée le catalogue de base s'il est absent. S'exécute UNE seule
+   fois lorsqu'un administrateur charge l'admin (verrou : option
+   nl_products_seeded). Idempotent (saute les SKU déjà présents).
+   ➜ Supprimable une fois les produits créés.
+   ============================================================ */
+add_action( 'admin_init', 'nl_seed_products' );
+function nl_seed_products() {
+    if ( get_option( 'nl_products_seeded' ) === 'v1' ) {
+        return; // déjà fait
+    }
+    if ( ! current_user_can( 'manage_woocommerce' ) ) {
+        return; // seul un admin boutique déclenche
+    }
+    if ( ! function_exists( 'wc_get_product_id_by_sku' ) || ! class_exists( 'WC_Product_Simple' ) ) {
+        return; // WooCommerce indisponible
+    }
+
+    // Catégories (créées si absentes)
+    $cat_ids = [];
+    foreach ( [ 'parfums' => 'Parfums', 'brumes-dubai' => 'Brumes Dubaï' ] as $slug => $name ) {
+        $term = term_exists( $slug, 'product_cat' );
+        if ( ! $term ) {
+            $term = wp_insert_term( $name, 'product_cat', [ 'slug' => $slug ] );
+        }
+        if ( ! is_wp_error( $term ) ) {
+            $cat_ids[ $slug ] = (int) ( is_array( $term ) ? $term['term_id'] : $term );
+        }
+    }
+
+    $cp = 'Collection Privée — Édition La Dorée Paris. Eau de parfum 50 ml, fabriquée pour Maison NL. Disponible exclusivement à Mayotte, livraison rapide.';
+
+    // [ sku, nom, vedette, [slugs catégories], description courte, description longue ]
+    $produits = [
+        [ 'NL-AISHA-50',        'Aïsha',                     true,  [ 'parfums' ],                 'Sillage oriental floral, chaleureux et enveloppant.', 'Aïsha — ' . $cp . ' Notes ambrées et florales soutenues par un cœur fleuri raffiné.' ],
+        [ 'NL-BACCARA-50',      'Baccara',                   true,  [ 'parfums' ],                 'Fruité gourmand intense, signature audacieuse.',      'Baccara — ' . $cp . ' Une composition rouge et envoûtante, fruitée et sucrée, à la tenue exceptionnelle.' ],
+        [ 'NL-SCANDALEF-50',    'Scandale Femme',            true,  [ 'parfums' ],                 'Floral séduisant, féminin et lumineux.',              'Scandale Femme — ' . $cp . ' Un bouquet floral moderne et sensuel.' ],
+        [ 'NL-YARA-50',         'Yara',                      true,  [ 'parfums', 'brumes-dubai' ], 'Brume parfumée florale et poudrée.',                  'Yara — Brume parfumée florale et poudrée, fraîche et délicate. 50 ml.' ],
+        [ 'NL-MOULA-50',        'Moula',                     false, [ 'parfums' ],                 'Ambré boisé, profond et tenace.',                     'Moula — ' . $cp . ' Un accord ambré boisé puissant et raffiné.' ],
+        [ 'NL-SCANDALEH-50',    'Scandale Homme',            false, [ 'parfums' ],                 'Boisé frais, élégant et masculin.',                   'Scandale Homme — ' . $cp . ' Une signature boisée fraîche et distinguée.' ],
+        [ 'NL-INVICTS-50',      'Invicts',                   false, [ 'parfums' ],                 'Aromatique frais, énergique et moderne.',             'Invicts — ' . $cp . ' Un parfum aromatique vibrant.' ],
+        [ 'NL-KIRKE-50',        'Kirké',                     false, [ 'parfums' ],                 'Vert frais et hespéridé.',                            'Kirké — ' . $cp . ' Une fraîcheur verte et hespéridée, vive et raffinée.' ],
+        [ 'NL-COCOVAN-50',      'Coco Vanille',              false, [ 'parfums' ],                 'Gourmand vanille & coco, addictif.',                  'Coco Vanille — ' . $cp . ' Un cocon gourmand de vanille et de coco.' ],
+        [ 'NL-CREMEBRULEE-50',  'Crème Brûlée',              false, [ 'parfums' ],                 'Gourmand sucré, caramel et vanille.',                 'Crème Brûlée — ' . $cp . ' Un dessert olfactif gourmand, caramélisé et vanillé.' ],
+        [ 'NL-YARACANDY-250',   'Yara Candy',                false, [ 'parfums', 'brumes-dubai' ], 'Brume Dubaï fruitée et sucrée.',                      'Yara Candy — Brume parfumée Dubaï, gourmande et fruitée. 250 ml.' ],
+        [ 'NL-KENZIE-AMBER-250','Kenzie Amber Lychee',       false, [ 'parfums', 'brumes-dubai' ], 'Brume ambre & litchi, fraîche.',                      'Kenzie Amber Lychee — Brume rafraîchissante ambre et litchi. 250 ml.' ],
+        [ 'NL-KENZIE-APPLE-250','Kenzie Exotic Apple Crush', false, [ 'parfums', 'brumes-dubai' ], 'Brume pomme exotique, pétillante.',                   'Kenzie Exotic Apple Crush — Brume rafraîchissante pomme exotique. 250 ml.' ],
+    ];
+
+    $created = 0;
+    foreach ( $produits as $p ) {
+        list( $sku, $name, $featured, $slugs, $short, $desc ) = $p;
+        if ( wc_get_product_id_by_sku( $sku ) ) {
+            continue; // déjà existant : on saute (idempotent)
+        }
+        $product = new WC_Product_Simple();
+        $product->set_name( $name );
+        $product->set_status( 'publish' );
+        $product->set_catalog_visibility( 'visible' );
+        $product->set_sku( $sku );
+        $product->set_regular_price( '15' ); // ⚠️ prix par défaut, à ajuster
+        $product->set_featured( (bool) $featured );
+        $product->set_short_description( $short );
+        $product->set_description( $desc );
+        $ids = [];
+        foreach ( $slugs as $s ) {
+            if ( isset( $cat_ids[ $s ] ) ) {
+                $ids[] = $cat_ids[ $s ];
+            }
+        }
+        if ( $ids ) {
+            $product->set_category_ids( $ids );
+        }
+        $product->save();
+        $created++;
+    }
+
+    update_option( 'nl_products_seeded', 'v1' );
+    set_transient( 'nl_products_seeded_notice', $created, 120 );
+}
+
+add_action( 'admin_notices', function () {
+    $n = get_transient( 'nl_products_seeded_notice' );
+    if ( false !== $n ) {
+        delete_transient( 'nl_products_seeded_notice' );
+        printf(
+            '<div class="notice notice-success is-dismissible"><p>✅ <strong>NL Store</strong> : %d produit(s) créé(s) automatiquement. Pensez à ajuster les prix, ajouter les images, puis à retirer le bloc d\'import du thème.</p></div>',
+            absint( $n )
+        );
+    }
+} );
+
 /**
  * ============================================
  * NL STORE TESTIMONIALS CAROUSEL SHORTCODE
