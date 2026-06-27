@@ -818,24 +818,30 @@ function nl_render_footer() {
     $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
     $contact_url = get_permalink( get_page_by_path( 'contact' ) ) ?: home_url( '/contact/' );
 
-    // Coordonnées société (configurables via filtre)
+    // Coordonnées société (officielles INSEE/SIRENE — configurables via filtre)
     $info = apply_filters( 'nl_company_info', [
-        'name'     => 'NL Store',
-        'baseline' => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
-        'address'  => 'Imp. de la Place Publique, Mroalé, 97680 Tsingoni, Mayotte',
-        'phone'    => '',
-        'whatsapp' => '',
-        'email'    => '',
-        'instagram'=> '#',
-        'facebook' => '#',
-        'siret'    => '812 234 094 00017',
+        'name'      => 'NL Store',
+        'legal'     => 'MADI ALI — Entrepreneur individuel',
+        'baseline'  => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
+        'address'   => 'Imp. de la Place Publique, Mroalé — 97680 Tsingoni, Mayotte',
+        'phone'     => '',
+        'whatsapp'  => '',
+        'email'     => '',
+        'instagram' => '#',
+        'facebook'  => '#',
+        'siren'     => '812 234 094',
+        'siret'     => '812 234 094 00017',
+        'ape'       => '47.11B — Commerce d\'alimentation générale',
+        'map_query' => 'Imp. de la Place Publique, 97680 Tsingoni, Mayotte',
     ] );
 
+    $map_src = 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) . '&z=14&output=embed';
+
     ob_start(); ?>
-    <footer class="nl-footer-luxury">
+    <div class="nl-footer-luxury">
         <div class="nl-footer-bg"></div>
         <div class="nl-footer-content">
-            <div class="nl-footer-grid">
+            <div class="nl-footer-grid nl-footer-grid--4">
 
                 <div class="nl-footer-brand">
                     <h2><?php echo esc_html( $info['name'] ); ?></h2>
@@ -869,7 +875,7 @@ function nl_render_footer() {
                 </div>
 
                 <div class="nl-footer-col">
-                    <h3>Aide & Compte</h3>
+                    <h3>Aide &amp; Compte</h3>
                     <ul>
                         <li><a href="<?php echo esc_url( $account_url ); ?>">Mon compte</a></li>
                         <li><a href="<?php echo esc_url( $cart_url ); ?>">Mon panier</a></li>
@@ -878,13 +884,30 @@ function nl_render_footer() {
                     </ul>
                 </div>
 
+                <div class="nl-footer-col nl-footer-map">
+                    <h3>Nous trouver</h3>
+                    <div class="nl-footer-map__frame">
+                        <iframe
+                            src="<?php echo esc_url( $map_src ); ?>"
+                            title="Localisation NL Store — Tsingoni, Mayotte"
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"
+                            allowfullscreen></iframe>
+                    </div>
+                    <a class="nl-footer-map__link" href="https://maps.google.com/maps?q=<?php echo rawurlencode( $info['map_query'] ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
+                </div>
+
             </div>
 
             <div class="nl-footer-bottom">
-                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?> — MADI ALI · SIRET <?php echo esc_html( $info['siret'] ); ?> · APE 47.11B. Tous droits réservés.</p>
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?> — <?php echo esc_html( $info['legal'] ); ?> · SIREN <?php echo esc_html( $info['siren'] ); ?> · SIRET <?php echo esc_html( $info['siret'] ); ?> · APE <?php echo esc_html( $info['ape'] ); ?>. Tous droits réservés.</p>
             </div>
         </div>
-    </footer>
+    </div>
     <?php
     return ob_get_clean();
 }
+
+/* Affiche automatiquement le footer luxe dans le pied de page Astra
+   (remplace le copyright par défaut « Propulsé par Astra »). */
+add_filter( 'astra_footer_copyright', 'nl_render_footer', 99 );

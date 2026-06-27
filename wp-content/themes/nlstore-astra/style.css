@@ -1768,3 +1768,75 @@ select:focus {
   min-width: 0;
   max-width: 100%;
 }
+
+/* ======================================================
+   FOOTER — variante 4 colonnes + carte géolocalisation
+   ====================================================== */
+.nl-footer-grid--4 {
+  grid-template-columns: minmax(260px, 1.7fr) 1fr 1fr minmax(240px, 1.5fr) !important;
+}
+
+@media (max-width: 1024px) {
+  .nl-footer-grid--4 {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .nl-footer-grid--4 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Carte */
+.nl-footer-map__frame {
+  border: 1px solid var(--nl-border);
+  border-radius: var(--nl-radius);
+  overflow: hidden;
+  box-shadow: var(--nl-shadow);
+  line-height: 0;
+  background: var(--nl-surface);
+}
+
+.nl-footer-map__frame iframe {
+  width: 100%;
+  height: 190px;
+  border: 0;
+  display: block;
+  filter: grayscale(0.25) contrast(1.05) brightness(0.96);
+  transition: filter 0.4s var(--nl-ease);
+}
+
+.nl-footer-map:hover .nl-footer-map__frame iframe {
+  filter: none;
+}
+
+.nl-footer-map__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: var(--nl-space-3);
+  color: var(--nl-gold) !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.nl-footer-map__link .nl-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Neutralise le padding/largeur du conteneur footer Astra quand notre
+   footer luxe y est injecté (évite le double-espacement). */
+.ast-small-footer {
+  padding-block: 0 !important;
+}
+
+.ast-small-footer .ast-container,
+.ast-small-footer .ast-small-footer-section {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
