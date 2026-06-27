@@ -3,7 +3,7 @@
  * NLStore Astra — Child Theme
  */
 
-define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '2.0.0' );
+define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '2.1.0' );
 
 /* ----------------------------------------------------------
    STYLES & FONTS

@@ -2,7 +2,7 @@
 Theme Name: NLStore Astra
 Author: Elhade
 Description: Luxury dark e-commerce for NL Store Mayotte
-Version: 2.0.1
+Version: 2.1.0
 License: GPL v2
 Text Domain: nlstore-astra
 Template: astra
@@ -175,10 +175,11 @@ div {
   justify-content: center !important;
   overflow: hidden !important;
   padding: 100px 40px !important;
+  --nl-hero-bg: url('');
   background:
-    linear-gradient(135deg, rgba(5, 5, 5, 0.5), rgba(5, 5, 5, 0.75)),
-    url('https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1920&auto=format&fit=crop')
-    center center / cover no-repeat fixed !important;
+    linear-gradient(135deg, rgba(5,5,5,0.65), rgba(5,5,5,0.88)),
+    var(--nl-hero-bg) center center / cover no-repeat !important;
+  background-color: #0d0b09 !important;
   isolation: isolate;
 }
 
@@ -694,9 +695,7 @@ footer a:hover {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(5, 5, 5, 0.78), rgba(5, 5, 5, 0.92)),
-    url('https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1920&auto=format&fit=crop')
-    center center / cover no-repeat fixed;
+    linear-gradient(rgba(5, 5, 5, 0.92), rgba(5, 5, 5, 0.98));
   z-index: 0;
 }
 
@@ -1284,5 +1283,197 @@ select:focus {
 
   .nl-hero-brand {
     font-size: 34px !important;
+  }
+}
+
+/* ======================================================
+   HERO — boutons & badges (v2)
+   ====================================================== */
+.nl-hero-buttons {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap !important;
+  margin: 0 0 28px 0 !important;
+}
+
+.nl-btn-hero--primary {
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
+  color: #0a0a0a !important;
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
+}
+
+.nl-btn-hero--primary:hover {
+  background: linear-gradient(135deg, #f0cf79, #c4972d) !important;
+  color: #050505 !important;
+  transform: translateY(-3px) !important;
+}
+
+.nl-btn-hero--secondary {
+  background: transparent !important;
+  color: var(--nl-gold) !important;
+  border: 1.5px solid var(--nl-gold) !important;
+}
+
+.nl-btn-hero--secondary:hover {
+  background: rgba(212,175,55,0.1) !important;
+  color: var(--nl-gold-soft) !important;
+}
+
+.nl-hero-trust {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 28px !important;
+  flex-wrap: wrap !important;
+  margin-top: 28px !important;
+}
+
+.nl-hero-trust span {
+  font-size: 12px !important;
+  letter-spacing: 0.4px !important;
+  color: rgba(255,255,255,0.55) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.nl-hero-trust svg {
+  color: var(--nl-gold) !important;
+  stroke: var(--nl-gold) !important;
+  flex-shrink: 0 !important;
+}
+
+/* ======================================================
+   SECTION HEADER — label + titre principal
+   ====================================================== */
+.nl-section-header {
+  text-align: center !important;
+  margin-bottom: 48px !important;
+}
+
+.nl-section-label {
+  display: block !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 3px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-gold) !important;
+  margin: 0 0 12px 0 !important;
+  text-align: center !important;
+}
+
+.nl-section-main-title {
+  font-family: var(--nl-font-title) !important;
+  font-size: 40px !important;
+  font-weight: 700 !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 !important;
+  line-height: 1.1 !important;
+}
+
+/* ======================================================
+   CATÉGORIE CARD — bouton "Voir les produits"
+   ====================================================== */
+.nl-cat-card__btn {
+  display: block !important;
+  text-align: center !important;
+  margin: 0 22px 22px 22px !important;
+  padding: 10px 20px !important;
+  background: var(--nl-gold) !important;
+  color: #0a0a0a !important;
+  font-family: var(--nl-font-body) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  border-radius: 6px !important;
+  transition: background 0.25s ease !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+
+.nl-cat-card:hover .nl-cat-card__btn {
+  background: var(--nl-gold-soft) !important;
+}
+
+.nl-cat-card__img--empty {
+  background: linear-gradient(135deg, #1e1a12 0%, #2a200e 50%, #1a1208 100%) !important;
+  position: relative !important;
+}
+
+.nl-cat-card__img--empty::before {
+  content: "✦" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 42px !important;
+  color: rgba(212,175,55,0.2) !important;
+  pointer-events: none !important;
+}
+
+/* ======================================================
+   PRODUITS — label + bouton "Voir tout"
+   ====================================================== */
+.nl-products-section .nl-section-label {
+  margin-bottom: 8px !important;
+}
+
+.nl-products-view-all {
+  text-align: center !important;
+  margin-top: 44px !important;
+}
+
+.nl-btn-view-all {
+  display: inline-block !important;
+  padding: 14px 44px !important;
+  border: 1.5px solid var(--nl-gold) !important;
+  color: var(--nl-gold) !important;
+  font-family: var(--nl-font-body) !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  border-radius: 30px !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+}
+
+.nl-btn-view-all:hover {
+  background: var(--nl-gold) !important;
+  color: #0a0a0a !important;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
+}
+
+/* ======================================================
+   RESPONSIVE — nouveaux composants
+   ====================================================== */
+@media (max-width: 768px) {
+  .nl-hero-buttons {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .nl-btn-hero {
+    width: 100% !important;
+    max-width: 300px !important;
+    text-align: center !important;
+  }
+
+  .nl-hero-trust {
+    gap: 16px !important;
+  }
+
+  .nl-section-main-title {
+    font-size: 28px !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .nl-hero-trust span:last-child {
+    display: none !important;
   }
 }
