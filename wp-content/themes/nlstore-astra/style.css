@@ -990,3 +990,299 @@ select:focus {
     margin-right: 0;
     text-align: center !important;
 }
+
+/* ======================================================
+   PAGE TEMPLATE — NL Store Accueil
+   ====================================================== */
+.nl-home-page {
+  overflow-x: hidden;
+}
+
+/* ── Héro ── */
+.nl-hero-section .nl-hero-inner {
+  position: relative !important;
+  z-index: 2 !important;
+  text-align: center !important;
+  max-width: 860px !important;
+  margin: 0 auto !important;
+  padding: 0 24px !important;
+}
+
+.nl-hero-surtitre {
+  font-size: 13px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 0 18px 0 !important;
+}
+
+.nl-hero-logo-img {
+  max-height: 120px !important;
+  width: auto !important;
+  margin: 0 auto 10px !important;
+  display: block !important;
+  filter: drop-shadow(0 4px 20px rgba(212,175,55,0.4)) !important;
+}
+
+.nl-hero-logo-fallback {
+  font-family: var(--nl-font-title) !important;
+  font-size: 90px !important;
+  font-weight: 700 !important;
+  color: var(--nl-gold) !important;
+  line-height: 1 !important;
+  text-shadow: 0 6px 28px rgba(212,175,55,0.35) !important;
+  margin: 0 0 6px 0 !important;
+  letter-spacing: -2px !important;
+}
+
+.nl-hero-brand {
+  font-family: var(--nl-font-title) !important;
+  font-size: 64px !important;
+  font-weight: 700 !important;
+  color: var(--nl-gold) !important;
+  letter-spacing: 6px !important;
+  text-transform: uppercase !important;
+  margin: 0 0 16px 0 !important;
+  text-shadow: 0 6px 28px rgba(0,0,0,0.35) !important;
+}
+
+.nl-hero-subtitle {
+  font-family: var(--nl-font-title) !important;
+  font-size: 24px !important;
+  font-weight: 400 !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 0 10px 0 !important;
+  letter-spacing: 0.5px !important;
+}
+
+.nl-hero-tagline {
+  font-size: 12px !important;
+  letter-spacing: 2px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-grey) !important;
+  margin: 0 0 36px 0 !important;
+}
+
+.nl-btn-hero {
+  display: inline-block !important;
+  background: transparent !important;
+  border: 1.5px solid var(--nl-gold) !important;
+  color: var(--nl-gold) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  padding: 14px 36px !important;
+  border-radius: 30px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 0 transparent !important;
+}
+
+.nl-btn-hero:hover {
+  background: var(--nl-gold) !important;
+  color: #0a0a0a !important;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.3) !important;
+}
+
+/* ── Catégories ── */
+.nl-categories-section {
+  background: #0b0b0b !important;
+  padding: 80px 40px !important;
+}
+
+.nl-categories-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 22px !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+}
+
+.nl-cat-card {
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #181818, #0f0f0f) !important;
+  border: 1.5px solid rgba(212,175,55,0.18) !important;
+  box-shadow: 0 14px 32px rgba(0,0,0,0.3) !important;
+  text-decoration: none !important;
+  transition: all 0.32s cubic-bezier(0.34,1.56,0.64,1) !important;
+  cursor: pointer !important;
+}
+
+.nl-cat-card:hover {
+  transform: translateY(-8px) !important;
+  border-color: rgba(212,175,55,0.6) !important;
+  box-shadow: 0 24px 44px rgba(0,0,0,0.4) !important;
+}
+
+.nl-cat-card__img {
+  height: 200px !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+
+.nl-cat-card__img--empty {
+  background: linear-gradient(135deg, #1a1a1a, #0d0d0d) !important;
+}
+
+.nl-cat-card__img::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.5) 100%) !important;
+}
+
+.nl-cat-card__body {
+  padding: 20px 22px 24px !important;
+}
+
+.nl-cat-card__body h3 {
+  font-family: var(--nl-font-title) !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 0 12px 0 !important;
+  line-height: 1.1 !important;
+}
+
+.nl-cat-card__body ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.nl-cat-card__body li {
+  font-size: 13px !important;
+  color: var(--nl-grey) !important;
+  padding: 3px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.nl-cat-card__body li::before {
+  content: "•" !important;
+  color: var(--nl-gold) !important;
+  font-size: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+/* ── Titre de section ── */
+.nl-section-title-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 20px !important;
+  margin-bottom: 56px !important;
+}
+
+.nl-section-line {
+  flex: 1 !important;
+  height: 1px !important;
+  max-width: 220px !important;
+  background: linear-gradient(to right, transparent, rgba(212,175,55,0.45), transparent) !important;
+  display: block !important;
+}
+
+.nl-section-deco {
+  color: var(--nl-gold) !important;
+  font-size: 18px !important;
+}
+
+.nl-section-title {
+  font-family: var(--nl-font-title) !important;
+  font-size: 38px !important;
+  font-weight: 700 !important;
+  color: var(--nl-white-soft) !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+
+/* ── Produits populaires ── */
+.nl-products-section {
+  background: #0b0b0b !important;
+  padding: 80px 40px !important;
+}
+
+.nl-products-grid {
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+}
+
+/* ── Promotions de la semaine ── */
+.nl-promo-week-section {
+  background: #0b0b0b !important;
+  padding: 80px 40px !important;
+  border-top: 1px solid rgba(212,175,55,0.1) !important;
+}
+
+.nl-promo-week-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 40px !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  align-items: start !important;
+}
+
+/* ── Responsive template ── */
+@media (max-width: 1024px) {
+  .nl-categories-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .nl-hero-brand {
+    font-size: 44px !important;
+    letter-spacing: 4px !important;
+  }
+
+  .nl-hero-subtitle {
+    font-size: 18px !important;
+  }
+
+  .nl-categories-section,
+  .nl-products-section,
+  .nl-promo-week-section {
+    padding: 50px 20px !important;
+  }
+
+  .nl-promo-week-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .nl-section-title {
+    font-size: 28px !important;
+    white-space: normal !important;
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 580px) {
+  .nl-categories-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  .nl-cat-card__img {
+    height: 140px !important;
+  }
+
+  .nl-cat-card__body h3 {
+    font-size: 20px !important;
+  }
+
+  .nl-hero-logo-fallback {
+    font-size: 64px !important;
+  }
+
+  .nl-hero-brand {
+    font-size: 34px !important;
+  }
+}
