@@ -1423,7 +1423,7 @@ select:focus {
 
 .nl-wpromo-media {
   position: relative;
-  aspect-ratio: 16 / 11;
+  height: clamp(190px, 26vw, 250px);
   overflow: hidden;
   background: #0d0b08;
 }
@@ -1733,4 +1733,38 @@ select:focus {
   .nl-wpromo-cta {
     justify-content: center;
   }
+}
+
+/* ── Garde anti-empilement : tant que Swiper n'a pas initialisé, n'afficher
+   qu'une seule carte (évite que le carrousel "s'étale" verticalement si le
+   JS tarde ou échoue). Swiper ajoute .swiper-initialized une fois prêt. ── */
+.nl-wpromo-swiper:not(.swiper-initialized) .swiper-wrapper,
+.nl-quote-swiper:not(.swiper-initialized) .swiper-wrapper {
+  display: block;
+}
+.nl-wpromo-swiper:not(.swiper-initialized) .swiper-slide + .swiper-slide,
+.nl-quote-swiper:not(.swiper-initialized) .swiper-slide + .swiper-slide {
+  display: none;
+}
+.nl-wpromo-swiper:not(.swiper-initialized) .nl-swiper-controls,
+.nl-quote-swiper:not(.swiper-initialized) .nl-swiper-controls {
+  visibility: hidden;
+}
+
+/* ── Gardes anti-débordement : empêchent les pistes de grille 1fr et les
+   slides de s'étendre au contenu (casse la boucle de largeur Swiper qui
+   faisait "s'étaler" le carrousel). ── */
+.nl-promo-week-left,
+.nl-promo-week-right {
+  min-width: 0;
+}
+.nl-wpromo-swiper,
+.nl-quote-swiper {
+  width: 100%;
+  max-width: 100%;
+}
+.nl-wpromo-swiper .swiper-slide,
+.nl-quote-swiper .swiper-slide {
+  min-width: 0;
+  max-width: 100%;
 }

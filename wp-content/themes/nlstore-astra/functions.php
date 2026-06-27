@@ -209,8 +209,10 @@ add_shortcode('nl_testimonials_carousel', 'nl_testimonials_carousel_shortcode');
 // Enqueue sur wp_enqueue_scripts pour que le CSS Swiper atterrisse bien dans le <head>.
 // Swiper (carrousels avis & promos) — enqueue + init unifié.
 add_action('wp_enqueue_scripts', function() {
-    wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], '11.0.0', true);
-    wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', [], '11.0.0');
+    // Swiper auto-hébergé (assets/vendor/swiper) — aucune dépendance CDN.
+    $dir = get_stylesheet_directory_uri() . '/assets/vendor/swiper/';
+    wp_enqueue_script('swiper-js', $dir . 'swiper-bundle.min.js', [], '11.2.10', true);
+    wp_enqueue_style('swiper-css', $dir . 'swiper-bundle.min.css', [], '11.2.10');
 
     $js = <<<'JS'
 document.addEventListener('DOMContentLoaded', function () {
