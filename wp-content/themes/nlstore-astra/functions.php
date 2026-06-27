@@ -3,7 +3,7 @@
  * NLStore Astra — Child Theme
  */
 
-define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '2.1.0' );
+define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '3.0.0' );
 
 /* ----------------------------------------------------------
    STYLES & FONTS
@@ -38,6 +38,67 @@ function nl_enqueue_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
+
+/* ----------------------------------------------------------
+   LUCIDE ICONS + SCROLL REVEAL
+   Icônes : https://lucide.dev — usage <i data-lucide="truck"></i>
+---------------------------------------------------------- */
+function nl_enqueue_interactions() {
+    // Lucide icon library (rendu via data-lucide + lucide.createIcons())
+    wp_enqueue_script(
+        'lucide-icons',
+        'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js',
+        [],
+        null,
+        true
+    );
+
+    $js = <<<'JS'
+(function () {
+  function nlRenderIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      window.lucide.createIcons();
+    }
+  }
+  // Reveal au scroll
+  function nlReveal() {
+    var els = document.querySelectorAll('.nl-reveal');
+    if (!('IntersectionObserver' in window) || !els.length) {
+      els.forEach(function (el) { el.classList.add('nl-in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('nl-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { nlRenderIcons(); nlReveal(); });
+  } else {
+    nlRenderIcons(); nlReveal();
+  }
+  // Re-rend les icônes injectées après coup (mini-cart, AJAX…)
+  document.addEventListener('nl:icons', nlRenderIcons);
+})();
+JS;
+    wp_add_inline_script( 'lucide-icons', $js );
+}
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_interactions', 20 );
+
+/* Évite le flash de mise en page : dimensionne les icônes Lucide */
+function nl_icons_inline_css() {
+    echo '<style id="nl-icons-css">'
+        . '[data-lucide]{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;stroke-width:2;}'
+        . '.nl-hero-trust [data-lucide]{width:15px;height:15px;}'
+        . '.nl-socials [data-lucide]{width:18px;height:18px;}'
+        . '</style>';
+}
+add_action( 'wp_head', 'nl_icons_inline_css', 99 );
 
 /* ----------------------------------------------------------
    WOOCOMMERCE SUPPORT
@@ -75,7 +136,7 @@ function nl_testimonials_carousel_shortcode($atts) {
     ob_start();
     ?>
     <section class="nl-testimonials-carousel-wrapper" style="background-color: #0b0b0b; padding: 80px 40px;">
-        <h2 class="nl-testimonials-title" style="font-size: 36px; font-family: Georgia, serif; font-weight: 700; color: #f8f5ef; text-align: center; margin: 0 0 60px 0; letter-spacing: -0.5px;">
+        <h2 class="nl-testimonials-title" style="font-size: 36px; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; color: #f8f5ef; text-align: center; margin: 0 0 60px 0; letter-spacing: -0.5px;">
             <?php echo esc_html($atts['title']); ?>
         </h2>
 
@@ -152,7 +213,7 @@ add_action('wp_footer', function() {
     }
     .nl-testimonials-title {
         font-size: 36px;
-        font-family: Georgia, serif;
+        font-family: \'Cormorant Garamond\', Georgia, serif;
         font-weight: 700;
         color: #f8f5ef;
         text-align: center;
@@ -639,7 +700,7 @@ function nl_render_weekly_promos_carousel() {
         
         <div style="text-align: center; margin-bottom: 30px;">
             <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.25); color: #d4af37; font-size: 11px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">PROMOTIONS DE LA SEMAINE</span>
-            <h2 style="font-size: 36px !important; font-family: Georgia, serif; margin: 60px 0 60px 0 !important; letter-spacing: -0.5px;">Nos Coups de Cœur</h2>
+            <h2 style="font-size: 36px !important; font-family: 'Cormorant Garamond', Georgia, serif; margin: 60px 0 60px 0 !important; letter-spacing: -0.5px;">Nos Coups de Cœur</h2>
         </div>
         
         <div class="swiper nl-promos-swiper" style="position: relative; width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 40px;">
@@ -653,7 +714,7 @@ function nl_render_weekly_promos_carousel() {
                         </div>
                         
                         <div style="padding: 25px; display: flex; flex-direction: column; flex-grow: 1;">
-                            <h3 style="font-size: 24px; font-family: Georgia, serif; color: #f8f5ef; font-weight: 700; margin: 0 0 10px 0;">
+                            <h3 style="font-size: 24px; font-family: 'Cormorant Garamond', Georgia, serif; color: #f8f5ef; font-weight: 700; margin: 0 0 10px 0;">
                                 <?php echo esc_html($promo->title); ?>
                             </h3>
                             
@@ -738,6 +799,92 @@ function nl_render_weekly_promos_carousel() {
         }
     });
     </script>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * ============================================
+ * NL STORE — FOOTER LUXE  [nl_footer]
+ * À placer dans le pied de page (Astra > Footer Builder
+ * widget HTML/shortcode, ou bloc shortcode).
+ * ============================================
+ */
+add_shortcode( 'nl_footer', 'nl_render_footer' );
+
+function nl_render_footer() {
+    $shop_url    = class_exists( 'WooCommerce' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/boutique/' );
+    $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/mon-compte/' );
+    $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
+    $contact_url = get_permalink( get_page_by_path( 'contact' ) ) ?: home_url( '/contact/' );
+
+    // Coordonnées société (configurables via filtre)
+    $info = apply_filters( 'nl_company_info', [
+        'name'     => 'NL Store',
+        'baseline' => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
+        'address'  => 'Imp. de la Place Publique, Mroalé, 97680 Tsingoni, Mayotte',
+        'phone'    => '',
+        'whatsapp' => '',
+        'email'    => '',
+        'instagram'=> '#',
+        'facebook' => '#',
+        'siret'    => '812 234 094 00017',
+    ] );
+
+    ob_start(); ?>
+    <footer class="nl-footer-luxury">
+        <div class="nl-footer-bg"></div>
+        <div class="nl-footer-content">
+            <div class="nl-footer-grid">
+
+                <div class="nl-footer-brand">
+                    <h2><?php echo esc_html( $info['name'] ); ?></h2>
+                    <p><?php echo esc_html( $info['baseline'] ); ?></p>
+                    <?php if ( $info['address'] ) : ?>
+                        <p class="nl-footer-meta"><i data-lucide="map-pin"></i> <?php echo esc_html( $info['address'] ); ?></p>
+                    <?php endif; ?>
+                    <?php if ( $info['phone'] ) : ?>
+                        <p class="nl-footer-meta"><i data-lucide="phone"></i> <a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $info['phone'] ) ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
+                    <?php endif; ?>
+                    <?php if ( $info['email'] ) : ?>
+                        <p class="nl-footer-meta"><i data-lucide="mail"></i> <a href="mailto:<?php echo esc_attr( $info['email'] ); ?>"><?php echo esc_html( $info['email'] ); ?></a></p>
+                    <?php endif; ?>
+                    <div class="nl-socials">
+                        <?php if ( $info['whatsapp'] ) : ?>
+                            <a href="https://wa.me/<?php echo esc_attr( preg_replace( '/\D+/', '', $info['whatsapp'] ) ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><i data-lucide="message-circle"></i></a>
+                        <?php endif; ?>
+                        <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
+                        <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+                    </div>
+                </div>
+
+                <div class="nl-footer-col">
+                    <h3>Boutique</h3>
+                    <ul>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>">Tous les produits</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=parfums">Parfums</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=bebe">Bébé</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=hygiene">Hygiène</a></li>
+                    </ul>
+                </div>
+
+                <div class="nl-footer-col">
+                    <h3>Aide & Compte</h3>
+                    <ul>
+                        <li><a href="<?php echo esc_url( $account_url ); ?>">Mon compte</a></li>
+                        <li><a href="<?php echo esc_url( $cart_url ); ?>">Mon panier</a></li>
+                        <li><a href="<?php echo esc_url( $contact_url ); ?>">Contact</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/livraison/' ) ); ?>">Livraison à Mayotte</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="nl-footer-bottom">
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?> — MADI ALI · SIRET <?php echo esc_html( $info['siret'] ); ?> · APE 47.11B. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
     <?php
     return ob_get_clean();
 }
