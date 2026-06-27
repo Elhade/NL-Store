@@ -12,6 +12,19 @@
   --wc-pad: var(--nl-gutter);
 }
 
+/* Montants de prix : hériter de la couleur du conteneur (.price doré, total…)
+   afin de NE PAS être écrasés en blanc par la règle globale span/div de style.css.
+   Sans ça, les prix dorés deviennent invisibles sur les cartes produit ivoire. */
+.woocommerce .amount,
+.woocommerce .amount span,
+.woocommerce .woocommerce-Price-amount,
+.woocommerce .woocommerce-Price-currencySymbol,
+.woocommerce .price ins,
+.woocommerce .price > span,
+.woocommerce bdi {
+  color: inherit !important;
+}
+
 .woocommerce-shop .site-content,
 .woocommerce-cart .site-content,
 .woocommerce-checkout .site-content,
