@@ -3,7 +3,7 @@
  * NLStore Astra — Child Theme
  */
 
-define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '2.1.0' );
+define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '3.0.0' );
 
 /* ----------------------------------------------------------
    STYLES & FONTS
@@ -38,6 +38,73 @@ function nl_enqueue_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
+
+/* ----------------------------------------------------------
+   SCROLL REVEAL (icônes Lucide : voir helper nl_icon() plus bas)
+---------------------------------------------------------- */
+function nl_enqueue_interactions() {
+    // Reveal au scroll — pas de dépendance externe (handle inline sans fichier).
+    wp_register_script( 'nl-interactions', false, [], CHILD_THEME_NLSTORE_ASTRA_VERSION, true );
+    wp_enqueue_script( 'nl-interactions' );
+
+    $js = <<<'JS'
+(function () {
+  function nlReveal() {
+    var els = document.querySelectorAll('.nl-reveal');
+    if (!('IntersectionObserver' in window) || !els.length) {
+      els.forEach(function (el) { el.classList.add('nl-in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('nl-in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', nlReveal);
+  } else {
+    nlReveal();
+  }
+})();
+JS;
+    wp_add_inline_script( 'nl-interactions', $js );
+}
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_interactions', 20 );
+
+/* ----------------------------------------------------------
+   ICÔNES LUCIDE — inline SVG (auto-hébergé, aucune dépendance CDN)
+   Tracés officiels Lucide (ISC). Usage : <?php echo nl_icon('truck'); ?>
+---------------------------------------------------------- */
+function nl_icon( $name, $class = 'nl-icon' ) {
+    static $paths = null;
+    if ( null === $paths ) {
+        $paths = [
+            'truck'          => '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+            'shield-check'   => '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+            'headphones'     => '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+            'arrow-right'    => '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+            'message-circle' => '<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>',
+            'map-pin'        => '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+            'phone'          => '<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>',
+            'mail'           => '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
+            'instagram'      => '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
+            'facebook'       => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+        ];
+    }
+    if ( ! isset( $paths[ $name ] ) ) {
+        return '';
+    }
+    return sprintf(
+        '<svg class="%s" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">%s</svg>',
+        esc_attr( $class ),
+        $paths[ $name ] // tracés statiques de confiance (Lucide ISC)
+    );
+}
 
 /* ----------------------------------------------------------
    WOOCOMMERCE SUPPORT
@@ -75,7 +142,7 @@ function nl_testimonials_carousel_shortcode($atts) {
     ob_start();
     ?>
     <section class="nl-testimonials-carousel-wrapper" style="background-color: #0b0b0b; padding: 80px 40px;">
-        <h2 class="nl-testimonials-title" style="font-size: 36px; font-family: Georgia, serif; font-weight: 700; color: #f8f5ef; text-align: center; margin: 0 0 60px 0; letter-spacing: -0.5px;">
+        <h2 class="nl-testimonials-title" style="font-size: 36px; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; color: #f8f5ef; text-align: center; margin: 0 0 60px 0; letter-spacing: -0.5px;">
             <?php echo esc_html($atts['title']); ?>
         </h2>
 
@@ -110,7 +177,7 @@ function nl_testimonials_carousel_shortcode($atts) {
                         <div class="swiper-slide nl-testimonials-slide" style="width: 100%; height: auto; display: flex; align-items: stretch;">
                             <div class="nl-testimonial-card" style="background-color: #050505; border: 1px solid rgba(212, 175, 55, 0.15); border-radius: 8px; padding: 30px; width: 100%; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; transition: all 0.3s ease;">
                                 <div class="nl-testimonial-rating" style="font-size: 16px; color: #d4af37; letter-spacing: 2px; margin: 0 0 15px 0; display: flex; gap: 4px;">
-                                    <?php echo $stars; ?>
+                                    <?php echo esc_html( $stars ); ?>
                                 </div>
                                 <p class="nl-testimonial-text" style="font-size: 13px; color: #b8b8b8; font-style: italic; line-height: 1.8; margin: 0 0 15px 0; flex-grow: 1;">
                                     <?php echo wp_kses_post($review->comment_content); ?>
@@ -140,7 +207,8 @@ function nl_testimonials_carousel_shortcode($atts) {
 
 add_shortcode('nl_testimonials_carousel', 'nl_testimonials_carousel_shortcode');
 
-add_action('wp_footer', function() {
+// Enqueue sur wp_enqueue_scripts pour que le CSS Swiper atterrisse bien dans le <head>.
+add_action('wp_enqueue_scripts', function() {
     wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', [], '11.0.0', true);
     wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', [], '11.0.0');
     
@@ -152,7 +220,7 @@ add_action('wp_footer', function() {
     }
     .nl-testimonials-title {
         font-size: 36px;
-        font-family: Georgia, serif;
+        font-family: \'Cormorant Garamond\', Georgia, serif;
         font-weight: 700;
         color: #f8f5ef;
         text-align: center;
@@ -535,7 +603,7 @@ function nl_weekly_promos_page() {
             </div>
             
             <div style="background: #fff; padding: 20px; border-radius: 8px;">
-                <h2>📋 Promotions actives (<?php echo count($promos); ?>)</h2>
+                <h2>📋 Promotions actives (<?php echo absint( count( $promos ) ); ?>)</h2>
                 
                 <?php if (empty($promos)): ?>
                     <p style="color: #999;">Aucune promotion</p>
@@ -554,7 +622,7 @@ function nl_weekly_promos_page() {
                                 <form method="post" style="display: inline;">
                                     <?php wp_nonce_field('nl_weekly_promos_nonce'); ?>
                                     <input type="hidden" name="action" value="delete_promo">
-                                    <input type="hidden" name="promo_id" value="<?php echo $promo->id; ?>">
+                                    <input type="hidden" name="promo_id" value="<?php echo esc_attr( $promo->id ); ?>">
                                     <button type="submit" class="button button-small" onclick="return confirm('Supprimer?')">Supprimer</button>
                                 </form>
                             </div>
@@ -587,7 +655,8 @@ function nl_create_promotions_table() {
     dbDelta($sql);
 }
 
-add_action('after_setup_theme', 'nl_create_promotions_table');
+// Création de la table uniquement à l'activation du thème (évite dbDelta à chaque pageload).
+add_action('after_switch_theme', 'nl_create_promotions_table');
 
 // SHORTCODES
 add_shortcode('nl_promo_banner', 'nl_render_promo_banner');
@@ -607,7 +676,7 @@ function nl_render_promo_banner() {
     
     ob_start();
     ?>
-    <div style="background: <?php echo $gradient; ?>; padding: 25px 40px; text-align: center;">
+    <div style="background: <?php echo esc_attr( $gradient ); ?>; padding: 25px 40px; text-align: center;">
         <p style="color: <?php echo esc_attr($banner['text_color']); ?>; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin: 0; font-weight: bold;">
             <?php echo esc_html($banner['text']); ?> - 
             <a href="<?php echo esc_url($banner['link_url']); ?>" style="color: <?php echo esc_attr($banner['text_color']); ?>; text-decoration: underline;">
@@ -639,7 +708,7 @@ function nl_render_weekly_promos_carousel() {
         
         <div style="text-align: center; margin-bottom: 30px;">
             <span style="display: inline-block; padding: 8px 16px; border-radius: 20px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.25); color: #d4af37; font-size: 11px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">PROMOTIONS DE LA SEMAINE</span>
-            <h2 style="font-size: 36px !important; font-family: Georgia, serif; margin: 60px 0 60px 0 !important; letter-spacing: -0.5px;">Nos Coups de Cœur</h2>
+            <h2 style="font-size: 36px !important; font-family: 'Cormorant Garamond', Georgia, serif; margin: 60px 0 60px 0 !important; letter-spacing: -0.5px;">Nos Coups de Cœur</h2>
         </div>
         
         <div class="swiper nl-promos-swiper" style="position: relative; width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 40px;">
@@ -653,7 +722,7 @@ function nl_render_weekly_promos_carousel() {
                         </div>
                         
                         <div style="padding: 25px; display: flex; flex-direction: column; flex-grow: 1;">
-                            <h3 style="font-size: 24px; font-family: Georgia, serif; color: #f8f5ef; font-weight: 700; margin: 0 0 10px 0;">
+                            <h3 style="font-size: 24px; font-family: 'Cormorant Garamond', Georgia, serif; color: #f8f5ef; font-weight: 700; margin: 0 0 10px 0;">
                                 <?php echo esc_html($promo->title); ?>
                             </h3>
                             
@@ -738,6 +807,92 @@ function nl_render_weekly_promos_carousel() {
         }
     });
     </script>
+    <?php
+    return ob_get_clean();
+}
+
+/**
+ * ============================================
+ * NL STORE — FOOTER LUXE  [nl_footer]
+ * À placer dans le pied de page (Astra > Footer Builder
+ * widget HTML/shortcode, ou bloc shortcode).
+ * ============================================
+ */
+add_shortcode( 'nl_footer', 'nl_render_footer' );
+
+function nl_render_footer() {
+    $shop_url    = class_exists( 'WooCommerce' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/boutique/' );
+    $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/mon-compte/' );
+    $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
+    $contact_url = get_permalink( get_page_by_path( 'contact' ) ) ?: home_url( '/contact/' );
+
+    // Coordonnées société (configurables via filtre)
+    $info = apply_filters( 'nl_company_info', [
+        'name'     => 'NL Store',
+        'baseline' => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
+        'address'  => 'Imp. de la Place Publique, Mroalé, 97680 Tsingoni, Mayotte',
+        'phone'    => '',
+        'whatsapp' => '',
+        'email'    => '',
+        'instagram'=> '#',
+        'facebook' => '#',
+        'siret'    => '812 234 094 00017',
+    ] );
+
+    ob_start(); ?>
+    <footer class="nl-footer-luxury">
+        <div class="nl-footer-bg"></div>
+        <div class="nl-footer-content">
+            <div class="nl-footer-grid">
+
+                <div class="nl-footer-brand">
+                    <h2><?php echo esc_html( $info['name'] ); ?></h2>
+                    <p><?php echo esc_html( $info['baseline'] ); ?></p>
+                    <?php if ( $info['address'] ) : ?>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'map-pin' ); ?> <?php echo esc_html( $info['address'] ); ?></p>
+                    <?php endif; ?>
+                    <?php if ( $info['phone'] ) : ?>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'phone' ); ?> <a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $info['phone'] ) ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
+                    <?php endif; ?>
+                    <?php if ( $info['email'] ) : ?>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'mail' ); ?> <a href="mailto:<?php echo esc_attr( $info['email'] ); ?>"><?php echo esc_html( $info['email'] ); ?></a></p>
+                    <?php endif; ?>
+                    <div class="nl-socials">
+                        <?php if ( $info['whatsapp'] ) : ?>
+                            <a href="https://wa.me/<?php echo esc_attr( preg_replace( '/\D+/', '', $info['whatsapp'] ) ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><?php echo nl_icon( 'message-circle' ); ?></a>
+                        <?php endif; ?>
+                        <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><?php echo nl_icon( 'instagram' ); ?></a>
+                        <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><?php echo nl_icon( 'facebook' ); ?></a>
+                    </div>
+                </div>
+
+                <div class="nl-footer-col">
+                    <h3>Boutique</h3>
+                    <ul>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>">Tous les produits</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=parfums">Parfums</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=bebe">Bébé</a></li>
+                        <li><a href="<?php echo esc_url( $shop_url ); ?>?product_cat=hygiene">Hygiène</a></li>
+                    </ul>
+                </div>
+
+                <div class="nl-footer-col">
+                    <h3>Aide & Compte</h3>
+                    <ul>
+                        <li><a href="<?php echo esc_url( $account_url ); ?>">Mon compte</a></li>
+                        <li><a href="<?php echo esc_url( $cart_url ); ?>">Mon panier</a></li>
+                        <li><a href="<?php echo esc_url( $contact_url ); ?>">Contact</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/livraison/' ) ); ?>">Livraison à Mayotte</a></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <div class="nl-footer-bottom">
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?> — MADI ALI · SIRET <?php echo esc_html( $info['siret'] ); ?> · APE 47.11B. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
     <?php
     return ob_get_clean();
 }
