@@ -74,17 +74,17 @@ $categories_config = [
 
             <div class="nl-hero-buttons">
                 <a href="<?php echo esc_url($shop_url); ?>" class="nl-btn-hero nl-btn-hero--primary">
-                    Découvrir la boutique <i data-lucide="arrow-right"></i>
+                    Découvrir la boutique <?php echo nl_icon('arrow-right'); ?>
                 </a>
                 <a href="<?php echo esc_url($contact_url); ?>" class="nl-btn-hero nl-btn-hero--secondary">
-                    <i data-lucide="message-circle"></i> Nous contacter
+                    <?php echo nl_icon('message-circle'); ?> Nous contacter
                 </a>
             </div>
 
             <div class="nl-hero-trust">
-                <span><i data-lucide="truck"></i> Livraison rapide</span>
-                <span><i data-lucide="shield-check"></i> Qualité garantie</span>
-                <span><i data-lucide="headphones"></i> Support réactif</span>
+                <span><?php echo nl_icon('truck'); ?> Livraison rapide</span>
+                <span><?php echo nl_icon('shield-check'); ?> Qualité garantie</span>
+                <span><?php echo nl_icon('headphones'); ?> Support réactif</span>
             </div>
         </div>
     </section>
@@ -181,7 +181,7 @@ $categories_config = [
 
         <div class="nl-products-view-all">
             <a href="<?php echo esc_url($shop_url); ?>" class="nl-btn-view-all">
-                Voir tous les produits <i data-lucide="arrow-right"></i>
+                Voir tous les produits <?php echo nl_icon('arrow-right'); ?>
             </a>
         </div>
     </section>

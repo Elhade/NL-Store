@@ -198,6 +198,22 @@ p, li, span, div {
   color: var(--nl-white);
 }
 
+/* Inline Lucide icons (helper nl_icon) */
+.nl-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  flex-shrink: 0;
+}
+
+.nl-btn-hero .nl-icon,
+.nl-btn-view-all .nl-icon,
+.nl-cat-card__btn .nl-icon {
+  width: 16px;
+  height: 16px;
+}
+
 /* Decorative gold rule */
 .nl-rule {
   width: 64px;
@@ -1138,7 +1154,7 @@ footer a:hover {
   font-size: 13.5px;
 }
 
-.nl-footer-meta [data-lucide] {
+.nl-footer-meta .nl-icon {
   color: var(--nl-gold);
   width: 16px;
   height: 16px;

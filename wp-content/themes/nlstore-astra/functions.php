@@ -44,24 +44,12 @@ add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
    Icônes : https://lucide.dev — usage <i data-lucide="truck"></i>
 ---------------------------------------------------------- */
 function nl_enqueue_interactions() {
-    // Lucide icon library (rendu via data-lucide + lucide.createIcons())
-    // Version épinglée (stabilité + cache-busting WP). MàJ volontaire uniquement.
-    wp_enqueue_script(
-        'lucide-icons',
-        'https://unpkg.com/lucide@1.21.0/dist/umd/lucide.min.js',
-        [],
-        '1.21.0',
-        true
-    );
+    // Reveal au scroll — pas de dépendance externe (handle inline sans fichier).
+    wp_register_script( 'nl-interactions', false, [], CHILD_THEME_NLSTORE_ASTRA_VERSION, true );
+    wp_enqueue_script( 'nl-interactions' );
 
     $js = <<<'JS'
 (function () {
-  function nlRenderIcons() {
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      window.lucide.createIcons();
-    }
-  }
-  // Reveal au scroll
   function nlReveal() {
     var els = document.querySelectorAll('.nl-reveal');
     if (!('IntersectionObserver' in window) || !els.length) {
@@ -79,27 +67,45 @@ function nl_enqueue_interactions() {
     els.forEach(function (el) { io.observe(el); });
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { nlRenderIcons(); nlReveal(); });
+    document.addEventListener('DOMContentLoaded', nlReveal);
   } else {
-    nlRenderIcons(); nlReveal();
+    nlReveal();
   }
-  // Re-rend les icônes injectées après coup (mini-cart, AJAX…)
-  document.addEventListener('nl:icons', nlRenderIcons);
 })();
 JS;
-    wp_add_inline_script( 'lucide-icons', $js );
+    wp_add_inline_script( 'nl-interactions', $js );
 }
 add_action( 'wp_enqueue_scripts', 'nl_enqueue_interactions', 20 );
 
-/* Évite le flash de mise en page : dimensionne les icônes Lucide */
-function nl_icons_inline_css() {
-    echo '<style id="nl-icons-css">'
-        . '[data-lucide]{width:1em;height:1em;display:inline-block;vertical-align:-0.125em;stroke-width:2;}'
-        . '.nl-hero-trust [data-lucide]{width:15px;height:15px;}'
-        . '.nl-socials [data-lucide]{width:18px;height:18px;}'
-        . '</style>';
+/* ----------------------------------------------------------
+   ICÔNES LUCIDE — inline SVG (auto-hébergé, aucune dépendance CDN)
+   Tracés officiels Lucide (ISC). Usage : <?php echo nl_icon('truck'); ?>
+---------------------------------------------------------- */
+function nl_icon( $name, $class = 'nl-icon' ) {
+    static $paths = null;
+    if ( null === $paths ) {
+        $paths = [
+            'truck'          => '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+            'shield-check'   => '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+            'headphones'     => '<path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>',
+            'arrow-right'    => '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+            'message-circle' => '<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>',
+            'map-pin'        => '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+            'phone'          => '<path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/>',
+            'mail'           => '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
+            'instagram'      => '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
+            'facebook'       => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+        ];
+    }
+    if ( ! isset( $paths[ $name ] ) ) {
+        return '';
+    }
+    return sprintf(
+        '<svg class="%s" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">%s</svg>',
+        esc_attr( $class ),
+        $paths[ $name ] // tracés statiques de confiance (Lucide ISC)
+    );
 }
-add_action( 'wp_head', 'nl_icons_inline_css', 99 );
 
 /* ----------------------------------------------------------
    WOOCOMMERCE SUPPORT
@@ -844,20 +850,20 @@ function nl_render_footer() {
                     <h2><?php echo esc_html( $info['name'] ); ?></h2>
                     <p><?php echo esc_html( $info['baseline'] ); ?></p>
                     <?php if ( $info['address'] ) : ?>
-                        <p class="nl-footer-meta"><i data-lucide="map-pin"></i> <?php echo esc_html( $info['address'] ); ?></p>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'map-pin' ); ?> <?php echo esc_html( $info['address'] ); ?></p>
                     <?php endif; ?>
                     <?php if ( $info['phone'] ) : ?>
-                        <p class="nl-footer-meta"><i data-lucide="phone"></i> <a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $info['phone'] ) ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'phone' ); ?> <a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $info['phone'] ) ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
                     <?php endif; ?>
                     <?php if ( $info['email'] ) : ?>
-                        <p class="nl-footer-meta"><i data-lucide="mail"></i> <a href="mailto:<?php echo esc_attr( $info['email'] ); ?>"><?php echo esc_html( $info['email'] ); ?></a></p>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'mail' ); ?> <a href="mailto:<?php echo esc_attr( $info['email'] ); ?>"><?php echo esc_html( $info['email'] ); ?></a></p>
                     <?php endif; ?>
                     <div class="nl-socials">
                         <?php if ( $info['whatsapp'] ) : ?>
-                            <a href="https://wa.me/<?php echo esc_attr( preg_replace( '/\D+/', '', $info['whatsapp'] ) ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><i data-lucide="message-circle"></i></a>
+                            <a href="https://wa.me/<?php echo esc_attr( preg_replace( '/\D+/', '', $info['whatsapp'] ) ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><?php echo nl_icon( 'message-circle' ); ?></a>
                         <?php endif; ?>
-                        <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><i data-lucide="instagram"></i></a>
-                        <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><i data-lucide="facebook"></i></a>
+                        <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><?php echo nl_icon( 'instagram' ); ?></a>
+                        <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><?php echo nl_icon( 'facebook' ); ?></a>
                     </div>
                 </div>
 
