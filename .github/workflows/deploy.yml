@@ -96,6 +96,8 @@ jobs:
           echo "==========================="
 
           {
+            echo "set ssl:verify-certificate no"
+            echo "set ftp:ssl-allow no"
             echo "open -u \"${FTP_USERNAME}\",\"${FTP_PASSWORD}\" ftp://${FTP_SERVER}"
             echo "set ftp:passive-mode true"
             echo "set cmd:fail-exit yes"
