@@ -74,26 +74,17 @@ $categories_config = [
 
             <div class="nl-hero-buttons">
                 <a href="<?php echo esc_url($shop_url); ?>" class="nl-btn-hero nl-btn-hero--primary">
-                    Découvrir la boutique
+                    Découvrir la boutique <i data-lucide="arrow-right"></i>
                 </a>
                 <a href="<?php echo esc_url($contact_url); ?>" class="nl-btn-hero nl-btn-hero--secondary">
-                    Nous contacter
+                    <i data-lucide="message-circle"></i> Nous contacter
                 </a>
             </div>
 
             <div class="nl-hero-trust">
-                <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
-                    Livraison rapide
-                </span>
-                <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
-                    Qualité garantie
-                </span>
-                <span>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
-                    Support réactif
-                </span>
+                <span><i data-lucide="truck"></i> Livraison rapide</span>
+                <span><i data-lucide="shield-check"></i> Qualité garantie</span>
+                <span><i data-lucide="headphones"></i> Support réactif</span>
             </div>
         </div>
     </section>
@@ -102,12 +93,12 @@ $categories_config = [
          CATÉGORIES
     ==================================================== -->
     <section class="nl-categories-section">
-        <div class="nl-section-header">
+        <div class="nl-section-header nl-reveal">
             <p class="nl-section-label">NOS CATÉGORIES</p>
             <h2 class="nl-section-main-title">Qu'est-ce que vous cherchez ?</h2>
         </div>
 
-        <div class="nl-categories-grid">
+        <div class="nl-categories-grid nl-reveal">
             <?php foreach ($categories_config as $cat):
                 $term      = get_term_by('slug', $cat['slug'], 'product_cat');
                 $cat_url   = ($term && !is_wp_error($term)) ? get_term_link($term) : $shop_url;
@@ -161,14 +152,16 @@ $categories_config = [
          PRODUITS POPULAIRES
     ==================================================== -->
     <section class="nl-products-section">
-        <p class="nl-section-label">NOS BEST-SELLERS</p>
-        <div class="nl-section-title-wrap">
-            <span class="nl-section-line"></span>
-            <h2 class="nl-section-title">Produits Populaires</h2>
-            <span class="nl-section-line"></span>
+        <div class="nl-reveal" style="text-align:center;">
+            <p class="nl-section-label">NOS BEST-SELLERS</p>
+            <div class="nl-section-title-wrap">
+                <span class="nl-section-line"></span>
+                <h2 class="nl-section-title">Produits Populaires</h2>
+                <span class="nl-section-line"></span>
+            </div>
         </div>
 
-        <div class="nl-products-grid">
+        <div class="nl-products-grid nl-reveal">
             <?php
             if (class_exists('WooCommerce')) {
                 $featured_ids = wc_get_featured_product_ids();
@@ -188,7 +181,7 @@ $categories_config = [
 
         <div class="nl-products-view-all">
             <a href="<?php echo esc_url($shop_url); ?>" class="nl-btn-view-all">
-                Voir tous les produits
+                Voir tous les produits <i data-lucide="arrow-right"></i>
             </a>
         </div>
     </section>
@@ -197,13 +190,13 @@ $categories_config = [
          PROMOTIONS DE LA SEMAINE
     ==================================================== -->
     <section class="nl-promo-week-section">
-        <div class="nl-section-title-wrap">
+        <div class="nl-section-title-wrap nl-reveal">
             <span class="nl-section-deco">✦</span>
             <h2 class="nl-section-title">Promotions de la semaine</h2>
             <span class="nl-section-deco">✦</span>
         </div>
 
-        <div class="nl-promo-week-grid">
+        <div class="nl-promo-week-grid nl-reveal">
             <div class="nl-promo-week-left">
                 <?php echo do_shortcode('[nl_weekly_promos_carousel]'); ?>
             </div>
