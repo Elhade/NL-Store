@@ -1,0 +1,159 @@
+# ============================================================
+# WordPress - NL Store
+# Objectif :
+# - Ne pas envoyer le cœur WordPress
+# - Ne pas envoyer les fichiers sensibles
+# - Ne pas envoyer les médias, caches, sauvegardes ou exports lourds
+# - Garder uniquement le code utile : thème nlstore-astra, plugins custom
+# ============================================================
+
+
+# ============================================================
+# Cœur WordPress
+# ============================================================
+
+/wp-admin/
+/wp-includes/
+/index.php
+/license.txt
+/readme.html
+/README.html
+/wp-activate.php
+/wp-blog-header.php
+/wp-comments-post.php
+/wp-cron.php
+/wp-links-opml.php
+/wp-load.php
+/wp-login.php
+/wp-mail.php
+/wp-settings.php
+/wp-signup.php
+/wp-trackback.php
+/xmlrpc.php
+
+
+# ============================================================
+# Configuration sensible
+# ============================================================
+
+wp-config.php
+.env
+.env.local
+.env.*.local
+
+
+# ============================================================
+# Dossiers hors WordPress
+# ============================================================
+
+/archives/
+/cgi-bin/
+
+
+# ============================================================
+# Fichiers WordPress par défaut dans wp-content
+# ============================================================
+
+/wp-content/index.php
+/wp-content/languages/
+/wp-content/plugins/index.php
+/wp-content/themes/index.php
+
+
+# ============================================================
+# Thèmes WordPress par défaut
+# Le thème custom nlstore-astra est conservé.
+# ============================================================
+
+/wp-content/themes/twenty*/
+/wp-content/themes/astra/
+
+
+# ============================================================
+# Plugins — tous tiers, aucun plugin custom dans ce projet
+# ============================================================
+
+/wp-content/plugins/
+
+
+# ============================================================
+# Médias et uploads
+# ============================================================
+
+/wp-content/uploads/
+/wp-content/uploads-webpc/
+
+
+# ============================================================
+# Cache, fichiers techniques et modules de sécurité
+# ============================================================
+
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/upgrade-temp-backup/
+/wp-content/wflogs/
+/wp-content/jetpack-waf/
+/wp-content/mu-plugins/
+
+
+# ============================================================
+# Sauvegardes WordPress
+# ============================================================
+
+/wp-content/backups/
+/wp-content/ai1wm-backups/
+
+
+# ============================================================
+# Exports, logs et archives
+# ============================================================
+
+*.log
+*.sql
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+
+# ============================================================
+# Dépendances
+# ============================================================
+
+node_modules/
+vendor/
+
+
+# ============================================================
+# Fichiers de build
+# ============================================================
+
+dist/
+build/
+.cache/
+.vite/
+
+
+# ============================================================
+# Fichiers système et éditeurs
+# ============================================================
+
+.DS_Store
+.vscode/
+.idea/
+
+
+# ============================================================
+# Configuration serveur
+# ============================================================
+
+/.htaccess
+
+
+# ============================================================
+# Note :
+# Thème custom versionné : /wp-content/themes/nlstore-astra/
+# Plugins versionnés : tous sauf akismet et hello.php (inutiles)
+# Tous les plugins sont ignorés (tous tiers dans ce projet)
+# ============================================================

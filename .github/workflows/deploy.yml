@@ -1,0 +1,148 @@
+name: Deploy NL Store custom theme
+
+on:
+  workflow_dispatch:
+    inputs:
+      before_sha:
+        description: 'SHA de base à comparer'
+        required: true
+      after_sha:
+        description: 'SHA cible à déployer'
+        required: true
+  push:
+    branches: [main]
+    paths:
+      - wp-content/themes/nlstore-astra/**
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  ftp-deploy:
+    name: Deploy after push to main
+    runs-on: ubuntu-latest
+    environment:
+      name: nlstore
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
+
+      - name: Deploy modified files via FTP
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ secrets.FTP_SERVER_DIR }}
+        run: |
+          set -euo pipefail
+
+          remote_root="${FTP_SERVER_DIR%/}"
+          commands_file="$(mktemp)"
+
+          # Calcul des SHAs selon le type d'événement
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            before_sha="${{ github.event.inputs.before_sha }}"
+            after_sha="${{ github.event.inputs.after_sha }}"
+          else
+            before_sha="${{ github.event.before }}"
+            after_sha="${{ github.sha }}"
+          fi
+
+          # Premier push sur la branche : déployer tout
+          if [ "$before_sha" = "0000000000000000000000000000000000000000" ]; then
+            before_sha=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Échoue explicitement si l'un des SHAs est introuvable
+          if ! git cat-file -e "$before_sha^{commit}" 2>/dev/null; then
+            echo "::error::Commit de base introuvable: $before_sha"
+            exit 1
+          fi
+
+          if ! git cat-file -e "$after_sha^{commit}" 2>/dev/null; then
+            echo "::error::Commit cible introuvable: $after_sha"
+            exit 1
+          fi
+
+          path_regex='^wp-content/themes/nlstore-astra/'
+
+          added_modified=$(git diff --name-only --diff-filter=ACMR "$before_sha" "$after_sha" \
+            | grep "$path_regex" || true)
+          deleted=$(git diff --name-only --diff-filter=D "$before_sha" "$after_sha" \
+            | grep "$path_regex" || true)
+
+          if [ -z "$added_modified" ] && [ -z "$deleted" ]; then
+            echo "Aucun fichier pertinent modifié. Deploy ignoré."
+            exit 0
+          fi
+
+          deployed_count=$(printf '%s\n' "$added_modified" | sed '/^$/d' | wc -l | tr -d ' ')
+          deleted_count=$(printf '%s\n' "$deleted" | sed '/^$/d' | wc -l | tr -d ' ')
+
+          echo "=== Fichiers à déployer (${deployed_count}) ==="
+          echo "$added_modified"
+          echo "=== Fichiers à supprimer (${deleted_count}) ==="
+          echo "$deleted"
+          echo "==========================="
+
+          {
+            echo "open -u \"${FTP_USERNAME}\",\"${FTP_PASSWORD}\" ftp://${FTP_SERVER}"
+            echo "set ftp:passive-mode true"
+            echo "set cmd:fail-exit yes"
+            echo "set net:max-retries 3"
+            echo "set net:timeout 60"
+            echo "lcd ${GITHUB_WORKSPACE}"
+
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              echo "echo \"  [PUT] $file\""
+              echo "mkdir -fp \"${remote_root}/$(dirname "$file")\""
+              echo "put \"$file\" -o \"${remote_root}/$file\""
+            done <<< "$added_modified"
+
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              echo "echo \"  [DEL] $file\""
+              echo "rm -f \"${remote_root}/$file\""
+            done <<< "$deleted"
+
+            echo "bye"
+          } > "$commands_file"
+
+          echo "=== Transfert FTP en cours ==="
+          lftp -f "$commands_file"
+          echo "=== Transfert FTP terminé avec succès ==="
+
+          summary=$(
+            echo "## Déploiement NL Store"
+            echo ""
+            echo "Commit déployé : \`${after_sha}\`"
+            echo ""
+            echo "### Fichiers déployés (${deployed_count})"
+            if [ -n "$added_modified" ]; then
+              printf '%s\n' "$added_modified" | sed '/^$/d;s/^/- /'
+            else
+              echo "_aucun_"
+            fi
+            echo ""
+            echo "### Fichiers supprimés (${deleted_count})"
+            if [ -n "$deleted" ]; then
+              printf '%s\n' "$deleted" | sed '/^$/d;s/^/- /'
+            else
+              echo "_aucun_"
+            fi
+          )
+          echo "$summary"
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            echo "$summary" >> "$GITHUB_STEP_SUMMARY"
+          fi
