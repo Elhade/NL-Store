@@ -1,32 +1,63 @@
 <?php
 /**
- * NLStore Astra Theme functions and definitions
- *
- * @link https://developer.wordpress.org/themes/basics/theme-functions/
- *
- * @package NLStore Astra
- * @since 1.0.0
+ * NLStore Astra — Child Theme
  */
 
-/**
- * Define Constants
- */
-define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '1.0.0' );
+define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '2.0.0' );
 
-// Active le mode WP_DEBUG
-define( 'WP_DEBUG', true );
-define( 'WP_DEBUG_LOG', true );
-define( 'WP_DEBUG_DISPLAY', false );
-@ini_set( 'display_errors', 0 );
-define( 'SCRIPT_DEBUG', true );
+/* ----------------------------------------------------------
+   STYLES & FONTS
+---------------------------------------------------------- */
+function nl_enqueue_assets() {
+    // Google Fonts
+    wp_enqueue_style(
+        'nl-google-fonts',
+        'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap',
+        [],
+        null
+    );
 
-/**
- * Enqueue styles
- */
-function child_enqueue_styles() {
-	wp_enqueue_style( 'nlstore-astra-theme-css', get_stylesheet_directory_uri() . '/style.css', array('astra-theme-css'), CHILD_THEME_NLSTORE_ASTRA_VERSION, 'all' );
+    // Theme stylesheet (after parent Astra)
+    wp_enqueue_style(
+        'nlstore-astra-theme-css',
+        get_stylesheet_directory_uri() . '/style.css',
+        [ 'astra-theme-css' ],
+        CHILD_THEME_NLSTORE_ASTRA_VERSION,
+        'all'
+    );
+
+    // WooCommerce dedicated stylesheet
+    if ( class_exists( 'WooCommerce' ) ) {
+        wp_enqueue_style(
+            'nlstore-woocommerce-css',
+            get_stylesheet_directory_uri() . '/woocommerce.css',
+            [ 'nlstore-astra-theme-css' ],
+            CHILD_THEME_NLSTORE_ASTRA_VERSION,
+            'all'
+        );
+    }
 }
-add_action( 'wp_enqueue_scripts', 'child_enqueue_styles', 15 );
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
+
+/* ----------------------------------------------------------
+   WOOCOMMERCE SUPPORT
+---------------------------------------------------------- */
+add_action( 'after_setup_theme', function () {
+    add_theme_support( 'woocommerce', [
+        'thumbnail_image_width' => 600,
+        'single_image_width'    => 900,
+        'product_grid'          => [
+            'default_rows'    => 3,
+            'min_rows'        => 1,
+            'default_columns' => 4,
+            'min_columns'     => 1,
+            'max_columns'     => 6,
+        ],
+    ] );
+    add_theme_support( 'wc-product-gallery-zoom' );
+    add_theme_support( 'wc-product-gallery-lightbox' );
+    add_theme_support( 'wc-product-gallery-slider' );
+} );
 
 /**
  * ============================================
