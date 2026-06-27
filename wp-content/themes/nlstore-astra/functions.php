@@ -222,7 +222,94 @@ add_action( 'admin_notices', function () {
     if ( false !== $n ) {
         delete_transient( 'nl_products_seeded_notice' );
         printf(
-            '<div class="notice notice-success is-dismissible"><p>✅ <strong>NL Store</strong> : %d produit(s) créé(s) automatiquement. Pensez à ajuster les prix, ajouter les images, puis à retirer le bloc d\'import du thème.</p></div>',
+            '<div class="notice notice-success is-dismissible"><p>✅ <strong>NL Store</strong> : %d produit(s) créé(s) automatiquement. Pensez à ajuster les prix, puis à retirer le bloc d\'import du thème.</p></div>',
+            absint( $n )
+        );
+    }
+} );
+
+/* ------------------------------------------------------------
+   NL STORE — IMAGES PRODUITS (one-shot, auto-désactivé)
+   Verse les photos fournies (assets/products/<SKU>.jpg) dans la
+   médiathèque et les définit comme image principale du produit
+   correspondant. S'exécute après le seeder produits (priorité 20).
+   Idempotent : saute les produits qui ont déjà une image.
+   ------------------------------------------------------------ */
+add_action( 'admin_init', 'nl_seed_product_images', 20 );
+function nl_seed_product_images() {
+    if ( get_option( 'nl_product_images_seeded' ) === 'v1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_woocommerce' ) ) {
+        return;
+    }
+    if ( ! function_exists( 'wc_get_product_id_by_sku' ) || ! function_exists( 'wc_get_product' ) ) {
+        return;
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+
+    $dir  = trailingslashit( get_stylesheet_directory() ) . 'assets/products/';
+    $skus = [
+        'NL-AISHA-50', 'NL-BACCARA-50', 'NL-SCANDALEF-50', 'NL-YARA-50',
+        'NL-MOULA-50', 'NL-SCANDALEH-50', 'NL-INVICTS-50', 'NL-KIRKE-50',
+        'NL-COCOVAN-50', 'NL-CREMEBRULEE-50', 'NL-KENZIE-AMBER-250', 'NL-KENZIE-APPLE-250',
+    ];
+
+    $done = 0;
+    $pending = 0;
+    foreach ( $skus as $sku ) {
+        $pid = wc_get_product_id_by_sku( $sku );
+        if ( ! $pid ) {
+            $pending++; // produit pas encore prêt : on réessaiera au prochain chargement
+            continue;
+        }
+        $product = wc_get_product( $pid );
+        if ( ! $product || $product->get_image_id() ) {
+            continue; // déjà une image (ou produit invalide) : rien à faire
+        }
+        $file = $dir . $sku . '.jpg';
+        if ( ! file_exists( $file ) ) {
+            continue; // pas de photo fournie pour ce SKU
+        }
+
+        $upload = wp_upload_bits( $sku . '.jpg', null, file_get_contents( $file ) );
+        if ( ! empty( $upload['error'] ) ) {
+            $pending++;
+            continue;
+        }
+        $filetype  = wp_check_filetype( $upload['file'], null );
+        $attach_id = wp_insert_attachment( [
+            'post_mime_type' => $filetype['type'],
+            'post_title'     => $product->get_name(),
+            'post_status'    => 'inherit',
+        ], $upload['file'], $pid );
+        if ( is_wp_error( $attach_id ) || ! $attach_id ) {
+            $pending++;
+            continue;
+        }
+        wp_update_attachment_metadata( $attach_id, wp_generate_attachment_metadata( $attach_id, $upload['file'] ) );
+        $product->set_image_id( $attach_id );
+        $product->save();
+        $done++;
+    }
+
+    if ( 0 === $pending ) {
+        update_option( 'nl_product_images_seeded', 'v1' ); // tout est traité : on verrouille
+    }
+    if ( $done ) {
+        set_transient( 'nl_product_images_notice', $done, 120 );
+    }
+}
+
+add_action( 'admin_notices', function () {
+    $n = get_transient( 'nl_product_images_notice' );
+    if ( false !== $n ) {
+        delete_transient( 'nl_product_images_notice' );
+        printf(
+            '<div class="notice notice-success is-dismissible"><p>🖼️ <strong>NL Store</strong> : %d image(s) produit ajoutée(s) automatiquement.</p></div>',
             absint( $n )
         );
     }
