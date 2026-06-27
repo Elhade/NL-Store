@@ -40,8 +40,7 @@ function nl_enqueue_assets() {
 add_action( 'wp_enqueue_scripts', 'nl_enqueue_assets', 15 );
 
 /* ----------------------------------------------------------
-   LUCIDE ICONS + SCROLL REVEAL
-   Icônes : https://lucide.dev — usage <i data-lucide="truck"></i>
+   SCROLL REVEAL (icônes Lucide : voir helper nl_icon() plus bas)
 ---------------------------------------------------------- */
 function nl_enqueue_interactions() {
     // Reveal au scroll — pas de dépendance externe (handle inline sans fichier).
