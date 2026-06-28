@@ -824,18 +824,26 @@ function nl_render_footer() {
         'legal'     => 'MADI ALI — Entrepreneur individuel',
         'baseline'  => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
         'address'   => 'Imp. de la Place Publique, Mroalé — 97680 Tsingoni, Mayotte',
-        'phone'     => '',
-        'whatsapp'  => '',
-        'email'     => '',
-        'instagram' => '#',
-        'facebook'  => '#',
+        'phone'     => '07 66 53 38 47',
+        'whatsapp'  => '07 66 53 38 47',
+        'email'     => 'contact@nl.store.ghost-service.fr',
+        'instagram' => '',
+        'facebook'  => '',
         'siren'     => '812 234 094',
         'siret'     => '812 234 094 00017',
         'ape'       => '47.11B — Commerce d\'alimentation générale',
-        'map_query' => 'Imp. de la Place Publique, 97680 Tsingoni, Mayotte',
+        'map_query' => 'Mroalé, 97680 Tsingoni, Mayotte',
     ] );
 
-    $map_src = 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) . '&z=14&output=embed';
+    // Normalisation FR (0X… → indicatif +33) pour les liens tel: et WhatsApp
+    $tel_digits = preg_replace( '/\D+/', '', $info['phone'] );
+    $tel_intl   = ( 0 === strpos( (string) $tel_digits, '0' ) ) ? '+33' . substr( $tel_digits, 1 ) : ( $tel_digits ? '+' . $tel_digits : '' );
+    $wa_digits  = preg_replace( '/\D+/', '', $info['whatsapp'] );
+    if ( 0 === strpos( (string) $wa_digits, '0' ) ) {
+        $wa_digits = '33' . substr( $wa_digits, 1 );
+    }
+
+    $map_src = 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) . '&z=15&output=embed';
 
     ob_start(); ?>
     <div class="nl-footer-luxury">
@@ -850,17 +858,21 @@ function nl_render_footer() {
                         <p class="nl-footer-meta"><?php echo nl_icon( 'map-pin' ); ?> <?php echo esc_html( $info['address'] ); ?></p>
                     <?php endif; ?>
                     <?php if ( $info['phone'] ) : ?>
-                        <p class="nl-footer-meta"><?php echo nl_icon( 'phone' ); ?> <a href="tel:<?php echo esc_attr( preg_replace( '/\s+/', '', $info['phone'] ) ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
+                        <p class="nl-footer-meta"><?php echo nl_icon( 'phone' ); ?> <a href="tel:<?php echo esc_attr( $tel_intl ); ?>"><?php echo esc_html( $info['phone'] ); ?></a></p>
                     <?php endif; ?>
                     <?php if ( $info['email'] ) : ?>
                         <p class="nl-footer-meta"><?php echo nl_icon( 'mail' ); ?> <a href="mailto:<?php echo esc_attr( $info['email'] ); ?>"><?php echo esc_html( $info['email'] ); ?></a></p>
                     <?php endif; ?>
                     <div class="nl-socials">
                         <?php if ( $info['whatsapp'] ) : ?>
-                            <a href="https://wa.me/<?php echo esc_attr( preg_replace( '/\D+/', '', $info['whatsapp'] ) ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><?php echo nl_icon( 'message-circle' ); ?></a>
+                            <a href="https://wa.me/<?php echo esc_attr( $wa_digits ); ?>" aria-label="WhatsApp" target="_blank" rel="noopener"><?php echo nl_icon( 'message-circle' ); ?></a>
                         <?php endif; ?>
-                        <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><?php echo nl_icon( 'instagram' ); ?></a>
-                        <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><?php echo nl_icon( 'facebook' ); ?></a>
+                        <?php if ( $info['instagram'] && '#' !== $info['instagram'] ) : ?>
+                            <a href="<?php echo esc_url( $info['instagram'] ); ?>" aria-label="Instagram" target="_blank" rel="noopener"><?php echo nl_icon( 'instagram' ); ?></a>
+                        <?php endif; ?>
+                        <?php if ( $info['facebook'] && '#' !== $info['facebook'] ) : ?>
+                            <a href="<?php echo esc_url( $info['facebook'] ); ?>" aria-label="Facebook" target="_blank" rel="noopener"><?php echo nl_icon( 'facebook' ); ?></a>
+                        <?php endif; ?>
                     </div>
                 </div>
 
