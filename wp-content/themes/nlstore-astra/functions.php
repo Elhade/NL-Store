@@ -508,12 +508,12 @@ function nl_promo_banner_page() {
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('nl_promo_banner_nonce')) {
         $banner_data = array(
-            'text' => sanitize_text_field($_POST['banner_text'] ?? ''),
-            'link_text' => sanitize_text_field($_POST['banner_link_text'] ?? ''),
-            'link_url' => esc_url_raw($_POST['banner_link_url'] ?? ''),
-            'bg_gradient_from' => sanitize_hex_color($_POST['bg_gradient_from'] ?? '#d4af37'),
-            'bg_gradient_to' => sanitize_hex_color($_POST['bg_gradient_to'] ?? '#c9a22e'),
-            'text_color' => sanitize_hex_color($_POST['text_color'] ?? '#050505'),
+            'text' => sanitize_text_field(wp_unslash($_POST['banner_text'] ?? '')),
+            'link_text' => sanitize_text_field(wp_unslash($_POST['banner_link_text'] ?? '')),
+            'link_url' => esc_url_raw(wp_unslash($_POST['banner_link_url'] ?? '')),
+            'bg_gradient_from' => sanitize_hex_color(wp_unslash($_POST['bg_gradient_from'] ?? '#d4af37')),
+            'bg_gradient_to' => sanitize_hex_color(wp_unslash($_POST['bg_gradient_to'] ?? '#c9a22e')),
+            'text_color' => sanitize_hex_color(wp_unslash($_POST['text_color'] ?? '#050505')),
             'is_active' => isset($_POST['is_active']) ? 1 : 0,
         );
         
@@ -615,11 +615,11 @@ function nl_weekly_promos_page() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('nl_weekly_promos_nonce')) {
         if (isset($_POST['action']) && $_POST['action'] === 'add_promo') {
             $promo_data = array(
-                'title' => sanitize_text_field($_POST['promo_title']),
-                'description' => sanitize_textarea_field($_POST['promo_description']),
-                'price' => sanitize_text_field($_POST['promo_price']),
-                'image_url' => esc_url_raw($_POST['promo_image']),
-                'link_url' => esc_url_raw($_POST['promo_link']),
+                'title' => sanitize_text_field(wp_unslash($_POST['promo_title'])),
+                'description' => sanitize_textarea_field(wp_unslash($_POST['promo_description'])),
+                'price' => sanitize_text_field(wp_unslash($_POST['promo_price'])),
+                'image_url' => esc_url_raw(wp_unslash($_POST['promo_image'])),
+                'link_url' => esc_url_raw(wp_unslash($_POST['promo_link'])),
                 'created_at' => current_time('mysql'),
             );
             
@@ -742,16 +742,21 @@ add_action('after_switch_theme', 'nl_create_promotions_table');
 add_shortcode('nl_promo_banner', 'nl_render_promo_banner');
 
 function nl_render_promo_banner() {
+    static $rendered = false;
     $banner = get_option('nl_promo_banner');
-    
-    if (!$banner || !$banner['is_active']) {
+
+    // Garde anti-double-rendu (rendue via wp_body_open ; évite un doublon si
+    // le shortcode [nl_promo_banner] est aussi placé dans le contenu).
+    if ( ! $banner || empty( $banner['is_active'] ) || $rendered ) {
         return '';
     }
-    
+    $rendered = true;
+
+    // Couleurs déjà validées par sanitize_hex_color à l'enregistrement.
     $gradient = sprintf(
         'linear-gradient(90deg, %s 0%%, %s 100%%)',
-        esc_attr($banner['bg_gradient_from']),
-        esc_attr($banner['bg_gradient_to'])
+        $banner['bg_gradient_from'],
+        $banner['bg_gradient_to']
     );
     
     ob_start();
