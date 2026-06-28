@@ -137,18 +137,6 @@ $categories_config = [
     </section>
 
     <!-- ====================================================
-         BANNIÈRE PROMO (admin-configurable)
-    ==================================================== -->
-    <?php
-    if (shortcode_exists('nl_promo_banner')) {
-        $banner_output = do_shortcode('[nl_promo_banner]');
-        if (trim($banner_output)) {
-            echo $banner_output;
-        }
-    }
-    ?>
-
-    <!-- ====================================================
          PRODUITS POPULAIRES
     ==================================================== -->
     <section class="nl-products-section">

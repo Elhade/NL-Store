@@ -392,8 +392,21 @@ function nl_testimonials_carousel_shortcode($atts) {
 add_shortcode('nl_testimonials_carousel', 'nl_testimonials_carousel_shortcode');
 
 // Enqueue sur wp_enqueue_scripts pour que le CSS Swiper atterrisse bien dans le <head>.
-// Swiper (carrousels avis & promos) — enqueue + init unifié.
+// Swiper (carrousels avis & promos) — enqueue conditionnel + init unifié.
 add_action('wp_enqueue_scripts', function() {
+    // Ne charge Swiper que sur les pages qui rendent un carrousel (perf).
+    $needs = is_front_page() || is_page_template( 'template-accueil.php' );
+    if ( ! $needs && is_singular() ) {
+        $post = get_post();
+        if ( $post && ( has_shortcode( $post->post_content, 'nl_weekly_promos_carousel' )
+                     || has_shortcode( $post->post_content, 'nl_testimonials_carousel' ) ) ) {
+            $needs = true;
+        }
+    }
+    if ( ! apply_filters( 'nl_enqueue_swiper', $needs ) ) {
+        return;
+    }
+
     // Swiper auto-hébergé (assets/swiper) — aucune dépendance CDN.
     $dir = get_stylesheet_directory_uri() . '/assets/swiper/';
     wp_enqueue_script('swiper-js', $dir . 'swiper-bundle.min.js', [], '11.2.10', true);
@@ -743,16 +756,40 @@ function nl_render_promo_banner() {
     
     ob_start();
     ?>
-    <div style="background: <?php echo esc_attr( $gradient ); ?>; padding: 25px 40px; text-align: center;">
-        <p style="color: <?php echo esc_attr($banner['text_color']); ?>; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; margin: 0; font-weight: bold;">
-            <?php echo esc_html($banner['text']); ?> - 
-            <a href="<?php echo esc_url($banner['link_url']); ?>" style="color: <?php echo esc_attr($banner['text_color']); ?>; text-decoration: underline;">
-                <?php echo esc_html($banner['link_text']); ?>
-            </a>
+    <div class="nl-promo-banner" style="background: <?php echo esc_attr( $gradient ); ?>;">
+        <p style="color: <?php echo esc_attr( $banner['text_color'] ); ?>;">
+            <?php echo esc_html( $banner['text'] ); ?>
+            <?php if ( ! empty( $banner['link_text'] ) && ! empty( $banner['link_url'] ) ) : ?>
+                — <a href="<?php echo esc_url( $banner['link_url'] ); ?>" style="color: <?php echo esc_attr( $banner['text_color'] ); ?>;"><?php echo esc_html( $banner['link_text'] ); ?></a>
+            <?php endif; ?>
         </p>
     </div>
     <?php
     return ob_get_clean();
+}
+
+/* Affiche la bannière promo en barre haute, sur toutes les pages. */
+add_action( 'wp_body_open', 'nl_render_promo_banner_top', 5 );
+function nl_render_promo_banner_top() {
+    echo nl_render_promo_banner(); // sortie déjà échappée dans la fonction
+}
+
+/* Bannière promo par défaut (one-shot) pour qu'elle s'affiche d'emblée. */
+add_action( 'after_switch_theme', 'nl_seed_promo_banner' );
+add_action( 'admin_init', 'nl_seed_promo_banner' );
+function nl_seed_promo_banner() {
+    if ( false !== get_option( 'nl_promo_banner', false ) ) {
+        return; // déjà configurée
+    }
+    add_option( 'nl_promo_banner', [
+        'text'             => 'Livraison rapide partout à Mayotte — Qualité garantie',
+        'link_text'        => 'Découvrir la boutique',
+        'link_url'         => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/boutique/' ),
+        'bg_gradient_from' => '#e4c46a',
+        'bg_gradient_to'   => '#9c7723',
+        'text_color'       => '#0b0904',
+        'is_active'        => 1,
+    ] );
 }
 
 add_shortcode('nl_weekly_promos_carousel', 'nl_render_weekly_promos_carousel');
@@ -822,22 +859,8 @@ function nl_render_footer( $content = '' ) {
     $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
     $contact_url = get_permalink( get_page_by_path( 'contact' ) ) ?: home_url( '/contact/' );
 
-    // Coordonnées société (officielles INSEE/SIRENE — configurables via filtre)
-    $info = apply_filters( 'nl_company_info', [
-        'name'      => 'NL Store',
-        'legal'     => 'MADI ALI — Entrepreneur individuel',
-        'baseline'  => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
-        'address'   => 'Imp. de la Place Publique, Mroalé — 97680 Tsingoni, Mayotte',
-        'phone'     => '07 66 53 38 47',
-        'whatsapp'  => '07 66 53 38 47',
-        'email'     => 'contact@nl.store.ghost-service.fr',
-        'instagram' => '',
-        'facebook'  => '',
-        'siren'     => '812 234 094',
-        'siret'     => '812 234 094 00017',
-        'ape'       => '47.11B — Commerce d\'alimentation générale',
-        'map_query' => 'Mroalé, 97680 Tsingoni, Mayotte',
-    ] );
+    // Coordonnées société (officielles INSEE/SIRENE — voir nl_company_info())
+    $info = nl_company_info();
 
     // Normalisation FR (0X… → indicatif +33) pour les liens tel: et WhatsApp
     $tel_digits = preg_replace( '/\D+/', '', $info['phone'] );
@@ -927,3 +950,154 @@ function nl_render_footer( $content = '' ) {
 /* Affiche automatiquement le footer luxe dans le pied de page Astra
    (remplace le copyright par défaut « Propulsé par Astra »). */
 add_filter( 'astra_footer_copyright', 'nl_render_footer', 99 );
+/* ============================================================
+   NL STORE — Coordonnées société (source unique)
+   ============================================================ */
+function nl_company_info() {
+    return apply_filters( 'nl_company_info', [
+        'name'      => 'NL Store',
+        'legal'     => 'MADI ALI — Entrepreneur individuel',
+        'baseline'  => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
+        'address'   => 'Imp. de la Place Publique, Mroalé — 97680 Tsingoni, Mayotte',
+        'phone'     => '07 66 53 38 47',
+        'whatsapp'  => '07 66 53 38 47',
+        'email'     => 'contact@nl.store.ghost-service.fr',
+        'instagram' => '',
+        'facebook'  => '',
+        'siren'     => '812 234 094',
+        'siret'     => '812 234 094 00017',
+        'ape'       => '47.11B — Commerce d\'alimentation générale',
+        'map_query' => 'Mroalé, 97680 Tsingoni, Mayotte',
+    ] );
+}
+
+/* ============================================================
+   NL STORE — Catégories produit (one-shot) + images de catégorie
+   Crée Parfums / Bébé / Vêtements / Hygiène et leur affecte les
+   visuels du thème (assets/imgs/cat-*). Idempotent, auto-désactivé.
+   ============================================================ */
+add_action( 'admin_init', 'nl_seed_categories', 15 );
+function nl_seed_categories() {
+    if ( get_option( 'nl_categories_seeded' ) === 'v1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_woocommerce' ) || ! taxonomy_exists( 'product_cat' ) ) {
+        return;
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+
+    $dir  = trailingslashit( get_stylesheet_directory() ) . 'assets/imgs/';
+    $cats = [
+        'parfums'   => [ 'Parfums',   'cat-parfums.jpeg' ],
+        'bebe'      => [ 'Bébé',      'cat-bebe.jpeg' ],
+        'vetements' => [ 'Vêtements', 'cat-vetements.jpeg' ],
+        'hygiene'   => [ 'Hygiène',   'cat-hygiene.jpg' ],
+    ];
+
+    $pending = 0;
+    foreach ( $cats as $slug => $c ) {
+        list( $name, $file ) = $c;
+        $term = term_exists( $slug, 'product_cat' );
+        if ( ! $term ) {
+            $term = wp_insert_term( $name, 'product_cat', [ 'slug' => $slug ] );
+        }
+        if ( is_wp_error( $term ) ) {
+            $pending++;
+            continue;
+        }
+        $term_id = (int) ( is_array( $term ) ? $term['term_id'] : $term );
+        if ( get_term_meta( $term_id, 'thumbnail_id', true ) ) {
+            continue; // image déjà présente
+        }
+        $path = $dir . $file;
+        if ( ! file_exists( $path ) ) {
+            continue;
+        }
+        $upload = wp_upload_bits( $file, null, file_get_contents( $path ) );
+        if ( ! empty( $upload['error'] ) ) {
+            $pending++;
+            continue;
+        }
+        $ft  = wp_check_filetype( $upload['file'], null );
+        $att = wp_insert_attachment( [
+            'post_mime_type' => $ft['type'],
+            'post_title'     => $name,
+            'post_status'    => 'inherit',
+        ], $upload['file'] );
+        if ( is_wp_error( $att ) || ! $att ) {
+            $pending++;
+            continue;
+        }
+        wp_update_attachment_metadata( $att, wp_generate_attachment_metadata( $att, $upload['file'] ) );
+        update_term_meta( $term_id, 'thumbnail_id', $att );
+    }
+
+    if ( 0 === $pending ) {
+        update_option( 'nl_categories_seeded', 'v1' );
+    }
+}
+
+/* ============================================================
+   NL STORE — Page Contact auto (one-shot)
+   Crée une page « Contact » utilisant template-contact.php.
+   ============================================================ */
+add_action( 'admin_init', 'nl_seed_contact_page', 25 );
+function nl_seed_contact_page() {
+    if ( get_option( 'nl_contact_page_seeded' ) === 'v1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    $existing = get_page_by_path( 'contact' );
+    if ( $existing ) {
+        update_post_meta( $existing->ID, '_wp_page_template', 'template-contact.php' );
+        update_option( 'nl_contact_page_seeded', 'v1' );
+        return;
+    }
+    $pid = wp_insert_post( [
+        'post_title'   => 'Contact',
+        'post_name'    => 'contact',
+        'post_status'  => 'publish',
+        'post_type'    => 'page',
+        'post_content' => '',
+    ] );
+    if ( $pid && ! is_wp_error( $pid ) ) {
+        update_post_meta( $pid, '_wp_page_template', 'template-contact.php' );
+        update_option( 'nl_contact_page_seeded', 'v1' );
+    }
+}
+
+/* ============================================================
+   NL STORE — Traitement du formulaire de contact
+   Nonce + honeypot + sanitisation + wp_mail. Retourne un statut.
+   ============================================================ */
+function nl_handle_contact_form() {
+    if ( empty( $_POST['nl_contact_submit'] ) ) {
+        return null;
+    }
+    if ( ! isset( $_POST['nl_contact_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nl_contact_nonce'] ) ), 'nl_contact' ) ) {
+        return [ 'ok' => false, 'msg' => 'Session expirée, merci de réessayer.' ];
+    }
+    if ( ! empty( $_POST['nl_website'] ) ) { // pot de miel anti-bot
+        return [ 'ok' => true, 'msg' => 'Merci, votre message a bien été envoyé.' ];
+    }
+    $name    = sanitize_text_field( wp_unslash( $_POST['nl_name'] ?? '' ) );
+    $email   = sanitize_email( wp_unslash( $_POST['nl_email'] ?? '' ) );
+    $message = sanitize_textarea_field( wp_unslash( $_POST['nl_message'] ?? '' ) );
+    if ( '' === $name || ! is_email( $email ) || '' === $message ) {
+        return [ 'ok' => false, 'msg' => 'Merci de renseigner un nom, un e-mail valide et un message.' ];
+    }
+    $info    = nl_company_info();
+    $to      = $info['email'] ?: get_option( 'admin_email' );
+    $subject = '[NL Store] Nouveau message de ' . $name;
+    $body    = "Nom : {$name}\nE-mail : {$email}\n\nMessage :\n{$message}";
+    $headers = [ 'Reply-To: ' . $name . ' <' . $email . '>' ];
+    $sent    = wp_mail( $to, $subject, $body, $headers );
+    return $sent
+        ? [ 'ok' => true, 'msg' => 'Merci ' . $name . ', votre message a bien été envoyé. Nous vous répondrons rapidement.' ]
+        : [ 'ok' => false, 'msg' => "Une erreur est survenue à l'envoi. Réessayez, ou écrivez-nous directement par e-mail." ];
+}
