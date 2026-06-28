@@ -1837,3 +1837,189 @@ select:focus {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+/* ======================================================
+   PAGE CONTACT
+   ====================================================== */
+.nl-contact-page {
+  overflow-x: hidden;
+}
+
+.nl-contact-hero {
+  text-align: center;
+  padding: var(--nl-section-y) var(--nl-gutter) var(--nl-space-7);
+  background:
+    radial-gradient(circle at 50% -10%, rgba(212, 175, 55, 0.06), transparent 45%),
+    var(--nl-black-soft);
+}
+
+.nl-contact-hero h1 {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-display) !important;
+  color: transparent !important;
+  background: linear-gradient(180deg, #fbe9b0, var(--nl-gold) 55%, var(--nl-gold-deep)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  margin: var(--nl-space-2) 0 var(--nl-space-4) !important;
+}
+
+.nl-contact-sub {
+  color: var(--nl-grey) !important;
+  max-width: 620px;
+  margin: 0 auto !important;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.nl-contact-wrap {
+  padding: 0 var(--nl-gutter) var(--nl-section-y);
+  background: var(--nl-black-soft);
+}
+
+.nl-contact-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--nl-space-7);
+  max-width: var(--nl-container);
+  margin: 0 auto;
+  align-items: start;
+}
+
+.nl-contact-form-card,
+.nl-contact-info {
+  background: linear-gradient(180deg, var(--nl-surface-2), var(--nl-black-soft));
+  border: 1px solid var(--nl-hairline);
+  border-radius: var(--nl-radius-lg);
+  padding: var(--nl-space-7);
+  box-shadow: var(--nl-shadow);
+}
+
+.nl-contact-form-card h2,
+.nl-contact-info h2 {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-h3) !important;
+  color: var(--nl-white-soft) !important;
+  margin: 0 0 var(--nl-space-5) !important;
+}
+
+.nl-field {
+  margin-bottom: var(--nl-space-4);
+}
+
+.nl-field label {
+  display: block;
+  color: var(--nl-grey) !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.nl-field input,
+.nl-field textarea {
+  width: 100% !important;
+}
+
+.nl-field textarea {
+  resize: vertical;
+  min-height: 130px;
+}
+
+.nl-hp {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.nl-contact-submit {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 9px;
+  margin-top: var(--nl-space-2);
+}
+
+.nl-contact-submit .nl-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.nl-contact-alert {
+  border-radius: var(--nl-radius-sm);
+  padding: 14px 18px;
+  margin-bottom: var(--nl-space-5);
+  font-size: 14px;
+  border-left: 3px solid var(--nl-gold);
+}
+
+.nl-contact-alert.is-ok {
+  background: rgba(212, 175, 55, 0.1);
+  color: var(--nl-white) !important;
+}
+
+.nl-contact-alert.is-err {
+  background: rgba(220, 60, 60, 0.1);
+  border-left-color: #c0392b;
+  color: var(--nl-white-soft) !important;
+}
+
+.nl-contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--nl-space-6);
+}
+
+.nl-contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--nl-hairline);
+  color: var(--nl-grey) !important;
+  font-size: 14.5px;
+}
+
+.nl-contact-list li:last-child {
+  border-bottom: none;
+}
+
+.nl-contact-list .nl-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--nl-gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.nl-contact-list a {
+  color: var(--nl-white-soft) !important;
+}
+
+.nl-contact-list a:hover {
+  color: var(--nl-gold) !important;
+}
+
+.nl-contact-map {
+  border: 1px solid var(--nl-border);
+  border-radius: var(--nl-radius);
+  overflow: hidden;
+  box-shadow: var(--nl-shadow);
+  line-height: 0;
+}
+
+.nl-contact-map iframe {
+  width: 100%;
+  height: 240px;
+  border: 0;
+  display: block;
+  filter: grayscale(0.25) contrast(1.05) brightness(0.96);
+}
+
+@media (max-width: 880px) {
+  .nl-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
