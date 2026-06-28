@@ -2023,3 +2023,20 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* ======================================================
+   FOOTER — masque le pied de page Astra par défaut
+   (notre footer luxe est rendu via wp_footer)
+   ====================================================== */
+.site-footer,
+footer.site-footer,
+#colophon {
+  display: none !important;
+}
+
+/* Notre footer luxe (hors #page) doit passer au-dessus des overlays fixes. */
+.nl-footer-luxury {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(6, 5, 3, 0.96), var(--nl-black-deep));
+}
