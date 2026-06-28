@@ -37,7 +37,7 @@ $old_message = isset( $_POST['nl_message'] ) ? esc_textarea( sanitize_textarea_f
     <section class="nl-contact-wrap">
         <div class="nl-contact-grid">
 
-            <div class="nl-contact-form-card nl-reveal">
+            <div class="nl-contact-form-card nl-reveal-left">
                 <h2>Envoyer un message</h2>
 
                 <?php if ( $result ) : ?>
@@ -73,7 +73,7 @@ $old_message = isset( $_POST['nl_message'] ) ? esc_textarea( sanitize_textarea_f
                 <?php endif; ?>
             </div>
 
-            <aside class="nl-contact-info nl-reveal">
+            <aside class="nl-contact-info nl-reveal-right">
                 <h2>Nos coordonnées</h2>
                 <ul class="nl-contact-list">
                     <?php if ( $info['address'] ) : ?>

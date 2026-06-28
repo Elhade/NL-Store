@@ -2040,3 +2040,243 @@ footer.site-footer,
   z-index: 1;
   background: linear-gradient(180deg, rgba(6, 5, 3, 0.96), var(--nl-black-deep));
 }
+
+/* ======================================================
+   PACK MOTION PREMIUM
+   Reveals directionnels, stagger, parallax, vente animée.
+   Équivalent « Framer Motion » en CSS + IntersectionObserver.
+   Tout est neutralisé sous prefers-reduced-motion (voir fin).
+   ====================================================== */
+
+/* --- Reveals directionnels (gauche / droite / scale) --- */
+.nl-reveal-left,
+.nl-reveal-right,
+.nl-reveal-scale {
+  opacity: 0;
+  transition: opacity 0.85s var(--nl-ease), transform 0.85s var(--nl-ease);
+  will-change: opacity, transform;
+}
+.nl-reveal-left  { transform: translateX(-42px); }
+.nl-reveal-right { transform: translateX(42px); }
+.nl-reveal-scale { transform: scale(0.92); }
+.nl-reveal-left.nl-in,
+.nl-reveal-right.nl-in,
+.nl-reveal-scale.nl-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Stagger : enfants en cascade quand le conteneur entre en vue --- */
+.nl-stagger > * {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.nl-stagger.nl-in > * {
+  animation: nlStaggerIn 0.7s var(--nl-ease) both;
+  animation-delay: calc(var(--nl-i, 0) * 90ms);
+}
+@keyframes nlStaggerIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Stagger appliqué aux cartes produits WooCommerce de l'accueil */
+.nl-products-grid ul.products li.product {
+  opacity: 0;
+}
+.nl-products-grid.nl-in ul.products li.product {
+  animation: nlStaggerIn 0.7s var(--nl-ease) both;
+}
+.nl-products-grid.nl-in ul.products li.product:nth-child(1) { animation-delay: 0.05s; }
+.nl-products-grid.nl-in ul.products li.product:nth-child(2) { animation-delay: 0.15s; }
+.nl-products-grid.nl-in ul.products li.product:nth-child(3) { animation-delay: 0.25s; }
+.nl-products-grid.nl-in ul.products li.product:nth-child(4) { animation-delay: 0.35s; }
+.nl-products-grid.nl-in ul.products li.product:nth-child(n+5) { animation-delay: 0.45s; }
+
+/* --- Parallax léger (variable --nl-par pilotée en JS, desktop only) --- */
+.nl-parallax {
+  transform: translate3d(0, var(--nl-par, 0), 0);
+  will-change: transform;
+}
+
+/* Bandeau parallax fixe sur la section Promotions de la semaine */
+.nl-promo-week-section {
+  position: relative;
+  isolation: isolate;
+}
+.nl-promo-week-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(3, 3, 2, 0.93), rgba(3, 3, 2, 0.97)),
+    url("assets/imgs/cat-parfums.jpeg") center / cover no-repeat;
+  background-attachment: fixed;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ======================================================
+   ICÔNES LUCIDE ANIMÉES
+   ====================================================== */
+/* La flèche glisse vers la droite au survol des CTA */
+.nl-btn-hero .nl-icon,
+.nl-btn-view-all .nl-icon,
+.nl-cat-card__btn .nl-icon,
+.nl-contact-submit .nl-icon {
+  transition: transform 0.35s var(--nl-ease-spring);
+}
+.nl-btn-hero:hover .nl-icon,
+.nl-btn-view-all:hover .nl-icon,
+.nl-cat-card:hover .nl-cat-card__btn .nl-icon,
+.nl-contact-submit:hover .nl-icon {
+  transform: translateX(5px);
+}
+
+/* Le camion « roule » légèrement sur le badge de confiance */
+.nl-hero-trust span:hover .nl-icon {
+  animation: nlTruck 0.6s var(--nl-ease);
+}
+@keyframes nlTruck {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(-3px); }
+  60%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Flamme animée (titre Promotions / icône flame) */
+.nl-flame {
+  color: var(--nl-gold-bright);
+  transform-origin: 50% 90%;
+  animation: nlFlicker 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(241, 213, 126, 0.55));
+}
+@keyframes nlFlicker {
+  0%, 100% { transform: rotate(-2deg) scale(1);    opacity: 0.92; }
+  25%      { transform: rotate(2deg) scale(1.08);  opacity: 1; }
+  50%      { transform: rotate(-1deg) scale(0.97); opacity: 0.85; }
+  75%      { transform: rotate(1.5deg) scale(1.05); opacity: 1; }
+}
+
+/* ======================================================
+   VENTE ANIMÉE
+   ====================================================== */
+/* Badge « Promo » WooCommerce : pulsation + reflet doré qui balaie */
+.woocommerce span.onsale {
+  position: relative;
+  overflow: hidden;
+  animation: nlSalePulse 2.4s var(--nl-ease) infinite;
+}
+@keyframes nlSalePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.45); }
+  50%      { box-shadow: 0 0 0 7px rgba(212, 175, 55, 0); }
+}
+.woocommerce span.onsale::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  animation: nlShineSweep 2.8s ease-in-out infinite;
+}
+
+/* Reflet « shine » qui traverse les cartes au survol */
+.nl-cat-card,
+.woocommerce ul.products li.product {
+  position: relative;
+  overflow: hidden;
+}
+.nl-cat-card::after,
+.woocommerce ul.products li.product::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(110deg, transparent, rgba(241, 213, 126, 0.18), transparent);
+  transform: skewX(-18deg);
+  transition: none;
+  pointer-events: none;
+  z-index: 3;
+}
+.nl-cat-card:hover::after,
+.woocommerce ul.products li.product:hover::after {
+  animation: nlCardShine 0.9s var(--nl-ease) forwards;
+}
+@keyframes nlCardShine {
+  from { left: -150%; }
+  to   { left: 150%; }
+}
+@keyframes nlShineSweep {
+  0%   { left: -120%; }
+  60%  { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* Reflet permanent qui traverse les boutons CTA principaux */
+.nl-btn-hero--primary,
+.nl-btn-view-all {
+  position: relative;
+  overflow: hidden;
+}
+.nl-btn-hero--primary::before,
+.nl-btn-view-all::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  animation: nlShineSweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Les filets dorés des titres pulsent doucement */
+.nl-section-line,
+.nl-section-deco {
+  animation: nlGoldGlow 3.2s ease-in-out infinite;
+}
+@keyframes nlGoldGlow {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* ======================================================
+   ACCESSIBILITÉ — coupe tout le motion si demandé
+   ====================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .nl-reveal-left,
+  .nl-reveal-right,
+  .nl-reveal-scale,
+  .nl-stagger > *,
+  .nl-products-grid ul.products li.product {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .nl-parallax { transform: none !important; }
+  .nl-promo-week-section::before { background-attachment: scroll; }
+  .nl-flame,
+  .woocommerce span.onsale,
+  .woocommerce span.onsale::after,
+  .nl-cat-card::after,
+  .woocommerce ul.products li.product::after,
+  .nl-btn-hero--primary::before,
+  .nl-btn-view-all::before,
+  .nl-section-line,
+  .nl-section-deco {
+    animation: none !important;
+  }
+}
+
+/* Mobile : pas de fond fixe (jank iOS), parallax neutralisé en JS */
+@media (max-width: 1024px) {
+  .nl-promo-week-section::before { background-attachment: scroll; }
+}
