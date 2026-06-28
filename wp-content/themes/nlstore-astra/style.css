@@ -394,6 +394,12 @@ input[type="submit"]:hover {
   line-height: 1.08 !important;
 }
 
+.nl-section-sub {
+  color: var(--nl-grey) !important;
+  font-size: 15px !important;
+  margin: 12px 0 0 !important;
+}
+
 /* Centered title with flanking rules */
 .nl-section-title-wrap {
   display: flex !important;
@@ -659,50 +665,52 @@ input[type="submit"]:hover {
 
 .nl-categories-grid {
   display: grid !important;
-  grid-template-columns: repeat(4, 1fr) !important;
+  grid-template-columns: repeat(2, 1fr) !important;
   gap: var(--nl-space-5) !important;
-  max-width: var(--nl-container) !important;
+  max-width: 1080px !important;
   margin: 0 auto !important;
 }
 
+/* ── Carte catégorie — pleine image + overlay (réf NL Store) ── */
 .nl-cat-card {
-  display: flex !important;
-  flex-direction: column !important;
-  border-radius: var(--nl-radius-lg) !important;
+  position: relative !important;
+  display: block !important;
+  height: clamp(300px, 30vw, 380px) !important;
+  border-radius: 20px !important;
   overflow: hidden !important;
-  background: linear-gradient(180deg, var(--nl-surface-2), var(--nl-black-soft)) !important;
-  border: 1px solid var(--nl-hairline) !important;
-  box-shadow: var(--nl-shadow) !important;
+  border: 1px solid rgba(212, 175, 55, 0.22) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45) !important;
   text-decoration: none !important;
-  transition: transform 0.4s var(--nl-ease-spring), border-color 0.4s var(--nl-ease), box-shadow 0.4s var(--nl-ease) !important;
+  isolation: isolate !important;
+  transition: transform 0.45s var(--nl-ease-spring), border-color 0.4s var(--nl-ease), box-shadow 0.4s var(--nl-ease) !important;
   cursor: pointer !important;
 }
 
 .nl-cat-card:hover {
-  transform: translateY(-10px) !important;
-  border-color: var(--nl-hairline-strong) !important;
-  box-shadow: var(--nl-shadow-lg) !important;
+  transform: translateY(-8px) !important;
+  border-color: rgba(212, 175, 55, 0.6) !important;
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 175, 55, 0.25) !important;
 }
 
 .nl-cat-card__img {
-  height: 210px !important;
+  position: absolute !important;
+  inset: 0 !important;
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  flex-shrink: 0 !important;
-  position: relative !important;
-  transition: transform 0.5s var(--nl-ease) !important;
+  z-index: 0 !important;
+  transition: transform 0.7s var(--nl-ease) !important;
 }
 
 .nl-cat-card:hover .nl-cat-card__img {
-  transform: scale(1.05) !important;
+  transform: scale(1.07) !important;
 }
 
 .nl-cat-card__img::after {
   content: "" !important;
   position: absolute !important;
   inset: 0 !important;
-  background: linear-gradient(to bottom, transparent 35%, rgba(8, 7, 5, 0.85) 100%) !important;
+  background: linear-gradient(180deg, rgba(6, 5, 3, 0.12) 0%, rgba(6, 5, 3, 0.34) 45%, rgba(6, 5, 3, 0.92) 100%) !important;
 }
 
 .nl-cat-card__img--empty {
@@ -712,7 +720,7 @@ input[type="submit"]:hover {
 .nl-cat-card__img--empty::before {
   content: "✦" !important;
   position: absolute !important;
-  top: 50% !important;
+  top: 42% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) !important;
   font-size: 42px !important;
@@ -721,68 +729,80 @@ input[type="submit"]:hover {
   z-index: 1 !important;
 }
 
-.nl-cat-card__body {
-  padding: var(--nl-space-5) var(--nl-space-5) var(--nl-space-4) !important;
-  flex-grow: 1 !important;
-}
-
-.nl-cat-card__body h3 {
-  font-family: var(--nl-font-title) !important;
-  font-size: var(--nl-fs-h3) !important;
+/* Badge coin haut-gauche : Top vente / Nouveau */
+.nl-cat-card__badge {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  z-index: 3 !important;
+  font-family: var(--nl-font-body) !important;
+  font-size: 10px !important;
   font-weight: 700 !important;
-  color: var(--nl-white-soft) !important;
-  margin: 0 0 var(--nl-space-3) 0 !important;
-  line-height: 1.1 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-gold-bright) !important;
+  background: rgba(8, 6, 3, 0.58) !important;
+  border: 1px solid rgba(212, 175, 55, 0.5) !important;
+  border-radius: 999px !important;
+  padding: 6px 13px !important;
+  backdrop-filter: blur(4px) !important;
 }
 
-.nl-cat-card__body ul {
-  list-style: none !important;
-  padding: 0 !important;
+/* Bloc texte en bas de la carte */
+.nl-cat-card__content {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 3 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+  padding: 26px 24px 24px !important;
+}
+
+.nl-cat-card__title {
+  font-family: var(--nl-font-title) !important;
+  font-size: clamp(26px, 3vw, 32px) !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin: 0 !important;
+  line-height: 1.05 !important;
+}
+
+.nl-cat-card__sub {
+  font-size: 14px !important;
+  color: var(--nl-grey) !important;
   margin: 0 !important;
 }
 
-.nl-cat-card__body li {
+.nl-cat-card__count {
   font-size: 13px !important;
-  color: var(--nl-grey) !important;
-  padding: 4px 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-
-.nl-cat-card__body li::before {
-  content: "" !important;
-  width: 5px !important;
-  height: 5px !important;
-  border-radius: 50% !important;
-  background: var(--nl-gold) !important;
-  flex-shrink: 0 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.4px !important;
+  color: var(--nl-gold) !important;
+  margin: 6px 0 2px !important;
 }
 
 .nl-cat-card__btn {
-  display: flex !important;
+  display: inline-flex !important;
   align-items: center !important;
-  justify-content: center !important;
   gap: 8px !important;
-  margin: 0 var(--nl-space-5) var(--nl-space-5) !important;
-  padding: 12px 20px !important;
+  margin-top: 12px !important;
+  padding: 11px 22px !important;
   background: transparent !important;
-  border: 1px solid var(--nl-border) !important;
+  border: 1px solid rgba(212, 175, 55, 0.55) !important;
   color: var(--nl-gold) !important;
   font-family: var(--nl-font-body) !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   letter-spacing: 1.5px !important;
   text-transform: uppercase !important;
-  border-radius: var(--nl-radius-sm) !important;
+  border-radius: 999px !important;
   transition: all 0.3s var(--nl-ease) !important;
   text-decoration: none !important;
   cursor: pointer !important;
-}
-
-.nl-cat-card__btn::after {
-  content: "→";
-  transition: transform 0.3s var(--nl-ease);
 }
 
 .nl-cat-card:hover .nl-cat-card__btn {
@@ -791,8 +811,12 @@ input[type="submit"]:hover {
   color: var(--nl-gold-ink) !important;
 }
 
-.nl-cat-card:hover .nl-cat-card__btn::after {
-  transform: translateX(4px);
+.nl-cat-card__btn .nl-icon {
+  transition: transform 0.3s var(--nl-ease-spring) !important;
+}
+
+.nl-cat-card:hover .nl-cat-card__btn .nl-icon {
+  transform: translateX(4px) !important;
 }
 
 /* ======================================================
@@ -1449,12 +1473,25 @@ select:focus {
     gap: var(--nl-space-3) !important;
   }
 
-  .nl-cat-card__img {
-    height: 150px !important;
+  .nl-cat-card {
+    height: 240px !important;
   }
 
-  .nl-cat-card__body h3 {
-    font-size: 20px !important;
+  .nl-cat-card__content {
+    padding: 16px 14px 16px !important;
+  }
+
+  .nl-cat-card__title {
+    font-size: 21px !important;
+  }
+
+  .nl-cat-card__sub {
+    font-size: 12px !important;
+  }
+
+  .nl-cat-card__btn {
+    padding: 9px 16px !important;
+    font-size: 10px !important;
   }
 
   .woocommerce ul.products,

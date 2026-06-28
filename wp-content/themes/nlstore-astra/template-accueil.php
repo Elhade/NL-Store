@@ -28,25 +28,33 @@ $categories_config = [
     [
         'slug'        => 'bebe',
         'label'       => 'Bébé',
-        'items'       => ['Biberons', 'Couches', 'Lingettes'],
+        'badge'       => 'Top vente',
+        'subtitle'    => 'Tout pour bébé',
+        'unit'        => 'produits',
         'fallback_img'=> get_theme_file_uri('assets/imgs/cat-bebe.jpeg'),
     ],
     [
         'slug'        => 'parfums',
         'label'       => 'Parfums',
-        'items'       => ['Femme', 'Homme', 'Brumes Dubai'],
+        'badge'       => 'Nouveau',
+        'subtitle'    => 'Pour femme et homme',
+        'unit'        => 'références',
         'fallback_img'=> get_theme_file_uri('assets/imgs/cat-parfums.jpeg'),
     ],
     [
         'slug'        => 'vetements',
         'label'       => 'Vêtements',
-        'items'       => ['Bébé', 'Enfant'],
+        'badge'       => 'Nouveau',
+        'subtitle'    => 'Bébé et enfant',
+        'unit'        => 'produits',
         'fallback_img'=> get_theme_file_uri('assets/imgs/cat-vetements.jpeg'),
     ],
     [
         'slug'        => 'hygiene',
         'label'       => 'Hygiène',
-        'items'       => ['Crèmes', 'Lingettes', 'Produits bébé'],
+        'badge'       => 'Top vente',
+        'subtitle'    => 'Soins et bien-être',
+        'unit'        => 'produits',
         'fallback_img'=> get_theme_file_uri('assets/imgs/cat-hygiene.jpg'),
     ],
 ];
@@ -96,6 +104,7 @@ $categories_config = [
         <div class="nl-section-header nl-reveal">
             <p class="nl-section-label">NOS CATÉGORIES</p>
             <h2 class="nl-section-main-title">Qu'est-ce que vous cherchez ?</h2>
+            <p class="nl-section-sub">Découvrez nos univers soigneusement sélectionnés</p>
         </div>
 
         <div class="nl-categories-grid nl-stagger">
@@ -103,7 +112,8 @@ $categories_config = [
                 $term      = get_term_by('slug', $cat['slug'], 'product_cat');
                 $cat_url   = ($term && !is_wp_error($term)) ? get_term_link($term) : $shop_url;
                 $thumb_id  = ($term && !is_wp_error($term)) ? get_term_meta($term->term_id, 'thumbnail_id', true) : 0;
-                $thumb_url = $thumb_id ? wp_get_attachment_image_url($thumb_id, 'medium_large') : $cat['fallback_img'];
+                $thumb_url = $thumb_id ? wp_get_attachment_image_url($thumb_id, 'large') : $cat['fallback_img'];
+                $count     = ($term && !is_wp_error($term)) ? (int) $term->count : 0;
 
                 // Dernier recours : première image produit de la catégorie
                 if (!$thumb_url && $term && !is_wp_error($term)) {
@@ -114,7 +124,7 @@ $categories_config = [
                     ]);
                     if (!empty($first_product)) {
                         $pid = get_post_thumbnail_id($first_product[0]->get_id());
-                        $thumb_url = $pid ? wp_get_attachment_image_url($pid, 'medium_large') : '';
+                        $thumb_url = $pid ? wp_get_attachment_image_url($pid, 'large') : '';
                     }
                 }
             ?>
@@ -122,15 +132,17 @@ $categories_config = [
                 <div class="nl-cat-card__img<?php echo $thumb_url ? '' : ' nl-cat-card__img--empty'; ?>"
                     <?php if ($thumb_url): ?>style="background-image:url('<?php echo esc_url($thumb_url); ?>')"<?php endif; ?>>
                 </div>
-                <div class="nl-cat-card__body">
-                    <h3><?php echo esc_html($cat['label']); ?></h3>
-                    <ul>
-                        <?php foreach ($cat['items'] as $item): ?>
-                            <li><?php echo esc_html($item); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
+                <?php if (!empty($cat['badge'])): ?>
+                    <span class="nl-cat-card__badge"><?php echo esc_html($cat['badge']); ?></span>
+                <?php endif; ?>
+                <div class="nl-cat-card__content">
+                    <h3 class="nl-cat-card__title"><?php echo esc_html($cat['label']); ?></h3>
+                    <p class="nl-cat-card__sub"><?php echo esc_html($cat['subtitle']); ?></p>
+                    <?php if ($count > 0): ?>
+                        <span class="nl-cat-card__count"><?php echo esc_html($count . ' ' . $cat['unit']); ?></span>
+                    <?php endif; ?>
+                    <span class="nl-cat-card__btn">Découvrir <?php echo nl_icon('arrow-right'); ?></span>
                 </div>
-                <span class="nl-cat-card__btn">Voir les produits</span>
             </a>
             <?php endforeach; ?>
         </div>
