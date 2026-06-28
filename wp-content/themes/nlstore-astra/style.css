@@ -2589,3 +2589,59 @@ footer.site-footer,
 }
 /* Les puces n'existent que sur mobile */
 .nl-cat-dots { display: none; }
+
+/* ======================================================
+   MENU BURGER MOBILE — contraste (or sur fond sombre)
+   La règle globale « button » le rendait doré plein, avec
+   l'icône dorée elle aussi (donc invisible). On le repasse
+   en fond sombre + liseré et icône dorés, bien visibles.
+   ====================================================== */
+.main-header-menu-toggle,
+.ast-mobile-menu-buttons .menu-toggle,
+button.menu-toggle,
+.menu-toggle {
+  background: rgba(10, 8, 4, 0.55) !important;
+  color: var(--nl-gold) !important;
+  border: 1px solid rgba(212, 175, 55, 0.5) !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  padding: 9px 11px !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+.main-header-menu-toggle:hover,
+button.menu-toggle:hover,
+.menu-toggle:hover {
+  background: rgba(212, 175, 55, 0.14) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Icône hamburger : SVG, police d'icône, ou barres CSS → doré */
+.menu-toggle .ast-mobile-svg,
+.menu-toggle svg,
+.main-header-menu-toggle svg,
+.ast-mobile-menu-buttons svg {
+  fill: var(--nl-gold) !important;
+  color: var(--nl-gold) !important;
+}
+.menu-toggle svg path,
+.main-header-menu-toggle svg path,
+.ast-mobile-menu-buttons svg path {
+  fill: var(--nl-gold) !important;
+  stroke: var(--nl-gold) !important;
+}
+/* Astra dessine parfois les barres via .menu-toggle-icon (pseudo-éléments) */
+.menu-toggle .menu-toggle-icon,
+.menu-toggle .menu-toggle-icon::before,
+.menu-toggle .menu-toggle-icon::after,
+.main-header-menu-toggle .menu-toggle-icon,
+.main-header-menu-toggle .menu-toggle-icon::before,
+.main-header-menu-toggle .menu-toggle-icon::after {
+  background-color: var(--nl-gold) !important;
+}
+/* Icône « croix » quand le menu est ouvert reste dorée */
+.main-header-menu-toggle[aria-expanded="true"] {
+  background: rgba(212, 175, 55, 0.16) !important;
+}
