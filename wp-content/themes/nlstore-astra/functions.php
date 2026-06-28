@@ -8,6 +8,18 @@ define( 'CHILD_THEME_NLSTORE_ASTRA_VERSION', '3.0.0' );
 /* ----------------------------------------------------------
    STYLES & FONTS
 ---------------------------------------------------------- */
+/**
+ * Version d'un asset du thème basée sur sa date de modification (filemtime).
+ * Garantit que chaque déploiement « casse » le cache navigateur/CDN : l'URL
+ * ?ver= change dès que le fichier change, donc les utilisateurs voient les
+ * mises à jour sans avoir à vider leur cache.
+ */
+function nl_asset_ver( $relative_path ) {
+    $file = get_stylesheet_directory() . '/' . ltrim( $relative_path, '/' );
+    $mtime = file_exists( $file ) ? filemtime( $file ) : false;
+    return $mtime ? (string) $mtime : CHILD_THEME_NLSTORE_ASTRA_VERSION;
+}
+
 function nl_enqueue_assets() {
     // Google Fonts
     wp_enqueue_style(
@@ -22,7 +34,7 @@ function nl_enqueue_assets() {
         'nlstore-astra-theme-css',
         get_stylesheet_directory_uri() . '/style.css',
         [ 'astra-theme-css' ],
-        CHILD_THEME_NLSTORE_ASTRA_VERSION,
+        nl_asset_ver( 'style.css' ),
         'all'
     );
 
@@ -32,7 +44,7 @@ function nl_enqueue_assets() {
             'nlstore-woocommerce-css',
             get_stylesheet_directory_uri() . '/woocommerce.css',
             [ 'nlstore-astra-theme-css' ],
-            CHILD_THEME_NLSTORE_ASTRA_VERSION,
+            nl_asset_ver( 'woocommerce.css' ),
             'all'
         );
     }
@@ -149,7 +161,63 @@ function nl_enqueue_interactions() {
     });
   }
 
-  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); }
+  // Carousel auto des catégories sur mobile : avance toutes les 2 s vers la
+  // droite, boucle au début, se met en pause au toucher puis reprend.
+  function nlCatCarousel() {
+    var grid = document.querySelector('.nl-categories-grid');
+    if (!grid) { return; }
+    var cards = grid.querySelectorAll('.nl-cat-card');
+    if (cards.length < 2) { return; }
+    var mqMobile = window.matchMedia('(max-width: 768px)');
+    var mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    // Puces d'indication
+    var dotsWrap = document.createElement('div');
+    dotsWrap.className = 'nl-cat-dots';
+    var dots = [];
+    cards.forEach(function (c, i) {
+      var d = document.createElement('button');
+      d.type = 'button';
+      d.setAttribute('aria-label', 'Aller à la catégorie ' + (i + 1));
+      d.addEventListener('click', function () { goTo(i); pauseThenResume(); });
+      dots.push(d);
+      dotsWrap.appendChild(d);
+    });
+    grid.parentNode.insertBefore(dotsWrap, grid.nextSibling);
+
+    var timer = null, resumeT = null, current = 0;
+    function stepW() { return cards[0].getBoundingClientRect().width + 14; }
+    function maxScroll() { return grid.scrollWidth - grid.clientWidth - 4; }
+    function goTo(idx) {
+      current = idx;
+      grid.scrollTo({ left: Math.min(idx * stepW(), maxScroll()), behavior: 'smooth' });
+    }
+    function next() {
+      if (!mqMobile.matches) { return; }
+      current = (grid.scrollLeft >= maxScroll() - 2 || current + 1 >= cards.length) ? 0 : current + 1;
+      grid.scrollTo({ left: Math.min(current * stepW(), maxScroll()), behavior: 'smooth' });
+    }
+    function syncDots() {
+      var idx = Math.round(grid.scrollLeft / stepW());
+      if (idx > cards.length - 1) { idx = cards.length - 1; }
+      if (idx < 0) { idx = 0; }
+      current = idx;
+      dots.forEach(function (d, i) { d.classList.toggle('is-active', i === idx); });
+    }
+    function start() { stop(); if (mqMobile.matches && !mqReduce.matches) { timer = setInterval(next, 2000); } }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function pauseThenResume() { stop(); clearTimeout(resumeT); resumeT = setTimeout(start, 3500); }
+
+    grid.addEventListener('scroll', function () { window.requestAnimationFrame(syncDots); }, { passive: true });
+    grid.addEventListener('touchstart', function () { stop(); clearTimeout(resumeT); }, { passive: true });
+    grid.addEventListener('touchend', pauseThenResume, { passive: true });
+    if (mqMobile.addEventListener) { mqMobile.addEventListener('change', function () { syncDots(); start(); }); }
+
+    syncDots();
+    start();
+  }
+
+  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); nlCatCarousel(); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
