@@ -952,9 +952,14 @@ function nl_render_footer( $content = '' ) {
     return ob_get_clean();
 }
 
-/* Affiche automatiquement le footer luxe dans le pied de page Astra
-   (remplace le copyright par défaut « Propulsé par Astra »). */
-add_filter( 'astra_footer_copyright', 'nl_render_footer', 99 );
+/* Affiche le footer luxe en pied de page, quelle que soit la config Astra.
+   Le footer Astra par défaut est masqué en CSS (.site-footer). On garde aussi
+   le filtre copyright comme repli si le Footer Builder n'est pas utilisé. */
+add_action( 'wp_footer', 'nl_output_luxury_footer', 5 );
+function nl_output_luxury_footer() {
+    echo nl_render_footer(); // sortie déjà échappée dans la fonction
+}
+add_filter( 'astra_footer_copyright', '__return_empty_string', 99 );
 /* ============================================================
    NL STORE — Coordonnées société (source unique)
    ============================================================ */
