@@ -1,37 +1,37 @@
 ---
 name: todos-ouverts
-description: TODOs critiques non encore faits — hero image, visuels produits, footer coordonnées, déploiement
+description: TODOs critiques non encore faits — hero image, visuels produits, réseaux sociaux footer
 metadata:
   type: project
 ---
 
-## TODOs ouverts — post v3.0.0
+## TODOs ouverts — post merge aa893a7 (2026-06-28)
 
-### Hero composité (bloquant pour le visuel final)
+### Hero image composite (bloquant pour le visuel final)
 
 - Le design maquette prévoit un hero avec une composition (produits sur soie/tissu luxueux).
-- Actuellement : fond = `assets/imgs/cat-parfums.jpeg` (photo generique via `--nl-hero-bg`).
+- Actuellement : fond = `assets/imgs/cat-parfums.jpeg` (photo générique via `--nl-hero-bg` dans `template-accueil.php`).
 - **Action** : créer/déposer une image montage dans `assets/imgs/` et mettre à jour la variable CSS `--nl-hero-bg` dans `template-accueil.php`.
 
-### Images produits et catégories (bloquant pour la boutique)
+### Images produits (bloquant pour la boutique)
 
 - Les visuels sources des parfums Collection Privée ont des bandeaux dorés incrustés (nom du parfum en surimpression). Ces visuels ne conviennent pas tels quels pour la boutique WooCommerce.
 - **Action** : obtenir des visuels nets (fond uni ou suppression bandeaux) pour chaque produit.
-- Les images de catégories WooCommerce sont absentes → le template tombe sur les fallback thème.
-- **Action** : uploader des images propres pour chaque catégorie (`bebe`, `parfums`, `vetements`, `hygiene`) dans WP Admin > Produits > Catégories.
+- Les images de catégories WooCommerce sont en fallback thème (assets/imgs) — convenables mais non idéales.
+- **Action** : uploader des images propres pour chaque catégorie dans WP Admin > Produits > Catégories si nécessaire.
 
-### [nl_footer] — coordonnées à renseigner
+### Réseaux sociaux footer (non bloquant mais visible)
 
-- Le shortcode `[nl_footer]` est implémenté et les mentions légales MADI ALI / SIRET sont correctes.
-- **Manquant** : `phone`, `email`, `whatsapp`, `instagram` (URL réel), `facebook` (URL réel) — actuellement vides ou `#`.
-- **Action** : ajouter un filtre `nl_company_info` dans `functions.php` (ou dans un fichier de config) pour renseigner ces valeurs.
-- **Action** : placer `[nl_footer]` dans le Footer Builder d'Astra (widget HTML/shortcode).
+- Le shortcode `[nl_footer]` est fonctionnel. Coordonnées MADI ALI / SIRET / phone / email / whatsapp sont renseignées dans `nl_company_info()`.
+- **Manquant** : URL Instagram et Facebook (champs `instagram` et `facebook` dans `nl_company_info()` retournent des chaînes vides — les icônes ne s'affichent pas).
+- **Action** : renseigner les URLs réelles via un filtre `nl_company_info` ou directement dans `functions.php`.
 
-### Déploiement — merge feature/templating → main
+### Déploiement — FAIT
 
-- Le merge de `feature/templating` vers `main` déclenche automatiquement le déploiement FTP prod.
-- **Action** : valider visuellement sur staging avant le merge.
+- Branche `feature/templating` mergée sur `main` (commit `aa893a7`).
+- Le déploiement FTP prod se déclenche automatiquement au merge sur main.
+- Ce TODO est clos.
 
-**Why:** Ces points sont les seuls bloquants entre l'état actuel (code complet v3.0.0) et un site fonctionnel en production.
+**Why:** Ces points sont les seuls bloquants ou manquants entre l'état code actuel et un site visuellement complet en production.
 
 Voir aussi : [[fonctions-helpers]], [[catalogue-produits]], [[stack-architecture]]
