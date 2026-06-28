@@ -41,7 +41,7 @@ $old_message = isset( $_POST['nl_message'] ) ? esc_textarea( sanitize_textarea_f
                 <h2>Envoyer un message</h2>
 
                 <?php if ( $result ) : ?>
-                    <div class="nl-contact-alert <?php echo $result['ok'] ? 'is-ok' : 'is-err'; ?>">
+                    <div class="nl-contact-alert <?php echo esc_attr( $result['ok'] ? 'is-ok' : 'is-err' ); ?>">
                         <?php echo esc_html( $result['msg'] ); ?>
                     </div>
                 <?php endif; ?>
