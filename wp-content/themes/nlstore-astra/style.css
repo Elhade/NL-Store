@@ -2537,3 +2537,55 @@ footer.site-footer,
     animation: none !important;
   }
 }
+
+/* ======================================================
+   CATÉGORIES — carousel auto sur mobile (slide 2s vers la droite)
+   ====================================================== */
+@media (max-width: 768px) {
+  .nl-categories-grid {
+    display: flex !important;
+    grid-template-columns: none !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 14px !important;
+    padding: 4px 16px 10px !important;
+    margin: 0 -16px !important; /* bord à bord */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+  }
+  .nl-categories-grid::-webkit-scrollbar { display: none; }
+
+  .nl-categories-grid .nl-cat-card {
+    flex: 0 0 84% !important;
+    scroll-snap-align: center !important;
+    height: 340px !important;
+  }
+
+  /* Puces d'indication du carousel */
+  .nl-cat-dots {
+    display: flex !important;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .nl-cat-dots button {
+    width: 8px !important;
+    height: 8px !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(212, 175, 55, 0.3) !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    transition: width 0.3s var(--nl-ease), background 0.3s var(--nl-ease);
+  }
+  .nl-cat-dots button.is-active {
+    width: 22px !important;
+    background: var(--nl-gold) !important;
+  }
+}
+/* Les puces n'existent que sur mobile */
+.nl-cat-dots { display: none; }
