@@ -2280,3 +2280,104 @@ footer.site-footer,
 @media (max-width: 1024px) {
   .nl-promo-week-section::before { background-attachment: scroll; }
 }
+
+/* ======================================================
+   PRODUITS POPULAIRES — slider horizontal scrollable
+   (uniquement l'accueil ; la boutique garde sa grille)
+   ====================================================== */
+.nl-products-grid.nl-products-slider {
+  position: relative;
+  max-width: var(--nl-container) !important;
+  margin: 0 auto !important;
+}
+
+/* Le conteneur de cartes devient une rangée scrollable avec snap */
+.nl-products-grid.nl-products-slider ul.products {
+  display: flex !important;
+  grid-template-columns: none !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: var(--nl-space-5) !important;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: 4px;
+  padding: 4px 4px 18px !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--nl-gold) rgba(255, 255, 255, 0.08);
+  scroll-behavior: smooth;
+}
+
+/* Scrollbar dorée discrète (WebKit) */
+.nl-products-grid.nl-products-slider ul.products::-webkit-scrollbar {
+  height: 6px;
+}
+.nl-products-grid.nl-products-slider ul.products::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+}
+.nl-products-grid.nl-products-slider ul.products::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--nl-gold-deep), var(--nl-gold));
+  border-radius: 999px;
+}
+
+/* Chaque produit : largeur fixe, aligné sur le snap */
+.nl-products-grid.nl-products-slider ul.products li.product {
+  flex: 0 0 auto !important;
+  width: clamp(230px, 23vw, 258px) !important;
+  scroll-snap-align: start;
+}
+
+/* Pas de stagger en slider : les cartes sont visibles dès le rendu */
+.nl-products-grid.nl-products-slider ul.products li.product {
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+/* Flèches de navigation (desktop) */
+.nl-slider-nav {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 48px;
+  height: 48px;
+  display: none !important;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--nl-gold);
+  border-radius: 50%;
+  background: rgba(10, 8, 4, 0.78);
+  color: var(--nl-gold);
+  font-size: 22px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background 0.3s var(--nl-ease), color 0.3s var(--nl-ease),
+    transform 0.3s var(--nl-ease-spring), opacity 0.3s var(--nl-ease);
+}
+.nl-slider-nav:hover {
+  background: var(--nl-gold);
+  color: var(--nl-gold-ink);
+  transform: translateY(-50%) scale(1.08);
+}
+.nl-slider-nav[disabled] {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+}
+.nl-slider-prev { left: -8px; }
+.nl-slider-next { right: -8px; }
+
+@media (min-width: 1025px) {
+  .nl-products-slider:hover .nl-slider-nav,
+  .nl-slider-nav:focus-visible {
+    display: inline-flex !important;
+  }
+}
+
+/* Mobile : ~1,1 carte visible pour inviter au scroll */
+@media (max-width: 768px) {
+  .nl-products-grid.nl-products-slider ul.products li.product {
+    width: 78vw !important;
+  }
+}

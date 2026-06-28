@@ -149,22 +149,24 @@ $categories_config = [
             </div>
         </div>
 
-        <div class="nl-products-grid nl-reveal">
+        <div class="nl-products-grid nl-products-slider nl-reveal">
+            <button type="button" class="nl-slider-nav nl-slider-prev" aria-label="Produits précédents"><?php echo nl_icon('chevron-left'); ?></button>
             <?php
             if (class_exists('WooCommerce')) {
                 $featured_ids = wc_get_featured_product_ids();
                 if (!empty($featured_ids)) {
-                    echo do_shortcode('[products limit="4" columns="4" visibility="featured" orderby="date" order="DESC"]');
+                    echo do_shortcode('[products limit="12" columns="4" visibility="featured" orderby="date" order="DESC"]');
                 } else {
                     $parfums = get_term_by('slug', 'parfums', 'product_cat');
                     if ($parfums && !is_wp_error($parfums) && $parfums->count > 0) {
-                        echo do_shortcode('[products limit="4" columns="4" category="parfums" orderby="date" order="DESC"]');
+                        echo do_shortcode('[products limit="12" columns="4" category="parfums" orderby="date" order="DESC"]');
                     } else {
-                        echo do_shortcode('[products limit="4" columns="4" orderby="date" order="DESC"]');
+                        echo do_shortcode('[products limit="12" columns="4" orderby="date" order="DESC"]');
                     }
                 }
             }
             ?>
+            <button type="button" class="nl-slider-nav nl-slider-next" aria-label="Produits suivants"><?php echo nl_icon('chevron-right'); ?></button>
         </div>
 
         <div class="nl-products-view-all">

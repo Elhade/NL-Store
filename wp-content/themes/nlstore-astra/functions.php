@@ -104,7 +104,33 @@ function nl_enqueue_interactions() {
     update();
   }
 
-  function init() { nlReveal(); nlParallax(); }
+  // Flèches de navigation des sliders produits (scroll horizontal).
+  function nlSliders() {
+    document.querySelectorAll('.nl-products-slider').forEach(function (slider) {
+      var track = slider.querySelector('ul.products');
+      var prev = slider.querySelector('.nl-slider-prev');
+      var next = slider.querySelector('.nl-slider-next');
+      if (!track || !prev || !next) { return; }
+
+      function step() {
+        var card = track.querySelector('li.product');
+        var w = card ? card.getBoundingClientRect().width : track.clientWidth * 0.8;
+        return w + 24; // largeur carte + gap approx.
+      }
+      function sync() {
+        var max = track.scrollWidth - track.clientWidth - 2;
+        prev.disabled = track.scrollLeft <= 2;
+        next.disabled = track.scrollLeft >= max;
+      }
+      prev.addEventListener('click', function () { track.scrollBy({ left: -step() * 2, behavior: 'smooth' }); });
+      next.addEventListener('click', function () { track.scrollBy({ left: step() * 2, behavior: 'smooth' }); });
+      track.addEventListener('scroll', sync, { passive: true });
+      window.addEventListener('resize', sync, { passive: true });
+      sync();
+    });
+  }
+
+  function init() { nlReveal(); nlParallax(); nlSliders(); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
