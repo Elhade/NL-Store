@@ -49,8 +49,21 @@ function nl_enqueue_interactions() {
 
     $js = <<<'JS'
 (function () {
+  var SELECTOR = '.nl-reveal, .nl-reveal-left, .nl-reveal-right, .nl-reveal-scale, .nl-stagger';
+
+  // Affecte un index aux enfants des conteneurs « stagger » pour la cascade.
+  function nlIndexStagger() {
+    document.querySelectorAll('.nl-stagger').forEach(function (box) {
+      var kids = box.children;
+      for (var i = 0; i < kids.length; i++) {
+        kids[i].style.setProperty('--nl-i', i);
+      }
+    });
+  }
+
   function nlReveal() {
-    var els = document.querySelectorAll('.nl-reveal');
+    nlIndexStagger();
+    var els = document.querySelectorAll(SELECTOR);
     if (!('IntersectionObserver' in window) || !els.length) {
       els.forEach(function (el) { el.classList.add('nl-in'); });
       return;
@@ -65,10 +78,37 @@ function nl_enqueue_interactions() {
     }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
     els.forEach(function (el) { io.observe(el); });
   }
+
+  // Parallax léger basé sur le scroll (rAF), désactivé si reduced-motion.
+  function nlParallax() {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var nodes = document.querySelectorAll('.nl-parallax');
+    if (reduce || !nodes.length || window.innerWidth < 1025) { return; }
+    var ticking = false;
+    function update() {
+      var vh = window.innerHeight;
+      nodes.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > vh) { return; }
+        var speed = parseFloat(el.getAttribute('data-speed')) || 0.12;
+        var offset = (r.top + r.height / 2 - vh / 2) * speed;
+        el.style.setProperty('--nl-par', offset.toFixed(1) + 'px');
+      });
+      ticking = false;
+    }
+    function onScroll() {
+      if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+
+  function init() { nlReveal(); nlParallax(); }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', nlReveal);
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    nlReveal();
+    init();
   }
 })();
 JS;

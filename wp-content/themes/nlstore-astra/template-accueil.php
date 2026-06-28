@@ -63,9 +63,9 @@ $categories_config = [
             <p class="nl-hero-surtitre">Exclusivement pour Mayotte</p>
 
             <?php if ($logo_url): ?>
-                <img src="<?php echo esc_url($logo_url); ?>" alt="NL Store" class="nl-hero-logo-img">
+                <img src="<?php echo esc_url($logo_url); ?>" alt="NL Store" class="nl-hero-logo-img nl-parallax" data-speed="-0.06">
             <?php else: ?>
-                <div class="nl-hero-logo-fallback">NL</div>
+                <div class="nl-hero-logo-fallback nl-parallax" data-speed="-0.06">NL</div>
             <?php endif; ?>
 
             <h1 class="nl-hero-brand">NL STORE</h1>
@@ -98,7 +98,7 @@ $categories_config = [
             <h2 class="nl-section-main-title">Qu'est-ce que vous cherchez ?</h2>
         </div>
 
-        <div class="nl-categories-grid nl-reveal">
+        <div class="nl-categories-grid nl-stagger">
             <?php foreach ($categories_config as $cat):
                 $term      = get_term_by('slug', $cat['slug'], 'product_cat');
                 $cat_url   = ($term && !is_wp_error($term)) ? get_term_link($term) : $shop_url;
@@ -179,17 +179,17 @@ $categories_config = [
     ==================================================== -->
     <section class="nl-promo-week-section">
         <div class="nl-section-title-wrap nl-reveal">
-            <span class="nl-section-deco">✦</span>
+            <?php echo nl_icon('flame', 'nl-icon nl-flame'); ?>
             <h2 class="nl-section-title">Promotions de la semaine</h2>
-            <span class="nl-section-deco">✦</span>
+            <?php echo nl_icon('flame', 'nl-icon nl-flame'); ?>
         </div>
 
-        <div class="nl-promo-week-grid nl-reveal">
-            <div class="nl-promo-week-left">
+        <div class="nl-promo-week-grid">
+            <div class="nl-promo-week-left nl-reveal-left">
                 <?php echo do_shortcode('[nl_weekly_promos_carousel]'); ?>
             </div>
 
-            <div class="nl-promo-week-right">
+            <div class="nl-promo-week-right nl-reveal-right">
                 <?php echo do_shortcode('[nl_testimonials_carousel title="Avis clients"]'); ?>
             </div>
         </div>
