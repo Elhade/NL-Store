@@ -131,7 +131,7 @@ add_action( 'after_setup_theme', function () {
 } );
 
 // Placeholder produit de marque (remplace le placeholder gris WooCommerce par défaut)
-add_filter( 'woocommerce_placeholder_img_src', function ( $src ) {
+add_filter( 'woocommerce_placeholder_img_src', function () {
     return get_stylesheet_directory_uri() . '/assets/img/nl-placeholder.svg';
 } );
 
@@ -594,8 +594,11 @@ function nl_weekly_promos_page() {
     global $wpdb;
     $table = $wpdb->prefix . 'nl_weekly_promos';
     
-    nl_create_promotions_table();
-    
+    // Crée la table seulement si absente (évite dbDelta à chaque chargement de la page).
+    if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) {
+        nl_create_promotions_table();
+    }
+
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('nl_weekly_promos_nonce')) {
         if (isset($_POST['action']) && $_POST['action'] === 'add_promo') {
             $promo_data = array(
@@ -618,7 +621,8 @@ function nl_weekly_promos_page() {
         }
     }
     
-    $promos = $wpdb->get_results("SELECT * FROM $table ORDER BY created_at DESC");
+    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- nom de table statique du thème
+    $promos = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY created_at DESC" );
     ?>
     <div class="wrap">
         <h1>⭐ Promotions de la Semaine</h1>
@@ -812,7 +816,7 @@ function nl_render_weekly_promos_carousel() {
  */
 add_shortcode( 'nl_footer', 'nl_render_footer' );
 
-function nl_render_footer() {
+function nl_render_footer( $content = '' ) {
     $shop_url    = class_exists( 'WooCommerce' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/boutique/' );
     $account_url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/mon-compte/' );
     $cart_url    = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
@@ -906,7 +910,7 @@ function nl_render_footer() {
                             referrerpolicy="no-referrer-when-downgrade"
                             allowfullscreen></iframe>
                     </div>
-                    <a class="nl-footer-map__link" href="https://maps.google.com/maps?q=<?php echo rawurlencode( $info['map_query'] ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
+                    <a class="nl-footer-map__link" href="<?php echo esc_url( 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
                 </div>
 
             </div>
