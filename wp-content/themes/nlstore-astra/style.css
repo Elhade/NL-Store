@@ -641,11 +641,20 @@ input[type="submit"]:hover {
 /* ======================================================
    CATEGORIES SECTION
    ====================================================== */
+/* Fond fixe animé — « aurore dorée » qui dérive lentement (réf section dédiée) */
 .nl-categories-section {
   background:
-    radial-gradient(circle at 50% -10%, rgba(212, 175, 55, 0.05), transparent 40%),
-    var(--nl-black-soft) !important;
+    radial-gradient(55% 45% at 18% 12%, rgba(212, 175, 55, 0.14), transparent 60%),
+    radial-gradient(50% 55% at 85% 88%, rgba(212, 175, 55, 0.10), transparent 60%),
+    linear-gradient(180deg, #0b0805, #060503) !important;
+  background-attachment: fixed, fixed, fixed !important;
+  background-size: 200% 200%, 200% 200%, cover !important;
+  animation: nlAurora 20s ease-in-out infinite alternate;
   padding: var(--nl-section-y) var(--nl-gutter) !important;
+}
+@keyframes nlAurora {
+  0%   { background-position: 0% 0%, 100% 100%, center; }
+  100% { background-position: 70% 50%, 30% 50%, center; }
 }
 
 .nl-categories-grid {
@@ -789,9 +798,20 @@ input[type="submit"]:hover {
 /* ======================================================
    PRODUCTS SECTION
    ====================================================== */
+/* Fond fixe animé — stries dorées verticales qui défilent (réf lignes or) */
 .nl-products-section {
-  background: var(--nl-black-soft) !important;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 78px, rgba(212, 175, 55, 0.055) 78px 80px),
+    radial-gradient(60% 50% at 50% 0%, rgba(212, 175, 55, 0.08), transparent 55%),
+    linear-gradient(180deg, #060504, #0a0805) !important;
+  background-attachment: fixed, fixed, fixed !important;
+  background-size: 320px 100%, cover, cover !important;
+  animation: nlStreaks 14s linear infinite;
   padding: var(--nl-section-y) var(--nl-gutter) !important;
+}
+@keyframes nlStreaks {
+  from { background-position: 0 0, center, center; }
+  to   { background-position: 320px 0, center, center; }
 }
 
 .nl-products-section .nl-section-label {
@@ -843,27 +863,39 @@ ul.products,
   margin: 0 !important;
 }
 
-/* ── Product card — ivory surface for contrast ── */
+/* ── Product card — surface noire luxe (réf Maison NL) ── */
 .woocommerce ul.products li.product,
 .woocommerce-page ul.products li.product {
-  background: var(--nl-ivory) !important;
-  border: 1px solid var(--nl-border) !important;
-  border-radius: var(--nl-radius-lg) !important;
+  background: linear-gradient(165deg, #16110a 0%, #0c0a06 60%, #080603 100%) !important;
+  border: 1px solid rgba(212, 175, 55, 0.18) !important;
+  border-radius: 18px !important;
   overflow: hidden !important;
-  box-shadow: var(--nl-shadow) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5) !important;
   transition: transform 0.35s var(--nl-ease-spring), border-color 0.35s var(--nl-ease), box-shadow 0.35s var(--nl-ease) !important;
   padding: 0 !important;
   margin: 0 !important;
   min-width: 0 !important;
   display: flex !important;
   flex-direction: column !important;
+  position: relative !important;
+}
+
+/* Le lien produit occupe toute la carte : image en haut, prix poussé en bas */
+.woocommerce ul.products li.product > a.woocommerce-LoopProduct-link,
+.woocommerce-page ul.products li.product > a.woocommerce-LoopProduct-link {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  text-decoration: none !important;
 }
 
 .woocommerce ul.products li.product:hover,
 .woocommerce-page ul.products li.product:hover {
   transform: translateY(-10px) !important;
-  border-color: var(--nl-hairline-strong) !important;
-  box-shadow: var(--nl-shadow-lg) !important;
+  border-color: rgba(212, 175, 55, 0.55) !important;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(212, 175, 55, 0.25),
+    0 18px 44px rgba(212, 175, 55, 0.12) !important;
 }
 
 .woocommerce ul.products li.product a img,
@@ -883,29 +915,31 @@ ul.products,
 
 .woocommerce ul.products li.product .woocommerce-loop-product__title,
 .woocommerce-page ul.products li.product .woocommerce-loop-product__title {
-  color: #1a1209 !important;
+  color: var(--nl-white) !important;
   font-family: var(--nl-font-title) !important;
-  font-size: 22px !important;
-  font-weight: 700 !important;
-  line-height: 1.2 !important;
+  font-size: 19px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
   margin: 0 !important;
-  padding: 16px 18px 4px !important;
+  padding: 18px 18px 2px !important;
 }
 
 .woocommerce ul.products li.product .price,
 .woocommerce-page ul.products li.product .price {
-  color: var(--nl-gold-deep) !important;
-  font-size: 20px !important;
+  color: var(--nl-gold) !important;
+  font-size: 21px !important;
   font-weight: 700 !important;
-  padding: 2px 18px 14px !important;
+  padding: 4px 76px 18px 18px !important; /* marge droite : place pour le bouton panier */
+  margin-top: auto !important; /* épingle le prix en bas de la carte */
   display: block !important;
 }
 
 .woocommerce ul.products li.product .price del {
-  color: #b3a890 !important;
+  color: var(--nl-grey) !important;
+  opacity: 0.7 !important;
   font-weight: 500 !important;
-  font-size: 15px !important;
-  margin-right: 6px !important;
+  font-size: 14px !important;
+  margin-right: 7px !important;
 }
 
 .woocommerce ul.products li.product .price ins {
@@ -918,59 +952,127 @@ ul.products,
   font-size: 13px !important;
 }
 
+/* Bouton panier — carré doré en bas à droite (icône seule, réf luxe) */
 .woocommerce ul.products li.product .button,
 .woocommerce-page ul.products li.product .button {
-  width: calc(100% - 36px) !important;
-  margin: auto 18px 18px 18px !important;
-  padding: 13px 20px !important;
+  position: absolute !important;
+  bottom: 16px !important;
+  right: 16px !important;
+  z-index: 4 !important;
+  width: 48px !important;
+  height: 48px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0 !important; /* masque le libellé « Ajouter au panier » */
+  line-height: 0 !important;
   background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
   color: var(--nl-gold-ink) !important;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 1.2px !important;
-  border-radius: var(--nl-radius-sm) !important;
-  box-shadow: 0 6px 18px rgba(212, 175, 55, 0.28) !important;
-  text-align: center !important;
-  display: flex !important;
+  border-radius: 13px !important;
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3) !important;
+  display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
 }
 
+/* Icône panier dessinée via masque SVG (couleur = encre dorée) */
 .woocommerce ul.products li.product .button::after {
-  content: "›";
-  font-size: 18px;
-  line-height: 1;
-  font-weight: 400;
-}
-
-.woocommerce ul.products li.product .button:has(.nl-btn-arrow)::after {
-  content: none !important;
-}
-
-.woocommerce ul.products li.product .button .nl-btn-arrow {
-  font-size: 18px !important;
-  line-height: 1 !important;
-  transition: transform 0.3s var(--nl-ease) !important;
+  content: "" !important;
+  width: 22px !important;
+  height: 22px !important;
+  background-color: var(--nl-gold-ink) !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='21' r='1'/%3E%3Ccircle cx='19' cy='21' r='1'/%3E%3Cpath d='M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='8' cy='21' r='1'/%3E%3Ccircle cx='19' cy='21' r='1'/%3E%3Cpath d='M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform 0.3s var(--nl-ease-spring) !important;
 }
 
 .woocommerce ul.products li.product .button:hover {
   background: linear-gradient(135deg, var(--nl-gold-bright), var(--nl-gold-deep)) !important;
-  box-shadow: 0 12px 28px rgba(212, 175, 55, 0.4) !important;
+  box-shadow: 0 12px 28px rgba(212, 175, 55, 0.45) !important;
+  transform: translateY(-2px) !important;
 }
 
-.woocommerce ul.products li.product .button:hover .nl-btn-arrow {
-  transform: translateX(4px) !important;
+.woocommerce ul.products li.product .button:hover::after {
+  transform: scale(1.12) !important;
+}
+
+/* État « ajouté » : on garde le carré, on signale via opacité */
+.woocommerce ul.products li.product .button.added {
+  opacity: 0.85 !important;
+}
+.woocommerce ul.products li.product .button.loading {
+  opacity: 0.6 !important;
+}
+/* Lien « Voir le panier » qui apparaît après ajout : discret sous la carte */
+.woocommerce ul.products li.product .added_to_cart {
+  position: absolute !important;
+  bottom: 16px !important;
+  right: 72px !important;
+  z-index: 4 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  color: var(--nl-gold) !important;
+  background: rgba(10, 8, 4, 0.8) !important;
+  border: 1px solid rgba(212, 175, 55, 0.4) !important;
+  border-radius: 999px !important;
+  padding: 7px 14px !important;
+  text-decoration: none !important;
+}
+
+/* ── Cœur wishlist (réf : haut-droite) ── */
+.nl-wishlist {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 50%;
+  background: rgba(8, 6, 3, 0.62);
+  color: var(--nl-gold);
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.3s var(--nl-ease), color 0.3s var(--nl-ease),
+    transform 0.3s var(--nl-ease-spring), border-color 0.3s var(--nl-ease);
+}
+.nl-wishlist .nl-icon {
+  width: 19px;
+  height: 19px;
+  transition: fill 0.3s var(--nl-ease);
+  fill: transparent;
+}
+.nl-wishlist:hover {
+  transform: scale(1.1);
+  border-color: var(--nl-gold);
+  color: var(--nl-gold-bright);
+}
+.nl-wishlist.is-active {
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold));
+  color: var(--nl-gold-ink);
+  border-color: var(--nl-gold);
+}
+.nl-wishlist.is-active .nl-icon {
+  fill: var(--nl-gold-ink);
+  animation: nlHeartPop 0.4s var(--nl-ease-spring);
+}
+@keyframes nlHeartPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); }
+  100% { transform: scale(1); }
 }
 
 /* ======================================================
    PROMO WEEK SECTION
    ====================================================== */
 .nl-promo-week-section {
-  background:
-    radial-gradient(circle at 50% 120%, rgba(212, 175, 55, 0.05), transparent 45%),
-    var(--nl-black-soft) !important;
+  background: transparent !important; /* laisse voir le fond fixe ::before (parfum) */
   padding: var(--nl-section-y) var(--nl-gutter) !important;
   border-top: 1px solid var(--nl-hairline) !important;
 }
@@ -2301,7 +2403,7 @@ footer.site-footer,
   gap: var(--nl-space-5) !important;
   scroll-snap-type: x mandatory;
   scroll-padding-left: 4px;
-  padding: 4px 4px 18px !important;
+  padding: 18px 4px 24px !important; /* marge haute : évite que le hover -10px ne soit rogné */
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
   scrollbar-color: var(--nl-gold) rgba(255, 255, 255, 0.08);
@@ -2379,5 +2481,22 @@ footer.site-footer,
 @media (max-width: 768px) {
   .nl-products-grid.nl-products-slider ul.products li.product {
     width: 78vw !important;
+  }
+}
+
+/* ======================================================
+   FONDS FIXES ANIMÉS — sécurités mobile & accessibilité
+   ====================================================== */
+@media (max-width: 1024px) {
+  /* background-attachment: fixed rame sur iOS → on repasse en scroll */
+  .nl-categories-section,
+  .nl-products-section {
+    background-attachment: scroll, scroll, scroll !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-categories-section,
+  .nl-products-section {
+    animation: none !important;
   }
 }

@@ -130,7 +130,26 @@ function nl_enqueue_interactions() {
     });
   }
 
-  function init() { nlReveal(); nlParallax(); nlSliders(); }
+  // Wishlist (cœur) — bascule visuelle persistée en localStorage, sans backend.
+  function nlWishlist() {
+    var KEY = 'nl_wishlist';
+    var set;
+    try { set = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) { set = new Set(); }
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(Array.from(set))); } catch (e) {} }
+    document.querySelectorAll('.nl-wishlist').forEach(function (btn) {
+      var id = btn.getAttribute('data-id');
+      if (id && set.has(id)) { btn.classList.add('is-active'); btn.setAttribute('aria-pressed', 'true'); }
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var active = btn.classList.toggle('is-active');
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        if (id) { active ? set.add(id) : set.delete(id); save(); }
+      });
+    });
+  }
+
+  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -164,6 +183,7 @@ function nl_icon( $name, $class = 'nl-icon' ) {
             'mail'           => '<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
             'instagram'      => '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
             'facebook'       => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
+            'heart'          => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
         ];
     }
     if ( ! isset( $paths[ $name ] ) ) {
@@ -200,6 +220,34 @@ add_action( 'after_setup_theme', function () {
 add_filter( 'woocommerce_placeholder_img_src', function () {
     return get_stylesheet_directory_uri() . '/assets/img/nl-placeholder.svg';
 } );
+
+/* Badge soldes : affiche le pourcentage de remise (-20%) plutôt que « Promo ! ». */
+add_filter( 'woocommerce_sale_flash', 'nl_sale_flash_percent', 10, 3 );
+function nl_sale_flash_percent( $html, $post, $product ) {
+    if ( ! is_a( $product, 'WC_Product' ) ) {
+        return $html;
+    }
+    $regular = (float) $product->get_regular_price();
+    $sale    = (float) $product->get_sale_price();
+    if ( $regular > 0 && $sale > 0 && $sale < $regular ) {
+        $pct = (int) round( ( $regular - $sale ) / $regular * 100 );
+        return '<span class="onsale">-' . $pct . '%</span>';
+    }
+    return '<span class="onsale">Promo</span>';
+}
+
+/* Cœur « favoris » sur chaque carte produit (haut-droite, hors du lien produit).
+   Priorité 7 : après la fermeture du lien (5), avant le bouton panier (10). */
+add_action( 'woocommerce_after_shop_loop_item', 'nl_wishlist_button', 7 );
+function nl_wishlist_button() {
+    global $product;
+    $id = ( $product && is_a( $product, 'WC_Product' ) ) ? $product->get_id() : 0;
+    printf(
+        '<button type="button" class="nl-wishlist" data-id="%s" aria-label="Ajouter aux favoris" aria-pressed="false">%s</button>',
+        esc_attr( $id ),
+        nl_icon( 'heart', 'nl-icon' )
+    );
+}
 
 /* ============================================================
    NL STORE — IMPORT PRODUITS (one-shot, auto-désactivé)
