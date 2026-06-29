@@ -924,7 +924,149 @@ function nl_add_promotions_menu() {
         'nl-weekly-promos',
         'nl_weekly_promos_page'
     );
+
+    add_submenu_page(
+        'nl-store-promotions',
+        'Barre de réassurance',
+        'Réassurance',
+        'manage_options',
+        'nl-reassurance',
+        'nl_reassurance_page'
+    );
 }
+
+/* ============================================================
+   NL STORE — RÉASSURANCE (barre 4 items configurable)
+   ============================================================ */
+
+// Icônes proposées au choix dans le back-office.
+function nl_reassurance_icon_choices() {
+    return [
+        'truck'          => 'Camion (livraison)',
+        'shield-check'   => 'Bouclier (sécurité)',
+        'headphones'     => 'Casque (support)',
+        'badge-star'     => 'Sceau étoile (qualité)',
+        'flame'          => 'Flamme (promo)',
+        'heart'          => 'Cœur',
+        'shopping-bag'   => 'Sac (panier)',
+        'map-pin'        => 'Épingle (localisation)',
+        'phone'          => 'Téléphone',
+        'mail'           => 'E-mail',
+        'message-circle' => 'Message',
+    ];
+}
+
+// Données de la barre de réassurance (option + valeurs par défaut).
+function nl_reassurance_data() {
+    $defaults = [
+        'is_active' => 1,
+        'items'     => [
+            [ 'icon' => 'truck',        'title' => 'Livraison rapide',    'subtitle' => 'Partout en France' ],
+            [ 'icon' => 'shield-check', 'title' => 'Paiement sécurisé',   'subtitle' => '100% sécurisé' ],
+            [ 'icon' => 'headphones',   'title' => 'Service client',      'subtitle' => 'À votre écoute' ],
+            [ 'icon' => 'badge-star',   'title' => 'Produits de qualité', 'subtitle' => 'Sélection premium' ],
+        ],
+    ];
+    $data = get_option( 'nl_reassurance', [] );
+    if ( ! is_array( $data ) || empty( $data['items'] ) ) {
+        return $defaults;
+    }
+    $data['is_active'] = isset( $data['is_active'] ) ? (int) $data['is_active'] : 1;
+    return $data;
+}
+
+function nl_reassurance_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    $choices = nl_reassurance_icon_choices();
+
+    if ( 'POST' === $_SERVER['REQUEST_METHOD'] && check_admin_referer( 'nl_reassurance_nonce' ) ) {
+        $titles    = (array) wp_unslash( $_POST['title'] ?? [] );
+        $subtitles = (array) wp_unslash( $_POST['subtitle'] ?? [] );
+        $icons     = (array) wp_unslash( $_POST['icon'] ?? [] );
+        $items     = [];
+        for ( $i = 0; $i < 4; $i++ ) {
+            $icon  = isset( $icons[ $i ] ) ? sanitize_key( $icons[ $i ] ) : 'truck';
+            if ( ! isset( $choices[ $icon ] ) ) {
+                $icon = 'truck';
+            }
+            $items[] = [
+                'icon'     => $icon,
+                'title'    => sanitize_text_field( $titles[ $i ] ?? '' ),
+                'subtitle' => sanitize_text_field( $subtitles[ $i ] ?? '' ),
+            ];
+        }
+        update_option( 'nl_reassurance', [
+            'is_active' => isset( $_POST['is_active'] ) ? 1 : 0,
+            'items'     => $items,
+        ] );
+        echo '<div class="notice notice-success"><p>✅ Barre de réassurance mise à jour !</p></div>';
+    }
+
+    $data = nl_reassurance_data();
+    ?>
+    <div class="wrap">
+        <h1>🛡️ Barre de réassurance</h1>
+        <p>Cette barre s'affiche sur l'accueil, entre « Nos catégories » et « Best-sellers ». Personnalisez les 4 blocs (icône, titre, sous-titre).</p>
+        <form method="post" style="background:#fff;padding:20px;border-radius:8px;max-width:760px;">
+            <?php wp_nonce_field( 'nl_reassurance_nonce' ); ?>
+            <p>
+                <label><input type="checkbox" name="is_active" <?php checked( $data['is_active'], 1 ); ?>> Afficher la barre</label>
+            </p>
+            <table class="form-table">
+                <?php for ( $i = 0; $i < 4; $i++ ) :
+                    $it = $data['items'][ $i ] ?? [ 'icon' => 'truck', 'title' => '', 'subtitle' => '' ];
+                ?>
+                <tr>
+                    <th>Bloc <?php echo (int) ( $i + 1 ); ?></th>
+                    <td>
+                        <select name="icon[]" style="min-width:200px;margin-bottom:6px;">
+                            <?php foreach ( $choices as $key => $label ) : ?>
+                                <option value="<?php echo esc_attr( $key ); ?>" <?php selected( $it['icon'], $key ); ?>><?php echo esc_html( $label ); ?></option>
+                            <?php endforeach; ?>
+                        </select><br>
+                        <input type="text" name="title[]" value="<?php echo esc_attr( $it['title'] ); ?>" class="large-text" placeholder="Titre" style="margin-bottom:6px;"><br>
+                        <input type="text" name="subtitle[]" value="<?php echo esc_attr( $it['subtitle'] ); ?>" class="large-text" placeholder="Sous-titre">
+                    </td>
+                </tr>
+                <?php endfor; ?>
+            </table>
+            <?php submit_button( 'Enregistrer' ); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// Rendu de la barre de réassurance (utilisé par le template d'accueil).
+function nl_render_reassurance() {
+    $data = nl_reassurance_data();
+    if ( empty( $data['is_active'] ) || empty( $data['items'] ) ) {
+        return '';
+    }
+    ob_start();
+    ?>
+    <section class="nl-reassurance nl-reveal">
+        <div class="nl-reassurance__grid">
+            <?php foreach ( $data['items'] as $it ) :
+                if ( empty( $it['title'] ) && empty( $it['subtitle'] ) ) {
+                    continue;
+                }
+            ?>
+            <div class="nl-reassurance__item">
+                <span class="nl-reassurance__ico"><?php echo nl_icon( $it['icon'] ?? 'truck' ); ?></span>
+                <div class="nl-reassurance__txt">
+                    <strong><?php echo esc_html( $it['title'] ?? '' ); ?></strong>
+                    <span><?php echo esc_html( $it['subtitle'] ?? '' ); ?></span>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'nl_reassurance', 'nl_render_reassurance' );
 
 function nl_promotions_page() {
     if (!current_user_can('manage_options')) {
@@ -958,8 +1100,16 @@ function nl_promo_banner_page() {
     }
     
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && check_admin_referer('nl_promo_banner_nonce')) {
+        // Messages multiples (un par ligne) pour la bande défilante.
+        $raw_messages = wp_unslash($_POST['banner_messages'] ?? '');
+        $lines        = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string) $raw_messages)));
+        $messages     = array_values(array_map('sanitize_text_field', $lines));
+
         $banner_data = array(
-            'text' => sanitize_text_field(wp_unslash($_POST['banner_text'] ?? '')),
+            // 'text' conservé (1er message) pour compatibilité.
+            'text' => $messages ? $messages[0] : sanitize_text_field(wp_unslash($_POST['banner_text'] ?? '')),
+            'messages' => $messages,
+            'speed' => max(8, min(120, absint(wp_unslash($_POST['banner_speed'] ?? 26)))),
             'link_text' => sanitize_text_field(wp_unslash($_POST['banner_link_text'] ?? '')),
             'link_url' => esc_url_raw(wp_unslash($_POST['banner_link_url'] ?? '')),
             'bg_gradient_from' => sanitize_hex_color(wp_unslash($_POST['bg_gradient_from'] ?? '#d4af37')),
@@ -967,13 +1117,15 @@ function nl_promo_banner_page() {
             'text_color' => sanitize_hex_color(wp_unslash($_POST['text_color'] ?? '#050505')),
             'is_active' => isset($_POST['is_active']) ? 1 : 0,
         );
-        
+
         update_option('nl_promo_banner', $banner_data);
         echo '<div class="notice notice-success"><p>✅ Bannière mise à jour!</p></div>';
     }
-    
+
     $banner = get_option('nl_promo_banner', array(
         'text' => 'Offre limitée - Pack Bébé à 29,90€',
+        'messages' => array('Offre limitée - Pack Bébé à 29,90€'),
+        'speed' => 26,
         'link_text' => 'Commander maintenant',
         'link_url' => '/produit/pack-bebe-complet/',
         'bg_gradient_from' => '#d4af37',
@@ -981,6 +1133,11 @@ function nl_promo_banner_page() {
         'text_color' => '#050505',
         'is_active' => 1,
     ));
+    // Compat : si pas encore de 'messages', on dérive depuis 'text'.
+    $banner_messages = ! empty( $banner['messages'] ) && is_array( $banner['messages'] )
+        ? $banner['messages']
+        : array_filter( array( $banner['text'] ?? '' ) );
+    $banner_speed = isset( $banner['speed'] ) ? (int) $banner['speed'] : 26;
     ?>
     <div class="wrap">
         <h1>📢 Configuration - Bannière Promo</h1>
@@ -995,23 +1152,32 @@ function nl_promo_banner_page() {
             
             <table class="form-table">
                 <tr>
-                    <th><label for="banner_text">Texte *</label></th>
+                    <th><label for="banner_messages">Messages</label></th>
                     <td>
-                        <input type="text" id="banner_text" name="banner_text" value="<?php echo esc_attr($banner['text'] ?? ''); ?>" class="large-text" required>
+                        <textarea id="banner_messages" name="banner_messages" rows="4" class="large-text" placeholder="Un message par ligne…"><?php echo esc_textarea( implode( "\n", $banner_messages ) ); ?></textarea>
+                        <p class="description">Un message par ligne. Ils défilent à la suite dans la bannière.</p>
                     </td>
                 </tr>
-                
+
                 <tr>
-                    <th><label for="banner_link_text">Texte du lien *</label></th>
+                    <th><label for="banner_speed">Vitesse de défilement</label></th>
                     <td>
-                        <input type="text" id="banner_link_text" name="banner_link_text" value="<?php echo esc_attr($banner['link_text'] ?? ''); ?>" class="large-text" required>
+                        <input type="number" id="banner_speed" name="banner_speed" value="<?php echo esc_attr( $banner_speed ); ?>" min="8" max="120" step="1" style="width:90px;"> secondes par boucle
+                        <p class="description">Plus le nombre est grand, plus le défilement est lent (8 à 120).</p>
                     </td>
                 </tr>
-                
+
                 <tr>
-                    <th><label for="banner_link_url">URL du lien *</label></th>
+                    <th><label for="banner_link_text">Texte du lien</label></th>
                     <td>
-                        <input type="url" id="banner_link_url" name="banner_link_url" value="<?php echo esc_attr($banner['link_url'] ?? ''); ?>" class="large-text" required>
+                        <input type="text" id="banner_link_text" name="banner_link_text" value="<?php echo esc_attr($banner['link_text'] ?? ''); ?>" class="large-text">
+                    </td>
+                </tr>
+
+                <tr>
+                    <th><label for="banner_link_url">URL du lien</label></th>
+                    <td>
+                        <input type="url" id="banner_link_url" name="banner_link_url" value="<?php echo esc_attr($banner['link_url'] ?? ''); ?>" class="large-text">
                     </td>
                 </tr>
                 
@@ -1210,28 +1376,39 @@ function nl_render_promo_banner() {
         $banner['bg_gradient_to']
     );
     
-    // Contenu d'un « bloc » de marquee (texte + lien éventuel), déjà échappé.
     $color = esc_attr( $banner['text_color'] );
-    ob_start();
-    ?><span class="nl-promo-marquee__item" style="color: <?php echo $color; ?>;">
-        <?php echo esc_html( $banner['text'] ); ?>
-        <?php if ( ! empty( $banner['link_text'] ) && ! empty( $banner['link_url'] ) ) : ?>
-            — <a href="<?php echo esc_url( $banner['link_url'] ); ?>" style="color: <?php echo $color; ?>;"><?php echo esc_html( $banner['link_text'] ); ?></a>
-        <?php endif; ?>
-    </span><?php
-    $item = ob_get_clean();
 
-    // On duplique le bloc plusieurs fois pour un défilement continu et sans trou,
-    // quelle que soit la largeur d'écran.
-    $track = str_repeat( $item, 4 );
+    // Liste des messages (compat : dérive depuis 'text' si 'messages' absent).
+    $messages = ( ! empty( $banner['messages'] ) && is_array( $banner['messages'] ) )
+        ? $banner['messages']
+        : array_filter( array( $banner['text'] ?? '' ) );
+    if ( empty( $messages ) ) {
+        return '';
+    }
+    $speed = isset( $banner['speed'] ) ? max( 8, min( 120, (int) $banner['speed'] ) ) : 26;
+
+    // Construit un item par message (+ un item « lien » optionnel à la fin).
+    $items = '';
+    foreach ( $messages as $msg ) {
+        $items .= '<span class="nl-promo-marquee__item" style="color:' . $color . ';">'
+            . esc_html( $msg ) . '</span>';
+    }
+    if ( ! empty( $banner['link_text'] ) && ! empty( $banner['link_url'] ) ) {
+        $items .= '<span class="nl-promo-marquee__item" style="color:' . $color . ';"><a href="'
+            . esc_url( $banner['link_url'] ) . '" style="color:' . $color . ';">'
+            . esc_html( $banner['link_text'] ) . '</a></span>';
+    }
+
+    // On répète assez de fois pour remplir l'écran, puis on double pour la boucle.
+    $group = str_repeat( $items, 3 );
 
     ob_start();
     ?>
     <div class="nl-promo-banner" style="background: <?php echo esc_attr( $gradient ); ?>;">
         <div class="nl-promo-marquee">
-            <div class="nl-promo-marquee__track">
-                <?php echo $track; // déjà échappé ci-dessus ?>
-                <?php echo $track; // 2e copie pour la boucle sans couture ?>
+            <div class="nl-promo-marquee__track" style="animation-duration: <?php echo (int) $speed; ?>s;">
+                <?php echo $group; // déjà échappé ci-dessus ?>
+                <?php echo $group; // 2e copie pour la boucle sans couture ?>
             </div>
         </div>
     </div>
@@ -1254,6 +1431,12 @@ function nl_seed_promo_banner() {
     }
     add_option( 'nl_promo_banner', [
         'text'             => 'Livraison rapide partout à Mayotte — Qualité garantie',
+        'messages'         => [
+            'Livraison rapide partout à Mayotte',
+            'Qualité garantie sur toute la sélection',
+            'Paiement 100% sécurisé',
+        ],
+        'speed'            => 26,
         'link_text'        => 'Découvrir la boutique',
         'link_url'         => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/boutique/' ),
         'bg_gradient_from' => '#e4c46a',

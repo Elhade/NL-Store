@@ -92,42 +92,6 @@ $categories_config = [
         </div>
     </section>
 
-    <!-- ====================================================
-         RÉASSURANCE
-    ==================================================== -->
-    <section class="nl-reassurance nl-reveal">
-        <div class="nl-reassurance__grid">
-            <div class="nl-reassurance__item">
-                <span class="nl-reassurance__ico"><?php echo nl_icon('truck'); ?></span>
-                <div class="nl-reassurance__txt">
-                    <strong>Livraison rapide</strong>
-                    <span>Partout en France</span>
-                </div>
-            </div>
-            <div class="nl-reassurance__item">
-                <span class="nl-reassurance__ico"><?php echo nl_icon('shield-check'); ?></span>
-                <div class="nl-reassurance__txt">
-                    <strong>Paiement sécurisé</strong>
-                    <span>100% sécurisé</span>
-                </div>
-            </div>
-            <div class="nl-reassurance__item">
-                <span class="nl-reassurance__ico"><?php echo nl_icon('headphones'); ?></span>
-                <div class="nl-reassurance__txt">
-                    <strong>Service client</strong>
-                    <span>À votre écoute</span>
-                </div>
-            </div>
-            <div class="nl-reassurance__item">
-                <span class="nl-reassurance__ico"><?php echo nl_icon('badge-star'); ?></span>
-                <div class="nl-reassurance__txt">
-                    <strong>Produits de qualité</strong>
-                    <span>Sélection premium</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <div class="nl-divider" aria-hidden="true">
         <span class="nl-divider__line"></span>
         <span class="nl-divider__dot">✦</span>
@@ -184,6 +148,11 @@ $categories_config = [
             <?php endforeach; ?>
         </div>
     </section>
+
+    <!-- ====================================================
+         RÉASSURANCE (configurable au back-office) — entre catégories et best-sellers
+    ==================================================== -->
+    <?php echo nl_render_reassurance(); ?>
 
     <div class="nl-divider" aria-hidden="true">
         <span class="nl-divider__line"></span>
