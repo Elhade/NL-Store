@@ -1030,21 +1030,30 @@ ul.products,
   opacity: 0.6 !important;
 }
 /* Lien « Voir le panier » qui apparaît après ajout : discret sous la carte */
+/* Lien « Voir le panier » injecté après ajout AJAX : masqué pour ne plus
+   chevaucher le prix ni les icônes. Le retour visuel est déjà assuré par le
+   toast « Voir le panier » + le compteur du panier dans l'en-tête. */
 .woocommerce ul.products li.product .added_to_cart {
-  position: absolute !important;
+  display: none !important;
+}
+
+/* ── Zones d'action de la carte : aucun chevauchement possible (défensif) ── */
+/* Cœur « favoris » : toujours en HAUT-droite */
+.woocommerce ul.products li.product .nl-wishlist {
+  top: 14px !important;
+  right: 14px !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 6 !important;
+}
+/* Bouton panier : toujours en BAS-droite (top:auto bloque toute remontée) */
+.woocommerce ul.products li.product .button.add_to_cart_button,
+.woocommerce ul.products li.product .button {
+  top: auto !important;
   bottom: 16px !important;
-  right: 72px !important;
+  right: 16px !important;
+  left: auto !important;
   z-index: 4 !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px !important;
-  text-transform: uppercase !important;
-  color: var(--nl-gold) !important;
-  background: rgba(10, 8, 4, 0.8) !important;
-  border: 1px solid rgba(212, 175, 55, 0.4) !important;
-  border-radius: 999px !important;
-  padding: 7px 14px !important;
-  text-decoration: none !important;
 }
 
 /* ── Cœur wishlist (réf : haut-droite) ── */
