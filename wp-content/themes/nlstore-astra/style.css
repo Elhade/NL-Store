@@ -3331,3 +3331,8 @@ button.menu-toggle:hover,
 }
 .mapboxgl-ctrl-attrib, .mapboxgl-ctrl-attrib a { color: #8a8170 !important; }
 .mapboxgl-ctrl-attrib a { color: var(--nl-gold-soft) !important; }
+
+/* Tuiles CARTO Dark un peu éclaircies → gris ardoise plus lisible (façon Google dark) */
+.nl-map .leaflet-tile {
+  filter: brightness(1.38) contrast(0.92) saturate(1.18);
+}
