@@ -2664,3 +2664,203 @@ button.menu-toggle:hover,
 .main-header-menu-toggle[aria-expanded="true"] {
   background: rgba(212, 175, 55, 0.16) !important;
 }
+
+/* ======================================================
+   PANIER — item de menu, compteur, popup (toast)
+   ====================================================== */
+.nl-cart-menu-item .nl-cart-link {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.nl-cart-link .nl-icon {
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0;
+}
+.nl-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--nl-gold);
+  color: var(--nl-gold-ink);
+  font-family: var(--nl-font-body);
+}
+.nl-cart-count:not(.has-items) {
+  background: rgba(212, 175, 55, 0.18);
+  color: var(--nl-gold);
+}
+
+/* Popup d'ajout au panier */
+.nl-cart-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 30px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  background: linear-gradient(180deg, #16110a, #0b0905);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 0.35s var(--nl-ease), transform 0.4s var(--nl-ease-spring);
+}
+.nl-cart-toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.nl-cart-toast__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold));
+  color: var(--nl-gold-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+.nl-cart-toast__txt {
+  color: var(--nl-white-soft);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.nl-cart-toast__btn {
+  margin-left: 4px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold));
+  color: var(--nl-gold-ink) !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nl-cart-toast__close {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--nl-grey) !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+  padding: 0 2px !important;
+  margin: 0 !important;
+  cursor: pointer;
+  width: auto !important;
+  height: auto !important;
+}
+@media (max-width: 480px) {
+  .nl-cart-toast {
+    left: 16px;
+    right: 16px;
+    max-width: none;
+    transform: translateY(30px);
+    gap: 10px;
+    padding: 12px;
+  }
+  .nl-cart-toast.is-visible { transform: translateY(0); }
+  .nl-cart-toast__txt { white-space: normal; font-size: 13px; flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-cart-toast { transition: opacity 0.2s linear; }
+}
+
+/* ======================================================
+   MENU BURGER OFF-CANVAS — refonte luxe
+   ====================================================== */
+.ast-mobile-header-content,
+#ast-mobile-header-content,
+.ast-mobile-popup-drawer .ast-mobile-popup-inner {
+  background: linear-gradient(180deg, #0b0905 0%, #070504 100%) !important;
+  border-left: 1px solid rgba(212, 175, 55, 0.22) !important;
+}
+
+/* Pas de puces de liste sur le menu off-canvas */
+.ast-mobile-header-content .main-header-menu,
+#ast-mobile-header-content .main-header-menu,
+.ast-mobile-popup-drawer .main-header-menu,
+.ast-mobile-header-content ul,
+#ast-mobile-header-content ul,
+.ast-mobile-popup-drawer ul.main-header-menu {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.ast-mobile-header-content .menu-item,
+#ast-mobile-header-content .menu-item,
+.ast-mobile-popup-drawer .menu-item {
+  list-style: none !important;
+}
+
+/* Items de menu */
+.ast-mobile-header-content .main-header-menu .menu-item,
+#ast-mobile-header-content .menu-item,
+.ast-mobile-popup-drawer .menu-item {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12) !important;
+}
+.ast-mobile-header-content .main-header-menu .menu-item > a,
+#ast-mobile-header-content .menu-item > a,
+.ast-mobile-popup-drawer .menu-item > .menu-link,
+.ast-mobile-popup-drawer .menu-item > a {
+  color: var(--nl-white-soft) !important;
+  font-family: var(--nl-font-body) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.3px !important;
+  text-transform: uppercase !important;
+  padding: 17px 24px !important;
+  transition: color 0.25s var(--nl-ease), background 0.25s var(--nl-ease), padding-left 0.25s var(--nl-ease) !important;
+}
+.ast-mobile-header-content .menu-item > a:hover,
+#ast-mobile-header-content .menu-item > a:hover,
+.ast-mobile-popup-drawer .menu-item > a:hover,
+.ast-mobile-header-content .menu-item.current-menu-item > a,
+.ast-mobile-popup-drawer .menu-item.current-menu-item > a {
+  color: var(--nl-gold) !important;
+  background: rgba(212, 175, 55, 0.06) !important;
+  padding-left: 30px !important;
+}
+
+/* Item « Panier » mis en avant dans le menu */
+.nl-cart-menu-item > .nl-cart-link {
+  color: var(--nl-gold) !important;
+}
+.ast-mobile-header-content .nl-cart-menu-item,
+.ast-mobile-popup-drawer .nl-cart-menu-item {
+  border-top: 1px solid rgba(212, 175, 55, 0.25) !important;
+}
+.ast-mobile-header-content .nl-cart-menu-item .nl-cart-label,
+.ast-mobile-popup-drawer .nl-cart-menu-item .nl-cart-label {
+  margin-right: auto;
+}
+
+/* Flèche/sous-menus en doré */
+.ast-mobile-header-content .ast-menu-toggle,
+#ast-mobile-header-content .ast-menu-toggle,
+.ast-mobile-popup-drawer .ast-menu-toggle {
+  color: var(--nl-gold) !important;
+}
+
+/* Bouton de fermeture (croix) du drawer en doré */
+.ast-mobile-popup-drawer .menu-toggle-close,
+.ast-mobile-popup-drawer .ast-mobile-popup-close {
+  color: var(--nl-gold) !important;
+}
