@@ -231,6 +231,11 @@ $categories_config = [
         </div>
     </section>
 
+    <!-- ====================================================
+         MARQUES (bande défilante) — entre produits et promotions
+    ==================================================== -->
+    <?php echo do_shortcode('[nl_brands_marquee]'); ?>
+
     <div class="nl-divider" aria-hidden="true">
         <span class="nl-divider__line"></span>
         <span class="nl-divider__dot">✦</span>

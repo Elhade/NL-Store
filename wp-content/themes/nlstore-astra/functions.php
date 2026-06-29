@@ -478,6 +478,115 @@ JS;
 }
 
 /* ============================================================
+   NL STORE — MARQUES : bande défilante + page « Nos marques »
+   Réadaptation du composant React/shadcn « Marquee » en PHP/CSS.
+   Les marques sont gérées via le filtre 'nl_brands' (nom + logo + url).
+   Tant qu'aucun logo n'est fourni, on affiche un wordmark doré.
+   ============================================================ */
+
+// Liste des marques (filtrable). 'logo' = nom de fichier dans assets/brands/
+// (ou URL absolue) ; vide => wordmark. 'url' = lien externe optionnel.
+function nl_brands() {
+    $brands = [
+        [ 'name' => 'Collection Privée Paris', 'logo' => '', 'url' => '', 'desc' => 'Parfums de niche, éditions dorées.' ],
+        [ 'name' => 'Édition La Dorée',        'logo' => '', 'url' => '', 'desc' => 'Fragrances signature, flacons d\'exception.' ],
+        [ 'name' => 'Kenzie',                  'logo' => '', 'url' => '', 'desc' => 'Brumes parfumées et senteurs gourmandes.' ],
+        [ 'name' => 'Uriage',                  'logo' => '', 'url' => '', 'desc' => 'Soins et hygiène, expertise dermatologique.' ],
+    ];
+    return apply_filters( 'nl_brands', $brands );
+}
+
+// Résout l'URL d'un logo de marque (fichier dans assets/brands/ ou URL absolue).
+function nl_brand_logo_url( $logo ) {
+    if ( ! $logo ) {
+        return '';
+    }
+    if ( preg_match( '#^https?://#i', $logo ) ) {
+        return $logo;
+    }
+    return get_stylesheet_directory_uri() . '/assets/brands/' . ltrim( $logo, '/' );
+}
+
+// Rendu d'une « pastille » de marque (logo si dispo, sinon wordmark).
+function nl_brand_chip( $brand ) {
+    if ( ! empty( $brand['logo'] ) ) {
+        $inner = sprintf(
+            '<img src="%s" alt="%s" loading="lazy" decoding="async">',
+            esc_url( nl_brand_logo_url( $brand['logo'] ) ),
+            esc_attr( $brand['name'] )
+        );
+    } else {
+        $inner = '<span class="nl-brand-wordmark">' . esc_html( $brand['name'] ) . '</span>';
+    }
+    return '<span class="nl-brand-chip">' . $inner . '</span>';
+}
+
+// URL de la page « Nos marques ».
+function nl_marques_url() {
+    $page = get_page_by_path( 'nos-marques' );
+    return $page ? get_permalink( $page ) : home_url( '/nos-marques/' );
+}
+
+// Bande défilante des marques — cliquable vers la page « Nos marques ».
+add_shortcode( 'nl_brands_marquee', 'nl_render_brands_marquee' );
+function nl_render_brands_marquee() {
+    $brands = nl_brands();
+    if ( empty( $brands ) ) {
+        return '';
+    }
+    $items = '';
+    foreach ( $brands as $b ) {
+        $items .= nl_brand_chip( $b );
+    }
+    // On répète le jeu pour remplir l'écran, puis on le double pour la boucle.
+    $group = str_repeat( $items, 3 );
+    $url   = nl_marques_url();
+
+    ob_start();
+    ?>
+    <section class="nl-brands">
+        <p class="nl-brands__label">Nos marques</p>
+        <a class="nl-brands__link" href="<?php echo esc_url( $url ); ?>" aria-label="Découvrir toutes nos marques">
+            <div class="nl-brands__marquee">
+                <div class="nl-brands__track">
+                    <?php echo $group; // pastilles déjà échappées ?>
+                    <?php echo $group; ?>
+                </div>
+            </div>
+        </a>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+
+// Page « Nos marques » auto-créée (idempotent, verrou d'option).
+add_action( 'admin_init', 'nl_seed_marques_page', 26 );
+function nl_seed_marques_page() {
+    if ( get_option( 'nl_marques_page_seeded' ) === 'v1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    $existing = get_page_by_path( 'nos-marques' );
+    if ( ! $existing ) {
+        $page_id = wp_insert_post( [
+            'post_title'   => 'Nos marques',
+            'post_name'    => 'nos-marques',
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+            'post_content' => '',
+        ] );
+        if ( $page_id && ! is_wp_error( $page_id ) ) {
+            update_post_meta( $page_id, '_wp_page_template', 'template-marques.php' );
+        }
+    } else {
+        update_post_meta( $existing->ID, '_wp_page_template', 'template-marques.php' );
+    }
+    update_option( 'nl_marques_page_seeded', 'v1' );
+}
+
+/* ============================================================
    NL STORE — IMPORT PRODUITS (one-shot, auto-désactivé)
    Crée le catalogue de base s'il est absent. S'exécute UNE seule
    fois lorsqu'un administrateur charge l'admin (verrou : option

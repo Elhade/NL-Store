@@ -3122,3 +3122,152 @@ button.menu-toggle:hover,
   .nl-reassurance__txt strong { font-size: 14px; }
   .nl-reassurance__txt span { font-size: 12px; }
 }
+
+/* ======================================================
+   MARQUES — bande défilante (réadaptation du Marquee React)
+   ====================================================== */
+.nl-brands {
+  position: relative;
+  z-index: 1;
+  padding: 30px 0 34px;
+  background: var(--nl-black-deep);
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+  overflow: hidden;
+}
+.nl-brands__label {
+  text-align: center;
+  margin: 0 0 18px;
+  color: var(--nl-grey);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.nl-brands__link {
+  display: block;
+  text-decoration: none !important;
+}
+.nl-brands__marquee {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.nl-brands__track {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  will-change: transform;
+  animation: nlMarquee 38s linear infinite;
+}
+.nl-brands:hover .nl-brands__track {
+  animation-play-state: paused;
+}
+.nl-brand-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 56px;
+  margin: 0 clamp(22px, 5vw, 56px);
+  flex-shrink: 0;
+}
+.nl-brand-chip img {
+  max-height: 46px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.6);
+  opacity: 0.7;
+  transition: filter 0.3s var(--nl-ease), opacity 0.3s var(--nl-ease), transform 0.3s var(--nl-ease);
+}
+.nl-brands__link:hover .nl-brand-chip img {
+  filter: none;
+  opacity: 1;
+}
+.nl-brand-wordmark {
+  font-family: var(--nl-font-title);
+  font-size: clamp(20px, 2.4vw, 27px);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--nl-gold-soft);
+  white-space: nowrap;
+  transition: color 0.3s var(--nl-ease);
+}
+.nl-brands__link:hover .nl-brand-wordmark {
+  color: var(--nl-gold-bright);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-brands__track { animation: none; justify-content: center; width: 100%; }
+}
+
+/* ======================================================
+   PAGE NOS MARQUES
+   ====================================================== */
+.nl-marques-hero {
+  text-align: center;
+  padding: clamp(48px, 9vw, 96px) var(--nl-gutter) 10px;
+}
+.nl-marques-hero h1 {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-h1) !important;
+  color: var(--nl-white-soft) !important;
+  margin: 8px 0 10px !important;
+}
+.nl-marques-wrap {
+  padding: 30px var(--nl-gutter) clamp(60px, 10vw, 110px);
+}
+.nl-marques-grid {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--nl-space-5);
+}
+.nl-marque-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 34px 24px;
+  background: linear-gradient(165deg, #16110a, #0c0a06);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 18px;
+  text-decoration: none !important;
+  transition: transform 0.35s var(--nl-ease-spring), border-color 0.35s var(--nl-ease), box-shadow 0.35s var(--nl-ease);
+}
+.nl-marque-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(212, 175, 55, 0.5);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+.nl-marque-card__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70px;
+  margin-bottom: 4px;
+}
+.nl-marque-card__logo img {
+  max-height: 64px;
+  max-width: 100%;
+  object-fit: contain;
+}
+.nl-marque-card h3 {
+  font-family: var(--nl-font-title) !important;
+  font-size: 21px !important;
+  color: var(--nl-white) !important;
+  margin: 0 !important;
+}
+.nl-marque-card p {
+  color: var(--nl-grey) !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+}
+@media (max-width: 900px) {
+  .nl-marques-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .nl-marques-grid { grid-template-columns: 1fr; }
+}
