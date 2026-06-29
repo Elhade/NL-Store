@@ -1940,12 +1940,9 @@ select:focus {
   height: 190px;
   border: 0;
   display: block;
-  filter: grayscale(0.25) contrast(1.05) brightness(0.96);
-  transition: filter 0.4s var(--nl-ease);
-}
-
-.nl-footer-map:hover .nl-footer-map__frame iframe {
-  filter: none;
+  /* Mode sombre « ardoise » (l'embed Google n'a pas de dark natif) :
+     inversion + rotation de teinte pour un rendu proche du thème dark Google. */
+  filter: invert(0.91) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.8);
 }
 
 .nl-footer-map__link {
@@ -2155,7 +2152,8 @@ select:focus {
   height: 240px;
   border: 0;
   display: block;
-  filter: grayscale(0.25) contrast(1.05) brightness(0.96);
+  /* Mode sombre « ardoise » (cf. footer) */
+  filter: invert(0.91) hue-rotate(180deg) brightness(0.95) contrast(0.9) saturate(0.8);
 }
 
 @media (max-width: 880px) {

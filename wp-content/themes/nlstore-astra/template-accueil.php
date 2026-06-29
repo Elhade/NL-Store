@@ -68,7 +68,7 @@ $categories_config = [
     <section class="nl-hero-section" style="--nl-hero-bg: url('<?php echo esc_url($hero_bg); ?>')">
 
         <div class="nl-hero-inner">
-            <p class="nl-hero-surtitre">Exclusivement pour Mayotte</p>
+            <p class="nl-hero-surtitre">Pour Mayotte et ses alentours</p>
 
             <?php if ($logo_url): ?>
                 <img src="<?php echo esc_url($logo_url); ?>" alt="NL Store" class="nl-hero-logo-img nl-parallax" data-speed="-0.06">
@@ -78,7 +78,7 @@ $categories_config = [
 
             <h1 class="nl-hero-brand">NL STORE</h1>
             <h2 class="nl-hero-subtitle">Tout pour bébé, parfums et vêtements</h2>
-            <p class="nl-hero-tagline">Qualité &nbsp;·&nbsp; Prix doux &nbsp;·&nbsp; Livraison rapide à Mayotte</p>
+            <p class="nl-hero-tagline">Qualité &nbsp;·&nbsp; Prix doux &nbsp;·&nbsp; Livraison à Mayotte et alentours</p>
 
             <div class="nl-hero-buttons">
                 <a href="<?php echo esc_url($shop_url); ?>" class="nl-btn-hero nl-btn-hero--primary">
