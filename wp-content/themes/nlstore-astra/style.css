@@ -3430,3 +3430,12 @@ button.menu-toggle:hover,
 /* Liens du bas de footer (CGV / FAQ) */
 .nl-footer-bottom a { color: var(--nl-gold-soft) !important; text-decoration: none; }
 .nl-footer-bottom a:hover { color: var(--nl-gold) !important; text-decoration: underline; }
+
+/* Carte dans la colonne de marque (au-dessus de l'adresse) */
+.nl-footer-brand .nl-footer-map__frame {
+  margin: 16px 0 4px;
+  max-width: 380px;
+}
+.nl-footer-brand .nl-footer-map__link {
+  margin-bottom: 12px;
+}
