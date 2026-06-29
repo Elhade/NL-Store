@@ -961,7 +961,7 @@ function nl_reassurance_data() {
     $defaults = [
         'is_active' => 1,
         'items'     => [
-            [ 'icon' => 'truck',        'title' => 'Livraison rapide',    'subtitle' => 'Partout en France' ],
+            [ 'icon' => 'truck',        'title' => 'Livraison rapide',    'subtitle' => 'À Mayotte et alentours' ],
             [ 'icon' => 'shield-check', 'title' => 'Paiement sécurisé',   'subtitle' => '100% sécurisé' ],
             [ 'icon' => 'headphones',   'title' => 'Service client',      'subtitle' => 'À votre écoute' ],
             [ 'icon' => 'badge-star',   'title' => 'Produits de qualité', 'subtitle' => 'Sélection premium' ],
@@ -1573,7 +1573,7 @@ function nl_render_footer( $content = '' ) {
                         <li><a href="<?php echo esc_url( $account_url ); ?>">Mon compte</a></li>
                         <li><a href="<?php echo esc_url( $cart_url ); ?>">Mon panier</a></li>
                         <li><a href="<?php echo esc_url( $contact_url ); ?>">Contact</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/livraison/' ) ); ?>">Livraison à Mayotte</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/livraison/' ) ); ?>">Livraison à Mayotte et alentours</a></li>
                     </ul>
                 </div>
 
@@ -1616,7 +1616,7 @@ function nl_company_info() {
     return apply_filters( 'nl_company_info', [
         'name'      => 'NL Store',
         'legal'     => 'MADI ALI — Entrepreneur individuel',
-        'baseline'  => 'Tout pour bébé, parfums et vêtements — Exclusivement pour Mayotte.',
+        'baseline'  => 'Tout pour bébé, parfums et vêtements — pour Mayotte et ses alentours.',
         'address'   => 'Imp. de la Place Publique, Mroalé — 97680 Tsingoni, Mayotte',
         'phone'     => '07 66 53 38 47',
         'whatsapp'  => '07 66 53 38 47',
