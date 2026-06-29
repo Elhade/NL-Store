@@ -10,3 +10,4 @@ Index des entrées mémoire. Max 200 lignes. Une ligne par entrée.
 - [Catalogue produits](catalogue-produits.md) — Collection Privée Édition La Dorée Paris 50ml (~15 €) : Aïsha, Baccara, Moula, Scandal F/H, Invicts, Kirké, Coco Vanille, Crème Brûlée + brumes Kenzie/Yara
 - [Audit sécurité](audit-securite.md) — nlstore-auditor : 0 critique ; correctifs appliqués (Lucide auto-hébergé, Swiper épinglé puis auto-hébergé, dbDelta) ; faux positif : get_page_by_path() non déprécié
 - [TODOs ouverts](todos-ouverts.md) — Hero image montage manquante, visuels produits nets requis, URLs réseaux sociaux manquantes dans nl_company_info() ; merge feature/templating FAIT
+- [Décision — Navigation AJAX refusée](decision-navigation-ajax.md) — SPA/Barba.js/Swup incompatible avec ce stack (DOMContentLoaded non relancé, nonces WooCommerce, passerelles paiement) ; alternatives : instant.page + transitions CSS + WebP
