@@ -3336,3 +3336,88 @@ button.menu-toggle:hover,
 .nl-map .leaflet-tile {
   filter: brightness(1.38) contrast(0.92) saturate(1.18);
 }
+
+/* ======================================================
+   PAGES DE CONTENU (FAQ / CGV / Support) — gabarit luxe
+   ====================================================== */
+.nl-page-hero {
+  text-align: center;
+  padding: clamp(46px, 9vw, 92px) var(--nl-gutter) 6px;
+}
+.nl-page-hero h1 {
+  font-family: var(--nl-font-title) !important;
+  font-size: var(--nl-fs-h1) !important;
+  color: var(--nl-white-soft) !important;
+  margin: 8px 0 0 !important;
+}
+.nl-page-wrap {
+  padding: 26px var(--nl-gutter) clamp(60px, 10vw, 110px);
+}
+.nl-richtext {
+  max-width: 820px;
+  margin: 0 auto;
+  color: var(--nl-grey-light, #c9c2b4);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.nl-richtext .nl-lead {
+  font-size: 18px;
+  color: var(--nl-white-soft);
+  margin-bottom: 26px;
+}
+.nl-richtext h2 {
+  font-family: var(--nl-font-title) !important;
+  color: var(--nl-white) !important;
+  font-size: 24px !important;
+  margin: 34px 0 10px !important;
+  padding-top: 18px;
+  border-top: 1px solid rgba(212, 175, 55, 0.14);
+}
+.nl-richtext h3 { color: var(--nl-white-soft) !important; font-size: 19px !important; margin: 22px 0 8px !important; }
+.nl-richtext p { margin: 0 0 14px; }
+.nl-richtext a { color: var(--nl-gold) !important; text-decoration: underline; }
+.nl-richtext a:hover { color: var(--nl-gold-bright) !important; }
+.nl-richtext ul { margin: 0 0 16px; padding-left: 22px; }
+.nl-richtext li { margin: 6px 0; }
+
+/* FAQ — accordéon natif <details> */
+.nl-faq details {
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 12px;
+  background: linear-gradient(165deg, #14100a, #0c0a06);
+  margin: 0 0 12px;
+  overflow: hidden;
+}
+.nl-faq summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 16px 48px 16px 18px;
+  position: relative;
+  color: var(--nl-white-soft);
+  font-weight: 600;
+  font-size: 16px;
+}
+.nl-faq summary::-webkit-details-marker { display: none; }
+.nl-faq summary::after {
+  content: "+";
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--nl-gold);
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.3s var(--nl-ease);
+}
+.nl-faq details[open] summary::after { content: "–"; }
+.nl-faq details[open] summary { color: var(--nl-gold); }
+.nl-faq details > p {
+  margin: 0;
+  padding: 0 18px 18px;
+  color: var(--nl-grey);
+  line-height: 1.7;
+}
+
+/* Liens du bas de footer (CGV / FAQ) */
+.nl-footer-bottom a { color: var(--nl-gold-soft) !important; text-decoration: none; }
+.nl-footer-bottom a:hover { color: var(--nl-gold) !important; text-decoration: underline; }

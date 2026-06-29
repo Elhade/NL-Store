@@ -1660,7 +1660,9 @@ function nl_render_footer( $content = '' ) {
                         <li><a href="<?php echo esc_url( $account_url ); ?>">Mon compte</a></li>
                         <li><a href="<?php echo esc_url( $cart_url ); ?>">Mon panier</a></li>
                         <li><a href="<?php echo esc_url( $contact_url ); ?>">Contact</a></li>
-                        <li><a href="<?php echo esc_url( home_url( '/livraison/' ) ); ?>">Livraison à Mayotte et alentours</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'support' ) ) ?: home_url( '/support/' ) ); ?>">Support &amp; Assistance</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a></li>
                     </ul>
                 </div>
 
@@ -1677,7 +1679,7 @@ function nl_render_footer( $content = '' ) {
             </div>
 
             <div class="nl-footer-bottom">
-                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?> — <?php echo esc_html( $info['legal'] ); ?> · SIREN <?php echo esc_html( $info['siren'] ); ?> · SIRET <?php echo esc_html( $info['siret'] ); ?> · APE <?php echo esc_html( $info['ape'] ); ?>. Tous droits réservés.</p>
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?>. Tous droits réservés. · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></p>
             </div>
         </div>
     </div>
@@ -1836,6 +1838,122 @@ JS;
 })();
 JS;
     wp_add_inline_script( 'leaflet', $js );
+}
+
+/* ============================================================
+   NL STORE — PAGES FAQ / CGV / SUPPORT (auto-créées, one-shot)
+   Pages publiées avec contenu par défaut + gabarit « NL Store — Page ».
+   Idempotent (verrou d'option). Modifiables ensuite dans WP > Pages.
+   ============================================================ */
+add_action( 'admin_init', 'nl_seed_legal_pages', 27 );
+function nl_seed_legal_pages() {
+    if ( get_option( 'nl_legal_pages_seeded' ) === 'v1' ) {
+        return;
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+
+    $info  = function_exists( 'nl_company_info' ) ? nl_company_info() : [];
+    $email = $info['email'] ?? '';
+    $phone = $info['phone'] ?? '';
+    $wa    = preg_replace( '/\D+/', '', $info['whatsapp'] ?? '' );
+    if ( 0 === strpos( (string) $wa, '0' ) ) {
+        $wa = '33' . substr( $wa, 1 );
+    }
+    $addr   = $info['address'] ?? '';
+    $legal  = $info['legal'] ?? '';
+    $siren  = $info['siren'] ?? '';
+    $siret  = $info['siret'] ?? '';
+    $ape    = $info['ape'] ?? '';
+    $name   = $info['name'] ?? 'NL Store';
+    $contact_url = ( $p = get_page_by_path( 'contact' ) ) ? get_permalink( $p ) : home_url( '/contact/' );
+
+    // ---- FAQ ----
+    $faq = <<<HTML
+<div class="nl-faq">
+<details open><summary>Livrez-vous partout à Mayotte ?</summary><p>Oui, nous livrons sur l'ensemble de Mayotte, ainsi que dans ses alentours. Les modalités précises sont confirmées au moment de la commande selon votre localisation.</p></details>
+<details><summary>Quels sont les délais de livraison ?</summary><p>En général, votre commande est préparée sous 24 à 48h, puis livrée rapidement selon la zone. Vous êtes tenu informé à chaque étape.</p></details>
+<details><summary>Quels moyens de paiement acceptez-vous ?</summary><p>Le paiement s'effectue en ligne de manière 100% sécurisée. Les moyens disponibles s'affichent au moment du règlement.</p></details>
+<details><summary>Mes paiements sont-ils sécurisés ?</summary><p>Oui. Les transactions sont chiffrées et traitées par des prestataires de paiement certifiés. Nous n'avons jamais accès à vos données bancaires.</p></details>
+<details><summary>Puis-je retourner un produit ?</summary><p>Vous disposez d'un droit de rétractation de 14 jours pour les produits éligibles. Certains articles (hygiène, produits descellés) en sont exclus pour des raisons sanitaires. Voir nos <a href="/cgv/">CGV</a>.</p></details>
+<details><summary>Comment suivre ma commande ?</summary><p>Connectez-vous à votre espace <a href="/mon-compte/">Mon compte</a> pour suivre l'état de votre commande, ou contactez-nous directement.</p></details>
+<details><summary>Comment vous contacter ?</summary><p>Par téléphone au {$phone}, sur WhatsApp, par e-mail à {$email}, ou via notre page <a href="{$contact_url}">Contact</a>.</p></details>
+</div>
+HTML;
+
+    // ---- Support & Assistance ----
+    $support = <<<HTML
+<p class="nl-lead">Une question, un souci avec une commande, un conseil produit ? Notre équipe vous répond rapidement.</p>
+<h2>Nous contacter</h2>
+<ul>
+<li><strong>Téléphone :</strong> {$phone}</li>
+<li><strong>WhatsApp :</strong> <a href="https://wa.me/{$wa}" target="_blank" rel="noopener">Démarrer une discussion</a></li>
+<li><strong>E-mail :</strong> <a href="mailto:{$email}">{$email}</a></li>
+<li><strong>Formulaire :</strong> <a href="{$contact_url}">Page Contact</a></li>
+</ul>
+<h2>Horaires</h2>
+<p>Du lundi au samedi, de 8h à 18h (heure de Mayotte). Nous répondons aux messages dans les meilleurs délais.</p>
+<h2>Questions fréquentes</h2>
+<p>La plupart des réponses se trouvent dans notre <a href="/faq/">FAQ</a> (livraison, paiement, retours, suivi de commande).</p>
+<h2>Suivi de commande</h2>
+<p>Retrouvez l'état de vos commandes dans votre espace <a href="/mon-compte/">Mon compte</a>.</p>
+HTML;
+
+    // ---- CGV ----
+    $cgv = <<<HTML
+<p class="nl-lead">Les présentes conditions générales de vente (CGV) régissent les ventes réalisées sur le site {$name}.</p>
+<h2>Article 1 — Identification du vendeur</h2>
+<p>{$name} — {$legal}.<br>Adresse : {$addr}.<br>SIREN : {$siren} · SIRET : {$siret} · Code APE : {$ape}.<br>E-mail : {$email} · Téléphone : {$phone}.</p>
+<h2>Article 2 — Objet</h2>
+<p>Les présentes CGV définissent les droits et obligations des parties dans le cadre de la vente en ligne des produits proposés par {$name}.</p>
+<h2>Article 3 — Produits</h2>
+<p>Les produits proposés sont décrits avec la plus grande exactitude. Les photographies sont les plus fidèles possibles mais ne sauraient engager le vendeur en cas de légère différence.</p>
+<h2>Article 4 — Prix</h2>
+<p>Les prix sont indiqués en euros, toutes taxes comprises, hors frais de livraison éventuels précisés avant validation de la commande. {$name} se réserve le droit de modifier ses prix à tout moment, les produits étant facturés au tarif en vigueur lors de la commande.</p>
+<h2>Article 5 — Commande</h2>
+<p>La validation de la commande implique l'acceptation pleine et entière des présentes CGV. Un e-mail de confirmation récapitule la commande.</p>
+<h2>Article 6 — Paiement</h2>
+<p>Le paiement s'effectue en ligne de manière sécurisée. La commande est traitée après confirmation du paiement.</p>
+<h2>Article 7 — Livraison</h2>
+<p>Les produits sont livrés à Mayotte et dans ses alentours, à l'adresse indiquée lors de la commande. Les délais sont communiqués à titre indicatif.</p>
+<h2>Article 8 — Droit de rétractation</h2>
+<p>Conformément à la loi, vous disposez d'un délai de 14 jours à compter de la réception pour exercer votre droit de rétractation, sans avoir à motiver votre décision. Sont exclus notamment les produits d'hygiène descellés et les produits personnalisés ou périssables.</p>
+<h2>Article 9 — Garanties légales</h2>
+<p>Tous les produits bénéficient de la garantie légale de conformité et de la garantie contre les vices cachés, dans les conditions prévues par la loi.</p>
+<h2>Article 10 — Données personnelles</h2>
+<p>Les données collectées sont nécessaires au traitement des commandes. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression en nous écrivant à {$email}.</p>
+<h2>Article 11 — Service client</h2>
+<p>Pour toute question, contactez-nous à {$email} ou au {$phone}, ou via notre page <a href="{$contact_url}">Contact</a>.</p>
+<h2>Article 12 — Droit applicable et litiges</h2>
+<p>Les présentes CGV sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. Le consommateur peut recourir à un médiateur de la consommation.</p>
+HTML;
+
+    $pages = [
+        'faq'     => [ 'title' => 'FAQ', 'content' => $faq ],
+        'support' => [ 'title' => 'Support & Assistance', 'content' => $support ],
+        'cgv'     => [ 'title' => 'Conditions Générales de Vente', 'content' => $cgv ],
+    ];
+
+    foreach ( $pages as $slug => $data ) {
+        $existing = get_page_by_path( $slug );
+        if ( $existing ) {
+            update_post_meta( $existing->ID, '_wp_page_template', 'template-page-luxe.php' );
+            continue;
+        }
+        $page_id = wp_insert_post( [
+            'post_title'   => $data['title'],
+            'post_name'    => $slug,
+            'post_status'  => 'publish',
+            'post_type'    => 'page',
+            'post_content' => $data['content'],
+        ] );
+        if ( $page_id && ! is_wp_error( $page_id ) ) {
+            update_post_meta( $page_id, '_wp_page_template', 'template-page-luxe.php' );
+        }
+    }
+
+    update_option( 'nl_legal_pages_seeded', 'v1' );
 }
 
 /* ============================================================
