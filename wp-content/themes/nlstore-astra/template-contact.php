@@ -91,7 +91,7 @@ $old_message = isset( $_POST['nl_message'] ) ? esc_textarea( sanitize_textarea_f
                 </ul>
 
                 <div class="nl-contact-map">
-                    <iframe src="<?php echo esc_url( $map_src ); ?>" title="Localisation NL Store — Tsingoni, Mayotte" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                    <?php echo nl_map_div( 14 ); // carte sombre Leaflet ?>
                 </div>
             </aside>
 

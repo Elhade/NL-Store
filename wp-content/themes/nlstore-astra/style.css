@@ -3269,3 +3269,51 @@ button.menu-toggle:hover,
 @media (max-width: 540px) {
   .nl-marques-grid { grid-template-columns: 1fr; }
 }
+
+/* ======================================================
+   CARTE SOMBRE LEAFLET (remplace l'iframe Google)
+   ====================================================== */
+.nl-map {
+  width: 100%;
+  background: #0b0905;
+  z-index: 0;
+}
+.nl-footer-map__frame .nl-map { height: 190px; }
+.nl-contact-map .nl-map { height: 240px; }
+
+/* Conteneur Leaflet : coins arrondis hérités du cadre */
+.nl-footer-map__frame .leaflet-container,
+.nl-contact-map .leaflet-container {
+  background: #0b0905;
+  border-radius: inherit;
+  font: inherit;
+}
+
+/* Marqueur doré pulsé */
+.nl-map-pin span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--nl-gold-bright), var(--nl-gold-deep));
+  border: 2px solid #0b0905;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.35), 0 0 14px rgba(212, 175, 55, 0.6);
+}
+
+/* Contrôles de zoom — thème sombre / doré */
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background: rgba(12, 10, 6, 0.92) !important;
+  color: var(--nl-gold) !important;
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+.leaflet-bar a:hover { background: rgba(212, 175, 55, 0.16) !important; }
+
+/* Attribution (obligatoire) — discrète sur fond sombre */
+.leaflet-control-attribution {
+  background: rgba(8, 6, 3, 0.6) !important;
+  color: #8a8170 !important;
+  font-size: 9px !important;
+  padding: 1px 6px !important;
+}
+.leaflet-control-attribution a { color: var(--nl-gold-soft) !important; }
