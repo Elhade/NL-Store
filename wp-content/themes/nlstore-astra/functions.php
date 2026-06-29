@@ -450,7 +450,7 @@ function nl_enqueue_cart_toast() {
     $cart_url = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
     $label    = esc_js( __( 'Produit ajouté au panier', 'nlstore' ) );
     $btn      = esc_js( __( 'Voir le panier', 'nlstore' ) );
-    $url      = esc_url( $cart_url );
+    $url      = esc_js( esc_url( $cart_url ) );
 
     $js = <<<JS
 jQuery(function($){
@@ -1034,7 +1034,8 @@ function nl_seo_meta() {
     $desc = wp_strip_all_tags( $desc );
 
     $title = wp_get_document_title();
-    $url   = home_url( add_query_arg( null, null ) );
+    // URL canonique propre (sans query string de tracking).
+    $url   = is_singular() ? get_permalink() : home_url( '/' );
     $image = $s['og_image'];
     if ( ! $image ) {
         $logo_id = get_theme_mod( 'custom_logo' );
@@ -1522,8 +1523,7 @@ function nl_weekly_promos_page() {
         }
     }
     
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- nom de table statique du thème
-    $promos = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY created_at DESC" );
+    $promos = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `{$table}` ORDER BY created_at DESC" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     ?>
     <div class="wrap">
         <h1>⭐ Promotions de la Semaine</h1>
@@ -1640,14 +1640,12 @@ function nl_render_promo_banner() {
     }
     $rendered = true;
 
-    // Couleurs déjà validées par sanitize_hex_color à l'enregistrement.
-    $gradient = sprintf(
-        'linear-gradient(90deg, %s 0%%, %s 100%%)',
-        $banner['bg_gradient_from'],
-        $banner['bg_gradient_to']
-    );
-    
-    $color = esc_attr( $banner['text_color'] );
+    // Revalidation des couleurs à la lecture (défense en profondeur).
+    $from = sanitize_hex_color( $banner['bg_gradient_from'] ?? '' ) ?: '#d4af37';
+    $to   = sanitize_hex_color( $banner['bg_gradient_to'] ?? '' ) ?: '#c9a22e';
+    $gradient = sprintf( 'linear-gradient(90deg, %s 0%%, %s 100%%)', $from, $to );
+
+    $color = esc_attr( sanitize_hex_color( $banner['text_color'] ?? '' ) ?: '#050505' );
 
     // Liste des messages (compat : dérive depuis 'text' si 'messages' absent).
     $messages = ( ! empty( $banner['messages'] ) && is_array( $banner['messages'] ) )
@@ -1722,8 +1720,7 @@ add_shortcode('nl_weekly_promos_carousel', 'nl_render_weekly_promos_carousel');
 function nl_render_weekly_promos_carousel() {
     global $wpdb;
     $table  = $wpdb->prefix . 'nl_weekly_promos';
-    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- nom de table statique du thème
-    $promos = $wpdb->get_results( "SELECT * FROM {$table} ORDER BY id DESC LIMIT 10" );
+    $promos = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM `{$table}` ORDER BY id DESC LIMIT 10" ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
     ob_start();
     ?>
