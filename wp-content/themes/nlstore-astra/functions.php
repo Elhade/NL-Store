@@ -1579,14 +1579,11 @@ function nl_render_footer( $content = '' ) {
 
                 <div class="nl-footer-col nl-footer-map">
                     <h3>Nous trouver</h3>
+                    <?php if ( nl_map_enabled() ) : ?>
                     <div class="nl-footer-map__frame">
-                        <iframe
-                            src="<?php echo esc_url( $map_src ); ?>"
-                            title="Localisation NL Store — Tsingoni, Mayotte"
-                            loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"
-                            allowfullscreen></iframe>
+                        <?php echo nl_map_div( 14 ); // carte sombre Leaflet ?>
                     </div>
+                    <?php endif; ?>
                     <a class="nl-footer-map__link" href="<?php echo esc_url( 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
                 </div>
 
@@ -1627,7 +1624,77 @@ function nl_company_info() {
         'siret'     => '812 234 094 00017',
         'ape'       => '47.11B — Commerce d\'alimentation générale',
         'map_query' => 'Mroalé, 97680 Tsingoni, Mayotte',
+        // Coordonnées GPS pour la carte sombre Leaflet (ajustables ici).
+        'lat'       => -12.7847,
+        'lng'       => 45.1100,
     ] );
+}
+
+/* ============================================================
+   NL STORE — CARTE SOMBRE (Leaflet + tuiles CARTO Dark)
+   Remplace l'iframe Google (et son bandeau imposé) par une carte
+   sombre propre, sans clé API. Chargée uniquement là où une carte
+   est affichée (accueil + page Contact) pour préserver la perf.
+   ============================================================ */
+function nl_map_enabled() {
+    return ( is_front_page() || is_page_template( 'template-contact.php' ) || is_page( 'contact' ) );
+}
+
+// Markup d'une carte (initialisée en JS au scroll).
+function nl_map_div( $zoom = 14 ) {
+    $info = nl_company_info();
+    $lat  = isset( $info['lat'] ) ? (float) $info['lat'] : -12.7847;
+    $lng  = isset( $info['lng'] ) ? (float) $info['lng'] : 45.11;
+    return sprintf(
+        '<div class="nl-map" data-lat="%s" data-lng="%s" data-zoom="%d" role="img" aria-label="%s"></div>',
+        esc_attr( $lat ),
+        esc_attr( $lng ),
+        (int) $zoom,
+        esc_attr( 'Carte — ' . $info['address'] )
+    );
+}
+
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_leaflet', 18 );
+function nl_enqueue_leaflet() {
+    if ( is_admin() || ! nl_map_enabled() ) {
+        return;
+    }
+    wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
+    wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
+
+    $js = <<<'JS'
+(function () {
+  function build(el) {
+    if (el.dataset.inited || typeof L === 'undefined') { return; }
+    var lat = parseFloat(el.getAttribute('data-lat'));
+    var lng = parseFloat(el.getAttribute('data-lng'));
+    var z = parseInt(el.getAttribute('data-zoom') || '14', 10);
+    if (isNaN(lat) || isNaN(lng)) { return; }
+    el.dataset.inited = '1';
+    var map = L.map(el, { scrollWheelZoom: false }).setView([lat, lng], z);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd', maxZoom: 20,
+      attribution: '&copy; OpenStreetMap, &copy; CARTO'
+    }).addTo(map);
+    L.circle([lat, lng], { radius: 700, color: '#d4af37', weight: 2, dashArray: '4 7', fillColor: '#d4af37', fillOpacity: 0.06 }).addTo(map);
+    var icon = L.divIcon({ className: 'nl-map-pin', html: '<span></span>', iconSize: [20, 20], iconAnchor: [10, 10] });
+    L.marker([lat, lng], { icon: icon }).addTo(map);
+    setTimeout(function () { map.invalidateSize(); }, 220);
+  }
+  function init() {
+    document.querySelectorAll('.nl-map').forEach(function (el) {
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { build(el); io.disconnect(); } });
+        }, { rootMargin: '250px' });
+        io.observe(el);
+      } else { build(el); }
+    });
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+JS;
+    wp_add_inline_script( 'leaflet', $js );
 }
 
 /* ============================================================
