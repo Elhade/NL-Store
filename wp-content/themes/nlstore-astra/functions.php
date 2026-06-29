@@ -933,6 +933,93 @@ function nl_add_promotions_menu() {
         'nl-reassurance',
         'nl_reassurance_page'
     );
+
+    add_submenu_page(
+        'nl-store-promotions',
+        'Carte (localisation)',
+        'Carte',
+        'manage_options',
+        'nl-map-settings',
+        'nl_map_settings_page'
+    );
+}
+
+/* ============================================================
+   NL STORE — RÉGLAGES CARTE (Mapbox token + coordonnées)
+   ============================================================ */
+function nl_map_settings() {
+    $info = function_exists( 'nl_company_info' ) ? nl_company_info() : [];
+    $defaults = [
+        'mapbox_token' => '',
+        'style'        => 'mapbox://styles/mapbox/dark-v11',
+        'lat'          => isset( $info['lat'] ) ? (float) $info['lat'] : -12.7847,
+        'lng'          => isset( $info['lng'] ) ? (float) $info['lng'] : 45.11,
+        'zoom'         => 14,
+    ];
+    $opt = get_option( 'nl_map_settings', [] );
+    if ( ! is_array( $opt ) ) {
+        $opt = [];
+    }
+    return array_merge( $defaults, $opt );
+}
+
+function nl_map_settings_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    if ( 'POST' === $_SERVER['REQUEST_METHOD'] && check_admin_referer( 'nl_map_settings_nonce' ) ) {
+        $lat = (float) str_replace( ',', '.', wp_unslash( $_POST['map_lat'] ?? '' ) );
+        $lng = (float) str_replace( ',', '.', wp_unslash( $_POST['map_lng'] ?? '' ) );
+        update_option( 'nl_map_settings', [
+            'mapbox_token' => sanitize_text_field( wp_unslash( $_POST['mapbox_token'] ?? '' ) ),
+            'style'        => sanitize_text_field( wp_unslash( $_POST['map_style'] ?? 'mapbox://styles/mapbox/dark-v11' ) ),
+            'lat'          => $lat,
+            'lng'          => $lng,
+            'zoom'         => max( 3, min( 20, absint( wp_unslash( $_POST['map_zoom'] ?? 14 ) ) ) ),
+        ] );
+        echo '<div class="notice notice-success"><p>✅ Réglages carte enregistrés !</p></div>';
+    }
+    $s = nl_map_settings();
+    ?>
+    <div class="wrap">
+        <h1>🗺️ Carte (localisation)</h1>
+        <p>Sans token, la carte utilise un fond sombre gratuit (CARTO). Avec un <strong>token Mapbox</strong> (gratuit), elle bascule sur le rendu dark premium Mapbox.</p>
+        <p><a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener">→ Créer un token Mapbox gratuit</a> (compte gratuit, 50 000 chargements/mois).</p>
+        <form method="post" style="background:#fff;padding:20px;border-radius:8px;max-width:680px;">
+            <?php wp_nonce_field( 'nl_map_settings_nonce' ); ?>
+            <table class="form-table">
+                <tr>
+                    <th><label for="mapbox_token">Token Mapbox</label></th>
+                    <td>
+                        <input type="text" id="mapbox_token" name="mapbox_token" value="<?php echo esc_attr( $s['mapbox_token'] ); ?>" class="large-text" placeholder="pk.eyJ1Ijoi… (laisser vide = carte gratuite)">
+                        <p class="description">Token public Mapbox (commence par « pk. »). Vide = carte gratuite CARTO Dark.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="map_style">Style Mapbox</label></th>
+                    <td>
+                        <input type="text" id="map_style" name="map_style" value="<?php echo esc_attr( $s['style'] ); ?>" class="large-text">
+                        <p class="description">Par défaut : <code>mapbox://styles/mapbox/dark-v11</code>. (Ignoré si pas de token.)</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="map_lat">Latitude</label></th>
+                    <td><input type="text" id="map_lat" name="map_lat" value="<?php echo esc_attr( $s['lat'] ); ?>" style="width:200px;"></td>
+                </tr>
+                <tr>
+                    <th><label for="map_lng">Longitude</label></th>
+                    <td><input type="text" id="map_lng" name="map_lng" value="<?php echo esc_attr( $s['lng'] ); ?>" style="width:200px;"></td>
+                </tr>
+                <tr>
+                    <th><label for="map_zoom">Zoom</label></th>
+                    <td><input type="number" id="map_zoom" name="map_zoom" value="<?php echo esc_attr( $s['zoom'] ); ?>" min="3" max="20" style="width:90px;"></td>
+                </tr>
+            </table>
+            <p class="description" style="margin:10px 0;">💡 Pour trouver les coordonnées : sur Google Maps, clic droit sur l'emplacement → cliquez sur les chiffres (lat, lng) pour les copier.</p>
+            <?php submit_button( 'Enregistrer' ); ?>
+        </form>
+    </div>
+    <?php
 }
 
 /* ============================================================
@@ -1641,24 +1728,79 @@ function nl_map_enabled() {
 }
 
 // Markup d'une carte (initialisée en JS au scroll).
-function nl_map_div( $zoom = 14 ) {
+function nl_map_div( $zoom = null ) {
     $info = nl_company_info();
-    $lat  = isset( $info['lat'] ) ? (float) $info['lat'] : -12.7847;
-    $lng  = isset( $info['lng'] ) ? (float) $info['lng'] : 45.11;
+    $s    = nl_map_settings();
+    $lat  = (float) $s['lat'];
+    $lng  = (float) $s['lng'];
+    $zoom = ( null === $zoom ) ? (int) $s['zoom'] : (int) $zoom;
     return sprintf(
         '<div class="nl-map" data-lat="%s" data-lng="%s" data-zoom="%d" role="img" aria-label="%s"></div>',
         esc_attr( $lat ),
         esc_attr( $lng ),
         (int) $zoom,
-        esc_attr( 'Carte — ' . $info['address'] )
+        esc_attr( 'Carte — ' . ( $info['address'] ?? '' ) )
     );
 }
 
-add_action( 'wp_enqueue_scripts', 'nl_enqueue_leaflet', 18 );
-function nl_enqueue_leaflet() {
+// Charge la bonne carte : Mapbox premium si un token est renseigné, sinon
+// Leaflet + tuiles CARTO Dark (gratuit, sans clé).
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_map', 18 );
+function nl_enqueue_map() {
     if ( is_admin() || ! nl_map_enabled() ) {
         return;
     }
+    $s = nl_map_settings();
+
+    if ( ! empty( $s['mapbox_token'] ) ) {
+        // ----- Mapbox GL JS (premium) -----
+        wp_enqueue_style( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css', [], '3.6.0' );
+        wp_enqueue_script( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js', [], '3.6.0', true );
+        wp_add_inline_script( 'mapbox-gl', 'window.NL_MAP=' . wp_json_encode( [
+            'token' => $s['mapbox_token'],
+            'style' => $s['style'] ?: 'mapbox://styles/mapbox/dark-v11',
+        ] ) . ';', 'before' );
+
+        $js = <<<'JS'
+(function () {
+  function build(el) {
+    if (el.dataset.inited || typeof mapboxgl === 'undefined' || !window.NL_MAP) { return; }
+    var lat = parseFloat(el.getAttribute('data-lat'));
+    var lng = parseFloat(el.getAttribute('data-lng'));
+    var z = parseInt(el.getAttribute('data-zoom') || '14', 10);
+    if (isNaN(lat) || isNaN(lng)) { return; }
+    el.dataset.inited = '1';
+    mapboxgl.accessToken = NL_MAP.token;
+    var map = new mapboxgl.Map({ container: el, style: NL_MAP.style, center: [lng, lat], zoom: z, cooperativeGestures: true });
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+    var pin = document.createElement('div'); pin.className = 'nl-map-pin'; pin.innerHTML = '<span></span>';
+    new mapboxgl.Marker({ element: pin }).setLngLat([lng, lat]).addTo(map);
+    map.on('load', function () {
+      map.addSource('nl-zone', { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Point', coordinates: [lng, lat] } } });
+      map.addLayer({ id: 'nl-zone', type: 'circle', source: 'nl-zone', paint: {
+        'circle-color': '#d4af37', 'circle-opacity': 0.08,
+        'circle-stroke-color': '#d4af37', 'circle-stroke-width': 1.5, 'circle-stroke-opacity': 0.6,
+        'circle-radius': ['interpolate', ['exponential', 2], ['zoom'], 10, 6, 16, 110]
+      } });
+    });
+    setTimeout(function () { map.resize(); }, 220);
+  }
+  function init() {
+    document.querySelectorAll('.nl-map').forEach(function (el) {
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { build(el); io.disconnect(); } }); }, { rootMargin: '250px' });
+        io.observe(el);
+      } else { build(el); }
+    });
+  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); } else { init(); }
+})();
+JS;
+        wp_add_inline_script( 'mapbox-gl', $js );
+        return;
+    }
+
+    // ----- Leaflet + CARTO Dark (gratuit) -----
     wp_enqueue_style( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', [], '1.9.4' );
     wp_enqueue_script( 'leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', [], '1.9.4', true );
 
@@ -1684,9 +1826,7 @@ function nl_enqueue_leaflet() {
   function init() {
     document.querySelectorAll('.nl-map').forEach(function (el) {
       if ('IntersectionObserver' in window) {
-        var io = new IntersectionObserver(function (es) {
-          es.forEach(function (e) { if (e.isIntersecting) { build(el); io.disconnect(); } });
-        }, { rootMargin: '250px' });
+        var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { build(el); io.disconnect(); } }); }, { rootMargin: '250px' });
         io.observe(el);
       } else { build(el); }
     });

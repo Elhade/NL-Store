@@ -3317,3 +3317,17 @@ button.menu-toggle:hover,
   padding: 1px 6px !important;
 }
 .leaflet-control-attribution a { color: var(--nl-gold-soft) !important; }
+
+/* Mapbox GL — contrôles & attribution en thème sombre/doré */
+.mapboxgl-ctrl-group {
+  background: rgba(12, 10, 6, 0.92) !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+}
+.mapboxgl-ctrl-group button + button { border-top: 1px solid rgba(212, 175, 55, 0.2) !important; }
+.mapboxgl-ctrl-group button .mapboxgl-ctrl-icon { filter: invert(1) sepia(1) saturate(3) hue-rotate(5deg) brightness(0.9); }
+.mapboxgl-ctrl-attrib {
+  background: rgba(8, 6, 3, 0.6) !important;
+  font-size: 9px !important;
+}
+.mapboxgl-ctrl-attrib, .mapboxgl-ctrl-attrib a { color: #8a8170 !important; }
+.mapboxgl-ctrl-attrib a { color: var(--nl-gold-soft) !important; }
