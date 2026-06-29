@@ -1617,11 +1617,17 @@ function nl_render_footer( $content = '' ) {
     <div class="nl-footer-luxury">
         <div class="nl-footer-bg"></div>
         <div class="nl-footer-content">
-            <div class="nl-footer-grid nl-footer-grid--4">
+            <div class="nl-footer-grid">
 
                 <div class="nl-footer-brand">
                     <h2><?php echo esc_html( $info['name'] ); ?></h2>
                     <p><?php echo esc_html( $info['baseline'] ); ?></p>
+                    <?php if ( nl_map_enabled() ) : ?>
+                        <div class="nl-footer-map__frame">
+                            <?php echo nl_map_div( 14 ); // carte sombre, au-dessus de l'adresse ?>
+                        </div>
+                        <a class="nl-footer-map__link" href="<?php echo esc_url( 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
+                    <?php endif; ?>
                     <?php if ( $info['address'] ) : ?>
                         <p class="nl-footer-meta"><?php echo nl_icon( 'map-pin' ); ?> <?php echo esc_html( $info['address'] ); ?></p>
                     <?php endif; ?>
@@ -1664,16 +1670,6 @@ function nl_render_footer( $content = '' ) {
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'support' ) ) ?: home_url( '/support/' ) ); ?>">Support &amp; Assistance</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a></li>
                     </ul>
-                </div>
-
-                <div class="nl-footer-col nl-footer-map">
-                    <h3>Nous trouver</h3>
-                    <?php if ( nl_map_enabled() ) : ?>
-                    <div class="nl-footer-map__frame">
-                        <?php echo nl_map_div( 14 ); // carte sombre Leaflet ?>
-                    </div>
-                    <?php endif; ?>
-                    <a class="nl-footer-map__link" href="<?php echo esc_url( 'https://maps.google.com/maps?q=' . rawurlencode( $info['map_query'] ) ); ?>" target="_blank" rel="noopener"><?php echo nl_icon( 'map-pin' ); ?> Itinéraire</a>
                 </div>
 
             </div>
