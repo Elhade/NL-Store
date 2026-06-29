@@ -942,6 +942,190 @@ function nl_add_promotions_menu() {
         'nl-map-settings',
         'nl_map_settings_page'
     );
+
+    add_submenu_page(
+        'nl-store-promotions',
+        'SEO & Analytics',
+        'SEO & Analytics',
+        'manage_options',
+        'nl-seo-settings',
+        'nl_seo_settings_page'
+    );
+}
+
+/* ============================================================
+   NL STORE — SEO, ANALYTICS (gated RGPD) & BANDEAU COOKIES
+   ============================================================ */
+function nl_seo_settings() {
+    $defaults = [
+        'meta_description' => '',
+        'ga4_id'           => '',
+        'og_image'         => '',
+    ];
+    $opt = get_option( 'nl_seo_settings', [] );
+    return array_merge( $defaults, is_array( $opt ) ? $opt : [] );
+}
+
+function nl_seo_settings_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    if ( 'POST' === $_SERVER['REQUEST_METHOD'] && check_admin_referer( 'nl_seo_settings_nonce' ) ) {
+        update_option( 'nl_seo_settings', [
+            'meta_description' => sanitize_text_field( wp_unslash( $_POST['meta_description'] ?? '' ) ),
+            'ga4_id'           => sanitize_text_field( wp_unslash( $_POST['ga4_id'] ?? '' ) ),
+            'og_image'         => esc_url_raw( wp_unslash( $_POST['og_image'] ?? '' ) ),
+        ] );
+        echo '<div class="notice notice-success"><p>✅ Réglages SEO & Analytics enregistrés !</p></div>';
+    }
+    $s = nl_seo_settings();
+    ?>
+    <div class="wrap">
+        <h1>🔎 SEO & Analytics</h1>
+        <p>Description par défaut pour les moteurs de recherche et le partage, et suivi d'audience (chargé uniquement après acceptation des cookies).</p>
+        <form method="post" style="background:#fff;padding:20px;border-radius:8px;max-width:720px;">
+            <?php wp_nonce_field( 'nl_seo_settings_nonce' ); ?>
+            <table class="form-table">
+                <tr>
+                    <th><label for="meta_description">Description par défaut (meta)</label></th>
+                    <td>
+                        <textarea id="meta_description" name="meta_description" rows="3" class="large-text" maxlength="320" placeholder="Ex : Parfums, articles bébé et vêtements à Mayotte et alentours. Qualité, prix doux, livraison rapide."><?php echo esc_textarea( $s['meta_description'] ); ?></textarea>
+                        <p class="description">~150-160 caractères idéalement. Utilisée si la page n'a pas de description propre.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="og_image">Image de partage (URL)</label></th>
+                    <td>
+                        <input type="url" id="og_image" name="og_image" value="<?php echo esc_attr( $s['og_image'] ); ?>" class="large-text" placeholder="https://… (1200×630 conseillé)">
+                        <p class="description">Image affichée lors d'un partage (Facebook, WhatsApp…). Par défaut : le logo.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="ga4_id">ID Google Analytics (GA4)</label></th>
+                    <td>
+                        <input type="text" id="ga4_id" name="ga4_id" value="<?php echo esc_attr( $s['ga4_id'] ); ?>" style="width:260px;" placeholder="G-XXXXXXXXXX">
+                        <p class="description">Commence par « G- ». Le suivi ne se charge <strong>qu'après acceptation</strong> des cookies (RGPD).</p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Enregistrer' ); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// Balises meta description + Open Graph / Twitter.
+add_action( 'wp_head', 'nl_seo_meta', 1 );
+function nl_seo_meta() {
+    $s    = nl_seo_settings();
+    $info = function_exists( 'nl_company_info' ) ? nl_company_info() : [];
+
+    // Description : excerpt de la page > réglage > baseline.
+    $desc = '';
+    if ( is_singular() ) {
+        $post = get_queried_object();
+        if ( $post && ! empty( $post->post_excerpt ) ) {
+            $desc = $post->post_excerpt;
+        }
+    }
+    if ( ! $desc ) {
+        $desc = $s['meta_description'] ?: ( $info['baseline'] ?? get_bloginfo( 'description' ) );
+    }
+    $desc = wp_strip_all_tags( $desc );
+
+    $title = wp_get_document_title();
+    $url   = home_url( add_query_arg( null, null ) );
+    $image = $s['og_image'];
+    if ( ! $image ) {
+        $logo_id = get_theme_mod( 'custom_logo' );
+        $image   = $logo_id ? wp_get_attachment_image_url( $logo_id, 'large' ) : '';
+    }
+
+    echo "\n<!-- NL Store SEO -->\n";
+    printf( '<meta name="description" content="%s">' . "\n", esc_attr( $desc ) );
+    printf( '<meta property="og:type" content="%s">' . "\n", is_singular( 'product' ) ? 'product' : 'website' );
+    printf( '<meta property="og:site_name" content="%s">' . "\n", esc_attr( get_bloginfo( 'name' ) ) );
+    printf( '<meta property="og:title" content="%s">' . "\n", esc_attr( $title ) );
+    printf( '<meta property="og:description" content="%s">' . "\n", esc_attr( $desc ) );
+    printf( '<meta property="og:url" content="%s">' . "\n", esc_url( $url ) );
+    if ( $image ) {
+        printf( '<meta property="og:image" content="%s">' . "\n", esc_url( $image ) );
+        echo '<meta name="twitter:card" content="summary_large_image">' . "\n";
+    } else {
+        echo '<meta name="twitter:card" content="summary">' . "\n";
+    }
+    printf( '<meta name="twitter:title" content="%s">' . "\n", esc_attr( $title ) );
+    printf( '<meta name="twitter:description" content="%s">' . "\n", esc_attr( $desc ) );
+}
+
+// Google Analytics (GA4) — chargé UNIQUEMENT après acceptation des cookies.
+add_action( 'wp_head', 'nl_analytics', 20 );
+function nl_analytics() {
+    $s     = nl_seo_settings();
+    $ga_id = preg_replace( '/[^A-Za-z0-9\-]/', '', $s['ga4_id'] );
+    if ( ! $ga_id ) {
+        return;
+    }
+    $ga_js = esc_js( $ga_id );
+    ?>
+    <script>
+    (function () {
+      var GA = '<?php echo $ga_js; ?>';
+      function consent() { try { return localStorage.getItem('nl_cookie_consent'); } catch (e) { return null; } }
+      function loadGA() {
+        if (window.__nlGAloaded || !GA) { return; }
+        window.__nlGAloaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag('js', new Date());
+        gtag('config', GA, { anonymize_ip: true });
+      }
+      if (consent() === 'accept') { loadGA(); }
+      document.addEventListener('nl:consent', function (e) { if (e.detail === 'accept') { loadGA(); } });
+    })();
+    </script>
+    <?php
+}
+
+// Bandeau cookies (RGPD) — auto-contenu (consentement en localStorage).
+add_action( 'wp_footer', 'nl_render_cookie_banner', 20 );
+function nl_render_cookie_banner() {
+    if ( is_admin() ) {
+        return;
+    }
+    $privacy_url = ( $p = get_page_by_path( 'politique-de-confidentialite' ) ) ? get_permalink( $p ) : home_url( '/politique-de-confidentialite/' );
+    ?>
+    <div class="nl-cookie" id="nl-cookie" role="dialog" aria-label="Préférences cookies" hidden>
+        <p class="nl-cookie__txt">Nous utilisons des cookies pour le bon fonctionnement du site et, avec votre accord, pour mesurer l'audience.
+            <a href="<?php echo esc_url( $privacy_url ); ?>">En savoir plus</a>.</p>
+        <div class="nl-cookie__actions">
+            <button type="button" class="nl-cookie__btn nl-cookie__btn--ghost" data-nl-cookie="refuse">Refuser</button>
+            <button type="button" class="nl-cookie__btn" data-nl-cookie="accept">Accepter</button>
+        </div>
+    </div>
+    <script>
+    (function () {
+      var el = document.getElementById('nl-cookie');
+      if (!el) { return; }
+      function get() { try { return localStorage.getItem('nl_cookie_consent'); } catch (e) { return 'na'; } }
+      function set(v) { try { localStorage.setItem('nl_cookie_consent', v); } catch (e) {} }
+      if (!get()) { el.hidden = false; requestAnimationFrame(function () { el.classList.add('is-visible'); }); }
+      el.querySelectorAll('[data-nl-cookie]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var v = b.getAttribute('data-nl-cookie');
+          set(v);
+          document.dispatchEvent(new CustomEvent('nl:consent', { detail: v }));
+          el.classList.remove('is-visible');
+          setTimeout(function () { el.hidden = true; }, 350);
+        });
+      });
+    })();
+    </script>
+    <?php
 }
 
 /* ============================================================
@@ -1675,7 +1859,7 @@ function nl_render_footer( $content = '' ) {
             </div>
 
             <div class="nl-footer-bottom">
-                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?>. Tous droits réservés. · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></p>
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?>. Tous droits réservés. · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politique-de-confidentialite' ) ) ?: home_url( '/politique-de-confidentialite/' ) ); ?>">Confidentialité</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></p>
             </div>
         </div>
     </div>
@@ -1843,7 +2027,7 @@ JS;
    ============================================================ */
 add_action( 'admin_init', 'nl_seed_legal_pages', 27 );
 function nl_seed_legal_pages() {
-    if ( get_option( 'nl_legal_pages_seeded' ) === 'v1' ) {
+    if ( get_option( 'nl_legal_pages_seeded' ) === 'v2' ) {
         return;
     }
     if ( ! current_user_can( 'manage_options' ) ) {
@@ -1925,10 +2109,40 @@ HTML;
 <p>Les présentes CGV sont soumises au droit français. En cas de litige, une solution amiable sera recherchée avant toute action judiciaire. Le consommateur peut recourir à un médiateur de la consommation.</p>
 HTML;
 
+    // ---- Politique de confidentialité (RGPD) ----
+    $privacy = <<<HTML
+<p class="nl-lead">La présente politique décrit comment {$name} collecte, utilise et protège vos données personnelles.</p>
+<h2>Responsable du traitement</h2>
+<p>{$name} — {$legal}.<br>Adresse : {$addr}.<br>Contact : {$email} · {$phone}.</p>
+<h2>Données collectées</h2>
+<p>Nous collectons les données que vous nous fournissez (nom, adresse, e-mail, téléphone, informations de commande) ainsi que des données de navigation (cookies, adresse IP, pages consultées).</p>
+<h2>Finalités</h2>
+<ul>
+<li>Traitement et suivi des commandes</li>
+<li>Livraison et service après-vente</li>
+<li>Réponses à vos messages</li>
+<li>Envoi d'informations commerciales (avec votre accord)</li>
+<li>Amélioration du site et mesure d'audience</li>
+</ul>
+<h2>Base légale</h2>
+<p>L'exécution du contrat (commandes), votre consentement (cookies, communications) et notre intérêt légitime (sécurité, amélioration du service).</p>
+<h2>Destinataires</h2>
+<p>Vos données sont destinées à {$name} et à ses prestataires (paiement, livraison, hébergement), tenus à la confidentialité. Elles ne sont jamais vendues à des tiers.</p>
+<h2>Durée de conservation</h2>
+<p>Les données sont conservées le temps nécessaire aux finalités, puis archivées ou supprimées conformément aux obligations légales.</p>
+<h2>Cookies</h2>
+<p>Le site utilise des cookies nécessaires à son fonctionnement et, avec votre consentement, des cookies de mesure d'audience. Vous pouvez accepter ou refuser ces derniers via le bandeau de cookies, et modifier votre choix à tout moment.</p>
+<h2>Vos droits</h2>
+<p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, d'opposition, de limitation et de portabilité de vos données. Pour les exercer, écrivez-nous à {$email}. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+<h2>Contact</h2>
+<p>Pour toute question relative à vos données personnelles : {$email}.</p>
+HTML;
+
     $pages = [
-        'faq'     => [ 'title' => 'FAQ', 'content' => $faq ],
-        'support' => [ 'title' => 'Support & Assistance', 'content' => $support ],
-        'cgv'     => [ 'title' => 'Conditions Générales de Vente', 'content' => $cgv ],
+        'faq'                        => [ 'title' => 'FAQ', 'content' => $faq ],
+        'support'                    => [ 'title' => 'Support & Assistance', 'content' => $support ],
+        'cgv'                        => [ 'title' => 'Conditions Générales de Vente', 'content' => $cgv ],
+        'politique-de-confidentialite' => [ 'title' => 'Politique de confidentialité', 'content' => $privacy ],
     ];
 
     foreach ( $pages as $slug => $data ) {
@@ -1949,7 +2163,7 @@ HTML;
         }
     }
 
-    update_option( 'nl_legal_pages_seeded', 'v1' );
+    update_option( 'nl_legal_pages_seeded', 'v2' );
 }
 
 /* ============================================================
