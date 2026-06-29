@@ -1818,7 +1818,7 @@ JS;
       subdomains: 'abcd', maxZoom: 20,
       attribution: '&copy; OpenStreetMap, &copy; CARTO'
     }).addTo(map);
-    L.circle([lat, lng], { radius: 700, color: '#d4af37', weight: 2, dashArray: '4 7', fillColor: '#d4af37', fillOpacity: 0.06 }).addTo(map);
+    L.circle([lat, lng], { radius: 420, color: '#e4c46a', weight: 1.5, dashArray: '2 8', fillColor: '#d4af37', fillOpacity: 0.025 }).addTo(map);
     var icon = L.divIcon({ className: 'nl-map-pin', html: '<span></span>', iconSize: [20, 20], iconAnchor: [10, 10] });
     L.marker([lat, lng], { icon: icon }).addTo(map);
     setTimeout(function () { map.invalidateSize(); }, 220);
