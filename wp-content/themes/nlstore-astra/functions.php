@@ -1814,6 +1814,7 @@ JS;
     if (isNaN(lat) || isNaN(lng)) { return; }
     el.dataset.inited = '1';
     var map = L.map(el, { scrollWheelZoom: false }).setView([lat, lng], z);
+    map.attributionControl.setPrefix(''); // retire le « Leaflet » + drapeau (on garde OSM/CARTO, requis)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
       subdomains: 'abcd', maxZoom: 20,
       attribution: '&copy; OpenStreetMap, &copy; CARTO'
