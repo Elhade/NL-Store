@@ -59,6 +59,15 @@ function nl_enqueue_interactions() {
     wp_register_script( 'nl-interactions', false, [], CHILD_THEME_NLSTORE_ASTRA_VERSION, true );
     wp_enqueue_script( 'nl-interactions' );
 
+    // Données pour les icônes d'en-tête (recherche + panier) injectées en JS.
+    $cart_count = ( class_exists( 'WooCommerce' ) && WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
+    wp_localize_script( 'nl-interactions', 'NL_DATA', [
+        'cartUrl'   => function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' ),
+        'cartCount' => (int) $cart_count,
+        'searchUrl' => home_url( '/' ),
+        'hasWoo'    => class_exists( 'WooCommerce' ) ? 1 : 0,
+    ] );
+
     $js = <<<'JS'
 (function () {
   var SELECTOR = '.nl-reveal, .nl-reveal-left, .nl-reveal-right, .nl-reveal-scale, .nl-stagger';
@@ -227,7 +236,62 @@ function nl_enqueue_interactions() {
     });
   }
 
-  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); nlCatCarousel(); nlHeaderTitle(); }
+  // Icônes d'en-tête (recherche + panier) injectées à côté du burger, hors menu.
+  var NL_SVG_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>';
+  var NL_SVG_BAG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
+
+  function nlBuildSearchOverlay(trigger) {
+    if (!window.NL_DATA) { return; }
+    var ov = document.createElement('div');
+    ov.className = 'nl-search-overlay';
+    ov.innerHTML =
+      '<form class="nl-search-form" action="' + NL_DATA.searchUrl + '" method="get" role="search">' +
+        '<span class="nl-search-form__ico" aria-hidden="true">' + NL_SVG_SEARCH + '</span>' +
+        '<input type="search" name="s" placeholder="Rechercher un produit…" aria-label="Rechercher" autocomplete="off">' +
+        (NL_DATA.hasWoo ? '<input type="hidden" name="post_type" value="product">' : '') +
+        '<button type="submit" class="nl-search-go">OK</button>' +
+        '<button type="button" class="nl-search-close" aria-label="Fermer">&times;</button>' +
+      '</form>';
+    document.body.appendChild(ov);
+    function open() { ov.classList.add('is-open'); setTimeout(function () { var i = ov.querySelector('input[name=s]'); if (i) { i.focus(); } }, 60); }
+    function close() { ov.classList.remove('is-open'); }
+    trigger.addEventListener('click', open);
+    ov.querySelector('.nl-search-close').addEventListener('click', close);
+    ov.addEventListener('click', function (e) { if (e.target === ov) { close(); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
+  }
+
+  function nlHeaderActions() {
+    if (!window.NL_DATA) { return; }
+    if (document.querySelector('.nl-header-actions')) { return; }
+    var toggle = document.querySelector('.ast-mobile-menu-buttons .menu-toggle, .main-header-bar .menu-toggle, .ast-header-base .menu-toggle, .menu-toggle');
+    if (!toggle) { return; }
+
+    var wrap = document.createElement('div');
+    wrap.className = 'nl-header-actions';
+
+    var searchBtn = document.createElement('button');
+    searchBtn.type = 'button';
+    searchBtn.className = 'nl-header-icon nl-header-search';
+    searchBtn.setAttribute('aria-label', 'Rechercher');
+    searchBtn.innerHTML = NL_SVG_SEARCH;
+    wrap.appendChild(searchBtn);
+
+    if (NL_DATA.hasWoo) {
+      var cart = document.createElement('a');
+      cart.className = 'nl-header-icon nl-header-cart';
+      cart.href = NL_DATA.cartUrl;
+      cart.setAttribute('aria-label', 'Voir le panier');
+      cart.innerHTML = NL_SVG_BAG +
+        '<span class="nl-cart-count' + (NL_DATA.cartCount > 0 ? ' has-items' : '') + '">' + NL_DATA.cartCount + '</span>';
+      wrap.appendChild(cart);
+    }
+
+    toggle.parentNode.insertBefore(wrap, toggle);
+    nlBuildSearchOverlay(searchBtn);
+  }
+
+  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); nlCatCarousel(); nlHeaderTitle(); nlHeaderActions(); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -1036,15 +1100,30 @@ function nl_render_promo_banner() {
         $banner['bg_gradient_to']
     );
     
+    // Contenu d'un « bloc » de marquee (texte + lien éventuel), déjà échappé.
+    $color = esc_attr( $banner['text_color'] );
+    ob_start();
+    ?><span class="nl-promo-marquee__item" style="color: <?php echo $color; ?>;">
+        <?php echo esc_html( $banner['text'] ); ?>
+        <?php if ( ! empty( $banner['link_text'] ) && ! empty( $banner['link_url'] ) ) : ?>
+            — <a href="<?php echo esc_url( $banner['link_url'] ); ?>" style="color: <?php echo $color; ?>;"><?php echo esc_html( $banner['link_text'] ); ?></a>
+        <?php endif; ?>
+    </span><?php
+    $item = ob_get_clean();
+
+    // On duplique le bloc plusieurs fois pour un défilement continu et sans trou,
+    // quelle que soit la largeur d'écran.
+    $track = str_repeat( $item, 4 );
+
     ob_start();
     ?>
     <div class="nl-promo-banner" style="background: <?php echo esc_attr( $gradient ); ?>;">
-        <p style="color: <?php echo esc_attr( $banner['text_color'] ); ?>;">
-            <?php echo esc_html( $banner['text'] ); ?>
-            <?php if ( ! empty( $banner['link_text'] ) && ! empty( $banner['link_url'] ) ) : ?>
-                — <a href="<?php echo esc_url( $banner['link_url'] ); ?>" style="color: <?php echo esc_attr( $banner['text_color'] ); ?>;"><?php echo esc_html( $banner['link_text'] ); ?></a>
-            <?php endif; ?>
-        </p>
+        <div class="nl-promo-marquee">
+            <div class="nl-promo-marquee__track">
+                <?php echo $track; // déjà échappé ci-dessus ?>
+                <?php echo $track; // 2e copie pour la boucle sans couture ?>
+            </div>
+        </div>
     </div>
     <?php
     return ob_get_clean();

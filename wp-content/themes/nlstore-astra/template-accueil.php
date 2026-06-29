@@ -97,6 +97,12 @@ $categories_config = [
         </div>
     </section>
 
+    <div class="nl-divider" aria-hidden="true">
+        <span class="nl-divider__line"></span>
+        <span class="nl-divider__dot">✦</span>
+        <span class="nl-divider__line"></span>
+    </div>
+
     <!-- ====================================================
          CATÉGORIES
     ==================================================== -->
@@ -148,6 +154,12 @@ $categories_config = [
         </div>
     </section>
 
+    <div class="nl-divider" aria-hidden="true">
+        <span class="nl-divider__line"></span>
+        <span class="nl-divider__dot">✦</span>
+        <span class="nl-divider__line"></span>
+    </div>
+
     <!-- ====================================================
          PRODUITS POPULAIRES
     ==================================================== -->
@@ -187,6 +199,12 @@ $categories_config = [
             </a>
         </div>
     </section>
+
+    <div class="nl-divider" aria-hidden="true">
+        <span class="nl-divider__line"></span>
+        <span class="nl-divider__dot">✦</span>
+        <span class="nl-divider__line"></span>
+    </div>
 
     <!-- ====================================================
          PROMOTIONS DE LA SEMAINE

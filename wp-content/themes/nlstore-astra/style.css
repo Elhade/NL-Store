@@ -108,7 +108,8 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* clip (et non hidden) : empêche le scroll horizontal SANS casser position:sticky */
+  overflow-x: clip;
 }
 
 body::before {
@@ -2863,4 +2864,200 @@ button.menu-toggle:hover,
 .ast-mobile-popup-drawer .menu-toggle-close,
 .ast-mobile-popup-drawer .ast-mobile-popup-close {
   color: var(--nl-gold) !important;
+}
+
+/* ======================================================
+   SÉPARATEURS DORÉS ENTRE SECTIONS (accueil)
+   ====================================================== */
+.nl-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 6px var(--nl-gutter);
+  position: relative;
+  z-index: 1;
+}
+.nl-divider__line {
+  height: 1px;
+  flex: 1;
+  max-width: 340px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.55), transparent);
+}
+.nl-divider__dot {
+  color: var(--nl-gold);
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
+}
+
+/* ======================================================
+   BANNIÈRE PROMO — marquee défilant
+   ====================================================== */
+.nl-promo-marquee {
+  overflow: hidden;
+  width: 100%;
+}
+.nl-promo-marquee__track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+  animation: nlMarquee 26s linear infinite;
+}
+.nl-promo-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 32px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+}
+.nl-promo-marquee__item a {
+  text-decoration: underline;
+  font-weight: 700;
+}
+@keyframes nlMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+/* Pause au survol (desktop) */
+.nl-promo-banner:hover .nl-promo-marquee__track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nl-promo-marquee__track { animation: none; justify-content: center; width: 100%; }
+}
+
+/* ======================================================
+   HEADER — icônes recherche + panier (hors burger) + sticky
+   ====================================================== */
+.nl-header-actions {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+}
+.nl-header-icon {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0 !important;
+  border: 1px solid rgba(212, 175, 55, 0.0) !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  color: var(--nl-gold) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: background 0.25s var(--nl-ease), border-color 0.25s var(--nl-ease) !important;
+}
+.nl-header-icon:hover {
+  background: rgba(212, 175, 55, 0.12) !important;
+  border-color: rgba(212, 175, 55, 0.4) !important;
+  transform: none !important;
+}
+.nl-header-icon svg {
+  width: 23px;
+  height: 23px;
+}
+.nl-header-cart .nl-cart-count {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  font-size: 10px;
+}
+
+/* Overlay de recherche */
+.nl-search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 22vh 18px 0;
+  background: rgba(4, 3, 2, 0.82);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--nl-ease), visibility 0.3s var(--nl-ease);
+}
+.nl-search-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+.nl-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 620px;
+  background: linear-gradient(180deg, #16110a, #0b0905);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 14px;
+  padding: 10px 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  transform: translateY(-16px);
+  transition: transform 0.3s var(--nl-ease-spring);
+}
+.nl-search-overlay.is-open .nl-search-form { transform: translateY(0); }
+.nl-search-form__ico { color: var(--nl-gold); display: inline-flex; }
+.nl-search-form__ico svg { width: 22px; height: 22px; }
+.nl-search-form input[type="search"] {
+  flex: 1;
+  background: transparent !important;
+  border: 0 !important;
+  outline: none !important;
+  color: var(--nl-white) !important;
+  font-size: 16px !important;
+  padding: 8px 4px !important;
+  box-shadow: none !important;
+}
+.nl-search-form input[type="search"]::placeholder { color: var(--nl-grey); }
+.nl-search-go {
+  padding: 10px 18px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold)) !important;
+  color: var(--nl-gold-ink) !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  border: 0 !important;
+}
+.nl-search-close {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--nl-grey) !important;
+  font-size: 26px !important;
+  line-height: 1 !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0 6px !important;
+  cursor: pointer;
+}
+
+/* En-tête sticky au scroll (la bannière promo, elle, défile et disparaît) */
+#masthead,
+.site-header,
+.ast-primary-header-bar {
+  position: -webkit-sticky !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 999 !important;
+}
+/* Léger fond + ombre quand collé en haut */
+#masthead {
+  background: rgba(8, 6, 3, 0.92) !important;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
