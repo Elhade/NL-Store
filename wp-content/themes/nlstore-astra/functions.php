@@ -217,7 +217,17 @@ function nl_enqueue_interactions() {
     start();
   }
 
-  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); nlCatCarousel(); }
+  // Repli : si le filtre PHP n'a pas pris, on remplace « NL Store » par
+  // « Store » dans le titre de l'en-tête uniquement (le logo affiche déjà NL).
+  function nlHeaderTitle() {
+    document.querySelectorAll('.site-title a').forEach(function (a) {
+      if (a.children.length === 0 && a.textContent.trim() === 'NL Store') {
+        a.textContent = 'Store';
+      }
+    });
+  }
+
+  function init() { nlReveal(); nlParallax(); nlSliders(); nlWishlist(); nlCatCarousel(); nlHeaderTitle(); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -252,6 +262,9 @@ function nl_icon( $name, $class = 'nl-icon' ) {
             'instagram'      => '<rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>',
             'facebook'       => '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>',
             'heart'          => '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+            'shopping-bag'   => '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+            'check'          => '<path d="M20 6 9 17l-5-5"/>',
+            'x'              => '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
         ];
     }
     if ( ! isset( $paths[ $name ] ) ) {
@@ -315,6 +328,88 @@ function nl_wishlist_button() {
         esc_attr( $id ),
         nl_icon( 'heart', 'nl-icon' )
     );
+}
+
+/* ============================================================
+   NL STORE — EN-TÊTE : titre « Store » (le logo affiche déjà « NL »)
+   On évite la répétition « NL » + « NL Store » dans l'en-tête UNIQUEMENT.
+   Le vrai nom du site (balise <title>, footer…) reste inchangé.
+   ============================================================ */
+function nl_header_store_title( $html ) {
+    return str_replace( 'NL Store', 'Store', $html );
+}
+// Couvre les différents noms de filtre selon la version d'Astra (sans risque).
+add_filter( 'astra_site_title_output', 'nl_header_store_title', 20 );
+add_filter( 'astra_site_title', 'nl_header_store_title', 20 );
+
+/* ============================================================
+   NL STORE — PANIER : item de menu + compteur live + popup
+   ============================================================ */
+
+// Ajoute un lien « Panier » (icône + compteur) au menu principal (et donc au
+// menu burger off-canvas qu'Astra clone depuis ce menu).
+add_filter( 'wp_nav_menu_items', 'nl_add_cart_menu_item', 10, 2 );
+function nl_add_cart_menu_item( $items, $args ) {
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        return $items;
+    }
+    if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+        return $items;
+    }
+    $count = ( WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
+    $url   = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
+
+    $items .= '<li class="menu-item nl-cart-menu-item"><a href="' . esc_url( $url ) . '" class="nl-cart-link">'
+        . nl_icon( 'shopping-bag', 'nl-icon' )
+        . '<span class="nl-cart-label">Panier</span>'
+        . '<span class="nl-cart-count' . ( $count > 0 ? ' has-items' : '' ) . '">' . (int) $count . '</span>'
+        . '</a></li>';
+
+    return $items;
+}
+
+// Met à jour le compteur en direct (AJAX) sans recharger la page.
+add_filter( 'woocommerce_add_to_cart_fragments', 'nl_cart_count_fragment' );
+function nl_cart_count_fragment( $fragments ) {
+    $count = ( WC()->cart ) ? WC()->cart->get_cart_contents_count() : 0;
+    $fragments['.nl-cart-count'] = '<span class="nl-cart-count' . ( $count > 0 ? ' has-items' : '' ) . '">' . (int) $count . '</span>';
+    return $fragments;
+}
+
+// Popup « Voir le panier » à l'ajout (écoute l'événement WooCommerce added_to_cart).
+add_action( 'wp_enqueue_scripts', 'nl_enqueue_cart_toast', 25 );
+function nl_enqueue_cart_toast() {
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        return;
+    }
+    $cart_url = function_exists( 'wc_get_cart_url' ) ? wc_get_cart_url() : home_url( '/panier/' );
+    $label    = esc_js( __( 'Produit ajouté au panier', 'nlstore' ) );
+    $btn      = esc_js( __( 'Voir le panier', 'nlstore' ) );
+    $url      = esc_url( $cart_url );
+
+    $js = <<<JS
+jQuery(function($){
+  function nlCartToast(){
+    var old = document.querySelector('.nl-cart-toast');
+    if (old) { old.remove(); }
+    var el = document.createElement('div');
+    el.className = 'nl-cart-toast';
+    el.setAttribute('role','status');
+    el.innerHTML =
+      '<span class="nl-cart-toast__ico" aria-hidden="true">&#10003;</span>' +
+      '<span class="nl-cart-toast__txt">$label</span>' +
+      '<a class="nl-cart-toast__btn" href="$url">$btn</a>' +
+      '<button type="button" class="nl-cart-toast__close" aria-label="Fermer">&times;</button>';
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add('is-visible'); });
+    var timer = setTimeout(close, 5000);
+    function close(){ clearTimeout(timer); el.classList.remove('is-visible'); setTimeout(function(){ if(el.parentNode){ el.remove(); } }, 400); }
+    el.querySelector('.nl-cart-toast__close').addEventListener('click', close);
+  }
+  $(document.body).on('added_to_cart', nlCartToast);
+});
+JS;
+    wp_add_inline_script( 'jquery-core', $js );
 }
 
 /* ============================================================
