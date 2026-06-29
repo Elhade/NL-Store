@@ -3061,3 +3061,64 @@ button.menu-toggle:hover,
   backdrop-filter: blur(8px);
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
+
+/* ======================================================
+   BARRE DE RÉASSURANCE (sous le hero)
+   ====================================================== */
+.nl-reassurance {
+  background: var(--nl-black-deep);
+  border-top: 1px solid rgba(212, 175, 55, 0.18);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  padding: 26px var(--nl-gutter);
+  position: relative;
+  z-index: 1;
+}
+.nl-reassurance__grid {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+.nl-reassurance__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.nl-reassurance__ico {
+  color: var(--nl-gold);
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.nl-reassurance__ico svg {
+  width: 34px;
+  height: 34px;
+}
+.nl-reassurance__txt {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.nl-reassurance__txt strong {
+  color: var(--nl-white);
+  font-family: var(--nl-font-body);
+  font-size: 16px;
+  font-weight: 700;
+}
+.nl-reassurance__txt span {
+  color: var(--nl-grey);
+  font-size: 13px;
+}
+@media (max-width: 900px) {
+  .nl-reassurance__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px 16px;
+  }
+  .nl-reassurance__item { justify-content: flex-start; }
+}
+@media (max-width: 420px) {
+  .nl-reassurance__ico svg { width: 28px; height: 28px; }
+  .nl-reassurance__txt strong { font-size: 14px; }
+  .nl-reassurance__txt span { font-size: 12px; }
+}
