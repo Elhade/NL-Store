@@ -1101,6 +1101,12 @@ function nl_render_photomaton() {
                 <?php endif; ?>
             </div>
         </div>
+        <div class="nl-photomaton__features">
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'shield-check' ); ?><div><strong>Photos conformes</strong><span>Respect des normes officielles</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'clock' ); ?><div><strong>Service rapide</strong><span>Impression immédiate</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'landmark' ); ?><div><strong>Disponible en mairie</strong><span>Près de chez vous</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'users' ); ?><div><strong>Accessible à tous</strong><span>Sans rendez-vous</span></div></div>
+        </div>
     </section>
     <?php
     return ob_get_clean();
