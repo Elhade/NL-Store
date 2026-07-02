@@ -150,14 +150,14 @@ $categories_config = [
     </section>
 
     <!-- ====================================================
-         PHOTOMATON EN MAIRIE (configurable au back-office) — juste après les catégories
-    ==================================================== -->
-    <?php echo nl_render_photomaton(); ?>
-
-    <!-- ====================================================
-         RÉASSURANCE (configurable au back-office) — entre catégories et best-sellers
+         RÉASSURANCE (configurable au back-office) — juste après les catégories
     ==================================================== -->
     <?php echo nl_render_reassurance(); ?>
+
+    <!-- ====================================================
+         PHOTOMATON EN MAIRIE (configurable au back-office) — après la réassurance
+    ==================================================== -->
+    <?php echo nl_render_photomaton(); ?>
 
     <div class="nl-divider" aria-hidden="true">
         <span class="nl-divider__line"></span>
