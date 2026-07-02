@@ -973,17 +973,21 @@ function nl_add_promotions_menu() {
    ============================================================ */
 function nl_photomaton_data() {
     $defaults = [
-        'is_active'    => 0,
+        'is_active'    => 1,
         'image'        => '',
         'button_label' => 'Trouver un photomaton',
         'intro'        => 'Réalisez vos photos d\'identité conformes et officielles en quelques minutes.',
-        'addresses'    => [], // [ ['name','address','lat','lng'], ... ]
+        'addresses'    => [
+            [ 'name' => 'Mairie de Tsingoni', 'address' => 'Place de la Mairie, 97680 Tsingoni', 'lat' => -12.7847, 'lng' => 45.1100 ],
+        ],
     ];
     $opt = get_option( 'nl_photomaton', [] );
-    if ( ! is_array( $opt ) ) {
-        $opt = [];
+    if ( ! is_array( $opt ) || empty( $opt ) ) {
+        return $defaults;
     }
-    return array_merge( $defaults, $opt );
+    $merged = array_merge( $defaults, $opt );
+    $merged['is_active'] = isset( $opt['is_active'] ) ? (int) $opt['is_active'] : 1;
+    return $merged;
 }
 
 function nl_photomaton_page() {
