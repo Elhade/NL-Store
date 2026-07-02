@@ -3496,3 +3496,223 @@ button.menu-toggle:hover,
 @media (prefers-reduced-motion: reduce) {
   .nl-cookie { transition: opacity 0.2s linear; }
 }
+
+/* ======================================================
+   SECTION PHOTOMATON EN MAIRIE
+   ====================================================== */
+.nl-photomaton {
+  position: relative;
+  z-index: 1;
+  padding: clamp(48px, 8vw, 90px) var(--nl-gutter) 0;
+  background: linear-gradient(180deg, #0a0805, #060503);
+  border-top: 1px solid rgba(212, 175, 55, 0.14);
+}
+.nl-photomaton__inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+.nl-photomaton__badge {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 999px;
+  color: var(--nl-gold-bright);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.nl-photomaton__title {
+  font-family: var(--nl-font-title) !important;
+  font-size: clamp(34px, 5vw, 58px) !important;
+  font-weight: 800 !important;
+  line-height: 1.02 !important;
+  text-transform: uppercase;
+  color: #fff !important;
+  margin: 0 0 18px !important;
+}
+.nl-photomaton__title span { color: var(--nl-gold) !important; }
+.nl-photomaton__sub {
+  color: var(--nl-grey-light, #cfc7b6) !important;
+  font-size: 17px !important;
+  max-width: 460px;
+  margin: 0 0 22px !important;
+}
+.nl-photomaton__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.nl-photomaton__list li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--nl-white-soft);
+  font-size: 16px;
+}
+.nl-photomaton__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 50%;
+  color: var(--nl-gold);
+}
+.nl-photomaton__ico .nl-icon { width: 19px; height: 19px; }
+.nl-photomaton__cta {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 30px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, var(--nl-gold-soft), var(--nl-gold-deep)) !important;
+  color: var(--nl-gold-ink) !important;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(212, 175, 55, 0.28) !important;
+  transition: transform 0.3s var(--nl-ease-spring), box-shadow 0.3s var(--nl-ease) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+.nl-photomaton__cta:hover { transform: translateY(-3px) !important; box-shadow: 0 18px 40px rgba(212, 175, 55, 0.4) !important; }
+.nl-photomaton__cta .nl-icon { width: 22px; height: 22px; }
+.nl-photomaton__cta span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
+.nl-photomaton__cta strong { font-size: 14px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+.nl-photomaton__cta small { font-size: 12px; opacity: 0.8; }
+
+.nl-photomaton__media { display: flex; justify-content: center; }
+.nl-photomaton__media img {
+  max-width: 100%;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.nl-photomaton__ph {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(212, 175, 55, 0.35);
+  border-radius: 18px;
+  color: rgba(212, 175, 55, 0.4);
+}
+.nl-photomaton__ph .nl-icon { width: 64px; height: 64px; }
+
+/* Barre d'atouts sous la section */
+.nl-photomaton__features {
+  max-width: 1180px;
+  margin: clamp(40px, 6vw, 70px) auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  padding: 26px 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.12);
+}
+.nl-photomaton__feat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--nl-white-soft);
+}
+.nl-photomaton__feat .nl-icon { width: 30px; height: 30px; color: var(--nl-gold); flex-shrink: 0; }
+.nl-photomaton__feat div { display: flex; flex-direction: column; line-height: 1.3; }
+.nl-photomaton__feat strong { font-size: 15px; color: var(--nl-white); }
+.nl-photomaton__feat span { font-size: 13px; color: var(--nl-grey); }
+
+@media (max-width: 900px) {
+  .nl-photomaton__inner { grid-template-columns: 1fr; }
+  .nl-photomaton__media { order: -1; }
+  .nl-photomaton__features { grid-template-columns: repeat(2, 1fr); gap: 20px 16px; }
+}
+
+/* ======================================================
+   MODAL « TROUVER UN PHOTOMATON »
+   ====================================================== */
+.nl-pm-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(4, 3, 2, 0.82);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s var(--nl-ease), visibility 0.3s var(--nl-ease);
+}
+.nl-pm-modal.is-open { opacity: 1; visibility: visible; }
+.nl-pm-modal__box {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  background: linear-gradient(180deg, #16110a, #0b0905);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  transform: translateY(16px);
+  transition: transform 0.3s var(--nl-ease-spring);
+}
+.nl-pm-modal.is-open .nl-pm-modal__box { transform: translateY(0); }
+.nl-pm-modal__box h3 {
+  font-family: var(--nl-font-title) !important;
+  color: var(--nl-white) !important;
+  font-size: 22px !important;
+  margin: 0 0 14px !important;
+}
+.nl-pm-modal__close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--nl-grey) !important;
+  font-size: 28px !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  cursor: pointer;
+  width: auto !important;
+  height: auto !important;
+}
+.nl-pm-modal__map {
+  width: 100%;
+  height: 360px;
+  max-height: 52vh;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0905;
+}
+.nl-pm-modal__map .leaflet-container,
+.nl-pm-modal__map .mapboxgl-map { border-radius: 12px; }
+.nl-pm-empty { color: var(--nl-grey); text-align: center; padding: 40px 10px; }
+.nl-pm-modal__list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  max-height: 22vh;
+  overflow-y: auto;
+}
+.nl-pm-modal__list li {
+  display: flex;
+  gap: 12px;
+  color: var(--nl-white-soft);
+  font-size: 14px;
+}
+.nl-pm-modal__list .nl-icon { color: var(--nl-gold); flex-shrink: 0; margin-top: 3px; }
+.nl-pm-modal__list strong { display: block; color: var(--nl-white); }

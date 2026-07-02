@@ -232,6 +232,11 @@ $categories_config = [
         </div>
     </section>
 
+    <!-- ====================================================
+         PHOTOMATON EN MAIRIE (configurable au back-office)
+    ==================================================== -->
+    <?php echo nl_render_photomaton(); ?>
+
 </main><!-- #nl-home -->
 
 <?php get_footer(); ?>
