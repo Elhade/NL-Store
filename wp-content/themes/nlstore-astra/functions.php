@@ -1032,13 +1032,7 @@ function nl_photomaton_page() {
         $lines[] = $a['name'] . ' | ' . $a['address'] . ' | ' . $a['lat'] . ' | ' . $a['lng'];
     }
     ?>
-    <div class="wrap">
-        <div class="nl-photomaton__features">
-            <div class="nl-photomaton__feat"><?php echo nl_icon( 'shield-check' ); ?><div><strong>Photos conformes</strong><span>Respect des normes officielles</span></div></div>
-            <div class="nl-photomaton__feat"><?php echo nl_icon( 'clock' ); ?><div><strong>Service rapide</strong><span>Impression immédiate</span></div></div>
-            <div class="nl-photomaton__feat"><?php echo nl_icon( 'landmark' ); ?><div><strong>Disponible en mairie</strong><span>Près de chez vous</span></div></div>
-            <div class="nl-photomaton__feat"><?php echo nl_icon( 'users' ); ?><div><strong>Accessible à tous</strong><span>Sans rendez-vous</span></div></div>
-        </div>
+    <div class="wrap mb-4">
         <h1>📷 Photomaton en mairie</h1>
         <p>Section affichée sur la page d'accueil. Le bouton ouvre une carte (Mapbox si un token est renseigné dans NL Store → Carte, sinon carte gratuite) avec les mairies équipées.</p>
         <form method="post" style="background:#fff;padding:20px;border-radius:8px;max-width:760px;">
