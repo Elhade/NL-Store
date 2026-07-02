@@ -1077,7 +1077,7 @@ function nl_render_photomaton() {
     $img = $d['image'];
     ob_start();
     ?>
-    <section class="nl-photomaton nl-reveal">
+    <section class="nl-photomaton nl-reveal mb-4">
         <div class="nl-photomaton__inner">
             <div class="nl-photomaton__content">
                 <span class="nl-photomaton__badge">Service de proximité</span>
