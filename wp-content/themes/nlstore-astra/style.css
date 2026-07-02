@@ -1108,7 +1108,7 @@ ul.products,
 .nl-promo-week-section {
   background: transparent !important; /* laisse voir le fond fixe ::before (parfum) */
   padding: var(--nl-section-y) var(--nl-gutter) !important;
-  border-top: 1px solid var(--nl-hairline) !important;
+  /* border-top: 1px solid var(--nl-hairline) !important; */
 }
 
 .nl-promo-week-grid {
@@ -3139,9 +3139,9 @@ button.menu-toggle:hover,
   padding: 30px 0 34px;
   background: var(--nl-black-deep);
   border-top: 1px solid rgba(212, 175, 55, 0.12);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
   overflow: hidden;
 }
+
 .nl-brands__label {
   text-align: center;
   margin: 0 0 18px;

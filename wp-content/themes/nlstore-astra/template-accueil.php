@@ -150,7 +150,22 @@ $categories_config = [
     </section>
 
     <!-- ====================================================
+<<<<<<< HEAD
          RÉASSURANCE (configurable au back-office) — juste après les catégories
+=======
+         PHOTOMATON EN MAIRIE (configurable au back-office) — juste après les catégories
+    ==================================================== -->
+    <?php echo nl_render_photomaton(); ?>
+
+    <div class="nl-divider" aria-hidden="true">
+        <span class="nl-divider__line"></span>
+        <span class="nl-divider__dot">✦</span>
+        <span class="nl-divider__line"></span>
+    </div>
+    
+    <!-- ====================================================
+         RÉASSURANCE (configurable au back-office) — entre catégories et best-sellers
+>>>>>>> c083a47 (feat(photomaton): add divider element to enhance visual separation in homepage template)
     ==================================================== -->
     <?php echo nl_render_reassurance(); ?>
 
