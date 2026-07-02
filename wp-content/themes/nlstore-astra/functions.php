@@ -1282,11 +1282,11 @@ function nl_render_cookie_banner() {
     if ( is_admin() ) {
         return;
     }
-    $privacy_url = ( $p = get_page_by_path( 'politique-de-confidentialite' ) ) ? get_permalink( $p ) : home_url( '/politique-de-confidentialite/' );
+    $cookies_url = ( $p = get_page_by_path( 'politique-de-cookies' ) ) ? get_permalink( $p ) : home_url( '/politique-de-cookies/' );
     ?>
     <div class="nl-cookie" id="nl-cookie" role="dialog" aria-label="Préférences cookies" hidden>
         <p class="nl-cookie__txt">Nous utilisons des cookies pour le bon fonctionnement du site et, avec votre accord, pour mesurer l'audience.
-            <a href="<?php echo esc_url( $privacy_url ); ?>">En savoir plus</a>.</p>
+            <a href="<?php echo esc_url( $cookies_url ); ?>">En savoir plus</a>.</p>
         <div class="nl-cookie__actions">
             <button type="button" class="nl-cookie__btn nl-cookie__btn--ghost" data-nl-cookie="refuse">Refuser</button>
             <button type="button" class="nl-cookie__btn" data-nl-cookie="accept">Accepter</button>
@@ -2034,13 +2034,14 @@ function nl_render_footer( $content = '' ) {
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'support' ) ) ?: home_url( '/support/' ) ); ?>">Support &amp; Assistance</a></li>
                         <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a></li>
+                        <li><a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politique-de-cookies' ) ) ?: home_url( '/politique-de-cookies/' ) ); ?>">Politique de cookies</a></li>
                     </ul>
                 </div>
 
             </div>
 
             <div class="nl-footer-bottom">
-                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?>. Tous droits réservés. · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politique-de-confidentialite' ) ) ?: home_url( '/politique-de-confidentialite/' ) ); ?>">Confidentialité</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></p>
+                <p>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( $info['name'] ); ?>. Tous droits réservés. · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'cgv' ) ) ?: home_url( '/cgv/' ) ); ?>">CGV</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politique-de-confidentialite' ) ) ?: home_url( '/politique-de-confidentialite/' ) ); ?>">Confidentialité</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'politique-de-cookies' ) ) ?: home_url( '/politique-de-cookies/' ) ); ?>">Cookies</a> · <a href="<?php echo esc_url( get_permalink( get_page_by_path( 'faq' ) ) ?: home_url( '/faq/' ) ); ?>">FAQ</a></p>
             </div>
         </div>
     </div>
@@ -2254,7 +2255,7 @@ JS;
    ============================================================ */
 add_action( 'admin_init', 'nl_seed_legal_pages', 27 );
 function nl_seed_legal_pages() {
-    if ( get_option( 'nl_legal_pages_seeded' ) === 'v2' ) {
+    if ( get_option( 'nl_legal_pages_seeded' ) === 'v3' ) {
         return;
     }
     if ( ! current_user_can( 'manage_options' ) ) {
@@ -2365,11 +2366,43 @@ HTML;
 <p>Pour toute question relative à vos données personnelles : {$email}.</p>
 HTML;
 
+    // ---- Politique de cookies (RGPD) ----
+    $privacy_url = ( $pp = get_page_by_path( 'politique-de-confidentialite' ) ) ? get_permalink( $pp ) : home_url( '/politique-de-confidentialite/' );
+    $cookies = <<<HTML
+<p class="nl-lead">Cette page explique ce qu'est un cookie, ceux que nous utilisons sur {$name}, et comment vous pouvez à tout moment contrôler votre consentement.</p>
+<h2>Qu'est-ce qu'un cookie ?</h2>
+<p>Un cookie est un petit fichier texte déposé sur votre appareil (ordinateur, tablette, téléphone) lorsque vous visitez un site. Il permet notamment de mémoriser vos préférences, de sécuriser votre navigation et, avec votre accord, de mesurer l'audience du site.</p>
+<h2>Les cookies que nous utilisons</h2>
+<h3>1. Cookies strictement nécessaires</h3>
+<p>Indispensables au fonctionnement du site, ils ne peuvent pas être désactivés. Ils permettent par exemple de gérer votre panier, votre session de connexion et la sécurité du site. Leur dépôt ne requiert pas votre consentement.</p>
+<ul>
+<li><strong>Panier & session WooCommerce</strong> — mémorisation de vos articles et de votre session.</li>
+<li><strong>Consentement cookies</strong> — mémorise votre choix (accepter / refuser) pour ne plus réafficher le bandeau.</li>
+<li><strong>Sécurité</strong> — protection contre la fraude et les envois de formulaires malveillants.</li>
+</ul>
+<h3>2. Cookies de mesure d'audience</h3>
+<p>Déposés <strong>uniquement après votre accord</strong>, ils nous aident à comprendre comment le site est utilisé (pages consultées, appareils) afin de l'améliorer. Ils sont issus de Google Analytics (GA4). Si vous refusez, aucun cookie de mesure d'audience n'est déposé.</p>
+<h2>Durée de conservation</h2>
+<p>Les cookies de consentement et de mesure d'audience sont conservés pour une durée maximale de 13 mois. Passé ce délai, votre consentement vous est à nouveau demandé.</p>
+<h2>Gérer votre consentement</h2>
+<p>Lors de votre première visite, un bandeau vous permet d'<strong>accepter</strong> ou de <strong>refuser</strong> les cookies de mesure d'audience. Vous pouvez modifier votre choix à tout moment :</p>
+<ul>
+<li>en supprimant les cookies et les données de site de votre navigateur (le bandeau réapparaîtra) ;</li>
+<li>via les paramètres de confidentialité de votre navigateur, qui permettent de bloquer ou supprimer les cookies.</li>
+</ul>
+<p>La plupart des navigateurs proposent une aide dédiée : <em>Chrome</em>, <em>Firefox</em>, <em>Safari</em> et <em>Edge</em> disposent tous d'un menu « Confidentialité » ou « Cookies et données de site ».</p>
+<h2>En savoir plus</h2>
+<p>Pour comprendre l'ensemble du traitement de vos données personnelles, consultez notre <a href="{$privacy_url}">politique de confidentialité</a>. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr).</p>
+<h2>Contact</h2>
+<p>Pour toute question relative aux cookies : {$email}.</p>
+HTML;
+
     $pages = [
         'faq'                        => [ 'title' => 'FAQ', 'content' => $faq ],
         'support'                    => [ 'title' => 'Support & Assistance', 'content' => $support ],
         'cgv'                        => [ 'title' => 'Conditions Générales de Vente', 'content' => $cgv ],
         'politique-de-confidentialite' => [ 'title' => 'Politique de confidentialité', 'content' => $privacy ],
+        'politique-de-cookies'       => [ 'title' => 'Politique de cookies', 'content' => $cookies ],
     ];
 
     foreach ( $pages as $slug => $data ) {
@@ -2390,7 +2423,7 @@ HTML;
         }
     }
 
-    update_option( 'nl_legal_pages_seeded', 'v2' );
+    update_option( 'nl_legal_pages_seeded', 'v3' );
 }
 
 /* ============================================================
