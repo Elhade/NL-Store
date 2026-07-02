@@ -330,6 +330,12 @@ function nl_icon( $name, $class = 'nl-icon' ) {
             'badge-star'     => '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="M12 8.3 12.94 11.01 15.8 11.06 13.52 12.79 14.35 15.54 12 13.9 9.65 15.54 10.48 12.79 8.2 11.06 11.06 11.01Z"/>',
             'check'          => '<path d="M20 6 9 17l-5-5"/>',
             'x'              => '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+            'zap'            => '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+            'user'           => '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+            'users'          => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+            'clock'          => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+            'landmark'       => '<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+            'camera'         => '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
         ];
     }
     if ( ! isset( $paths[ $name ] ) ) {
@@ -951,6 +957,184 @@ function nl_add_promotions_menu() {
         'nl-seo-settings',
         'nl_seo_settings_page'
     );
+
+    add_submenu_page(
+        'nl-store-promotions',
+        'Photomaton en mairie',
+        'Photomaton',
+        'manage_options',
+        'nl-photomaton',
+        'nl_photomaton_page'
+    );
+}
+
+/* ============================================================
+   NL STORE — SECTION PHOTOMATON EN MAIRIE (configurable)
+   ============================================================ */
+function nl_photomaton_data() {
+    $defaults = [
+        'is_active'    => 0,
+        'image'        => '',
+        'button_label' => 'Trouver un photomaton',
+        'intro'        => 'Réalisez vos photos d\'identité conformes et officielles en quelques minutes.',
+        'addresses'    => [], // [ ['name','address','lat','lng'], ... ]
+    ];
+    $opt = get_option( 'nl_photomaton', [] );
+    if ( ! is_array( $opt ) ) {
+        $opt = [];
+    }
+    return array_merge( $defaults, $opt );
+}
+
+function nl_photomaton_page() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        return;
+    }
+    if ( 'POST' === $_SERVER['REQUEST_METHOD'] && check_admin_referer( 'nl_photomaton_nonce' ) ) {
+        // Adresses : une par ligne « Nom | Adresse | lat | lng ».
+        $raw   = wp_unslash( $_POST['addresses'] ?? '' );
+        $lines = array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) $raw ) ) );
+        $addrs = [];
+        foreach ( $lines as $line ) {
+            $parts = array_map( 'trim', explode( '|', $line ) );
+            if ( count( $parts ) < 4 ) {
+                continue;
+            }
+            $lat = (float) str_replace( ',', '.', $parts[2] );
+            $lng = (float) str_replace( ',', '.', $parts[3] );
+            if ( ! $lat || ! $lng ) {
+                continue;
+            }
+            $addrs[] = [
+                'name'    => sanitize_text_field( $parts[0] ),
+                'address' => sanitize_text_field( $parts[1] ),
+                'lat'     => $lat,
+                'lng'     => $lng,
+            ];
+        }
+        update_option( 'nl_photomaton', [
+            'is_active'    => isset( $_POST['is_active'] ) ? 1 : 0,
+            'image'        => esc_url_raw( wp_unslash( $_POST['image'] ?? '' ) ),
+            'button_label' => sanitize_text_field( wp_unslash( $_POST['button_label'] ?? '' ) ),
+            'intro'        => sanitize_text_field( wp_unslash( $_POST['intro'] ?? '' ) ),
+            'addresses'    => $addrs,
+        ] );
+        echo '<div class="notice notice-success"><p>✅ Section Photomaton mise à jour !</p></div>';
+    }
+    $d = nl_photomaton_data();
+    // Recompose le textarea depuis le tableau d'adresses.
+    $lines = [];
+    foreach ( $d['addresses'] as $a ) {
+        $lines[] = $a['name'] . ' | ' . $a['address'] . ' | ' . $a['lat'] . ' | ' . $a['lng'];
+    }
+    ?>
+    <div class="wrap">
+        <h1>📷 Photomaton en mairie</h1>
+        <p>Section affichée sur la page d'accueil. Le bouton ouvre une carte (Mapbox si un token est renseigné dans NL Store → Carte, sinon carte gratuite) avec les mairies équipées.</p>
+        <form method="post" style="background:#fff;padding:20px;border-radius:8px;max-width:760px;">
+            <?php wp_nonce_field( 'nl_photomaton_nonce' ); ?>
+            <p><label><input type="checkbox" name="is_active" <?php checked( $d['is_active'], 1 ); ?>> Afficher la section sur l'accueil</label></p>
+            <table class="form-table">
+                <tr>
+                    <th><label for="image">Image (URL)</label></th>
+                    <td>
+                        <input type="url" id="image" name="image" value="<?php echo esc_attr( $d['image'] ); ?>" class="large-text" placeholder="https://… (photo du photomaton)">
+                        <p class="description">Déposez l'image dans Médias, puis collez son URL ici.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="intro">Texte d'introduction</label></th>
+                    <td><textarea id="intro" name="intro" rows="2" class="large-text"><?php echo esc_textarea( $d['intro'] ); ?></textarea></td>
+                </tr>
+                <tr>
+                    <th><label for="button_label">Libellé du bouton</label></th>
+                    <td><input type="text" id="button_label" name="button_label" value="<?php echo esc_attr( $d['button_label'] ); ?>" class="regular-text"></td>
+                </tr>
+                <tr>
+                    <th><label for="addresses">Mairies équipées</label></th>
+                    <td>
+                        <textarea id="addresses" name="addresses" rows="5" class="large-text" placeholder="Mairie de Tsingoni | Place de la Mairie, 97680 Tsingoni | -12.7889 | 45.1031"><?php echo esc_textarea( implode( "\n", $lines ) ); ?></textarea>
+                        <p class="description"><strong>Une mairie par ligne</strong>, au format : <code>Nom | Adresse | latitude | longitude</code>. (Coordonnées via Google Maps : clic droit → copier les chiffres.)</p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Enregistrer' ); ?>
+        </form>
+    </div>
+    <?php
+}
+
+// Rendu de la section Photomaton (design maquette).
+function nl_render_photomaton() {
+    $d = nl_photomaton_data();
+    if ( empty( $d['is_active'] ) ) {
+        return '';
+    }
+    $img = $d['image'];
+    ob_start();
+    ?>
+    <section class="nl-photomaton nl-reveal">
+        <div class="nl-photomaton__inner">
+            <div class="nl-photomaton__content">
+                <span class="nl-photomaton__badge">Service de proximité</span>
+                <h2 class="nl-photomaton__title">Photomaton <span>disponible en mairie</span></h2>
+                <p class="nl-photomaton__sub"><?php echo esc_html( $d['intro'] ); ?></p>
+                <ul class="nl-photomaton__list">
+                    <li><span class="nl-photomaton__ico"><?php echo nl_icon( 'shield-check' ); ?></span> Conforme aux normes officielles (ANTS)</li>
+                    <li><span class="nl-photomaton__ico"><?php echo nl_icon( 'zap' ); ?></span> Impression immédiate</li>
+                    <li><span class="nl-photomaton__ico"><?php echo nl_icon( 'user' ); ?></span> Simple, rapide et accessible à tous</li>
+                </ul>
+                <button type="button" class="nl-photomaton__cta" data-nl-photomaton-open>
+                    <?php echo nl_icon( 'map-pin' ); ?>
+                    <span><strong><?php echo esc_html( $d['button_label'] ); ?></strong><small>près de chez vous</small></span>
+                </button>
+            </div>
+            <div class="nl-photomaton__media">
+                <?php if ( $img ) : ?>
+                    <img src="<?php echo esc_url( $img ); ?>" alt="Photomaton en mairie" loading="lazy">
+                <?php else : ?>
+                    <div class="nl-photomaton__ph"><?php echo nl_icon( 'camera' ); ?></div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <div class="nl-photomaton__features">
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'shield-check' ); ?><div><strong>Photos conformes</strong><span>Respect des normes officielles</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'clock' ); ?><div><strong>Service rapide</strong><span>Impression immédiate</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'landmark' ); ?><div><strong>Disponible en mairie</strong><span>Près de chez vous</span></div></div>
+            <div class="nl-photomaton__feat"><?php echo nl_icon( 'users' ); ?><div><strong>Accessible à tous</strong><span>Sans rendez-vous</span></div></div>
+        </div>
+    </section>
+    <?php
+    return ob_get_clean();
+}
+
+// Modal carte des photomatons (rendue en pied de page si la section est active).
+add_action( 'wp_footer', 'nl_render_photomaton_modal', 15 );
+function nl_render_photomaton_modal() {
+    if ( is_admin() ) {
+        return;
+    }
+    $d = nl_photomaton_data();
+    if ( empty( $d['is_active'] ) || ! is_front_page() ) {
+        return;
+    }
+    ?>
+    <div class="nl-pm-modal" id="nl-pm-modal" role="dialog" aria-modal="true" aria-label="Trouver un photomaton" hidden>
+        <div class="nl-pm-modal__box">
+            <button type="button" class="nl-pm-modal__close" aria-label="Fermer">&times;</button>
+            <h3>Trouver un photomaton</h3>
+            <div class="nl-pm-modal__map" id="nl-pm-map"></div>
+            <?php if ( ! empty( $d['addresses'] ) ) : ?>
+            <ul class="nl-pm-modal__list">
+                <?php foreach ( $d['addresses'] as $a ) : ?>
+                    <li><?php echo nl_icon( 'map-pin' ); ?><span><strong><?php echo esc_html( $a['name'] ); ?></strong><?php echo esc_html( $a['address'] ); ?></span></li>
+                <?php endforeach; ?>
+            </ul>
+            <?php endif; ?>
+        </div>
+    </div>
+    <script>window.NL_PHOTOMATON = <?php echo wp_json_encode( array_values( $d['addresses'] ) ); ?>;</script>
+    <?php
 }
 
 /* ============================================================
@@ -1931,6 +2115,50 @@ function nl_enqueue_map() {
     }
     $s = nl_map_settings();
 
+    // Script de la modal « Trouver un photomaton » (multi-marqueurs, Mapbox ou Leaflet).
+    $modal_js = <<<'JS'
+(function () {
+  var modal = document.getElementById('nl-pm-modal');
+  var openers = document.querySelectorAll('[data-nl-photomaton-open]');
+  if (!modal || !openers.length) { return; }
+  var inited = false;
+  function initMap() {
+    if (inited) { return; } inited = true;
+    var el = document.getElementById('nl-pm-map');
+    var pts = (window.NL_PHOTOMATON || []).filter(function (p) { return p && p.lat && p.lng; });
+    if (!el || !pts.length) { if (el) { el.innerHTML = '<p class="nl-pm-empty">Aucune adresse renseignée pour le moment.</p>'; } return; }
+    if (window.NL_MAP && typeof mapboxgl !== 'undefined') {
+      mapboxgl.accessToken = NL_MAP.token;
+      var m = new mapboxgl.Map({ container: el, style: NL_MAP.style, center: [pts[0].lng, pts[0].lat], zoom: 11 });
+      m.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+      var b = new mapboxgl.LngLatBounds();
+      pts.forEach(function (p) {
+        var pin = document.createElement('div'); pin.className = 'nl-map-pin'; pin.innerHTML = '<span></span>';
+        new mapboxgl.Marker({ element: pin }).setLngLat([p.lng, p.lat]).setPopup(new mapboxgl.Popup({ offset: 16 }).setText(p.name || '')).addTo(m);
+        b.extend([p.lng, p.lat]);
+      });
+      if (pts.length > 1) { m.fitBounds(b, { padding: 50, maxZoom: 14 }); }
+      setTimeout(function () { m.resize(); }, 260);
+    } else if (typeof L !== 'undefined') {
+      var map = L.map(el, { scrollWheelZoom: false });
+      map.attributionControl.setPrefix('');
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 20, attribution: '&copy; OpenStreetMap, &copy; CARTO' }).addTo(map);
+      var icon = L.divIcon({ className: 'nl-map-pin', html: '<span></span>', iconSize: [20, 20], iconAnchor: [10, 10] });
+      var group = [];
+      pts.forEach(function (p) { L.marker([p.lat, p.lng], { icon: icon }).addTo(map).bindPopup(p.name || ''); group.push([p.lat, p.lng]); });
+      if (group.length > 1) { map.fitBounds(group, { padding: [40, 40], maxZoom: 14 }); } else { map.setView(group[0], 14); }
+      setTimeout(function () { map.invalidateSize(); }, 260);
+    }
+  }
+  function open() { modal.hidden = false; requestAnimationFrame(function () { modal.classList.add('is-open'); }); initMap(); }
+  function close() { modal.classList.remove('is-open'); setTimeout(function () { modal.hidden = true; }, 300); }
+  openers.forEach(function (b) { b.addEventListener('click', open); });
+  modal.addEventListener('click', function (e) { if (e.target === modal) { close(); } });
+  var x = modal.querySelector('.nl-pm-modal__close'); if (x) { x.addEventListener('click', close); }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { close(); } });
+})();
+JS;
+
     if ( ! empty( $s['mapbox_token'] ) ) {
         // ----- Mapbox GL JS (premium) -----
         wp_enqueue_style( 'mapbox-gl', 'https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css', [], '3.6.0' );
@@ -1976,6 +2204,7 @@ function nl_enqueue_map() {
 })();
 JS;
         wp_add_inline_script( 'mapbox-gl', $js );
+        wp_add_inline_script( 'mapbox-gl', $modal_js );
         return;
     }
 
@@ -2015,6 +2244,7 @@ JS;
 })();
 JS;
     wp_add_inline_script( 'leaflet', $js );
+    wp_add_inline_script( 'leaflet', $modal_js );
 }
 
 /* ============================================================
